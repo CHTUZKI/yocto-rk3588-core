@@ -1,0 +1,42 @@
+# ============================================
+# 标准构建（最小镜像，含 update.img）
+# ============================================
+cd /home/xuning/yocto-rk3588-core
+source poky/oe-init-build-env build
+bitbake rk3588-image-minimal
+
+# 产物：
+#   build/tmp/deploy/images/hd-rk3588-core/update.img
+#   build/latest/update.img
+#
+# 串口：115200 8N1（厂家 update.img 实测；勿用 1500000）
+#
+# 自检：
+#   xxd -l 4 .../loader.bin     → "LDR "
+#   package-file 无 idblock 行
+#   grep baudrate .../u-boot-initial-env → 115200
+
+# ============================================
+# 仅重打包 update.img（改了 meta-rockchip-updateimg 后）
+# ============================================
+cd /home/xuning/yocto-rk3588-core
+source poky/oe-init-build-env build
+bitbake rk3588-image-minimal -c clean
+bitbake rk3588-image-minimal
+
+# ============================================
+# 改 MiniLoader / rkbin 后
+# ============================================
+cd /home/xuning/yocto-rk3588-core
+source poky/oe-init-build-env build
+bitbake rockchip-rkbin -c cleansstate
+bitbake rk3588-image-minimal
+
+# ============================================
+# 改设备树 / 网口后
+# ============================================
+cd /home/xuning/yocto-rk3588-core
+source poky/oe-init-build-env build
+bitbake virtual/kernel -c cleansstate
+bitbake rk3588-image-minimal -c clean
+bitbake rk3588-image-minimal

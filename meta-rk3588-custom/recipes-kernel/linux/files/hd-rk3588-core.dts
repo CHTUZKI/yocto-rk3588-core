@@ -1,0 +1,175 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Vanxak HD-RK3588-CORE (vanxoak-iot LP4)
+ *
+ * Based on Rockchip vendor rk3588-evb4-lp4-v10-linux.dts (develop-6.1),
+ * with board-specific overrides from the factory live DT / bring-up:
+ *   - UART FIQ console @ 115200 (not 1500000)
+ *   - RJ45 on GMAC1, PHY MDIO addr 0, reset GPIO3_PB7
+ *   - NPU buck on I2C1m2 (fea90000); i2c1m0 conflicts with FIQ/UART2
+ *   - HDMI1 (GPIO4_PB2 enable), not EVB4 MIPI-DSI panel
+ */
+
+/dts-v1/;
+
+#include "rk3588-evb4-lp4.dtsi"
+#include "rk3588-linux.dtsi"
+
+/ {
+	model = "Vanxak HD-RK3588-CORE (vanxoak-iot LP4)";
+	compatible = "vanxak,hd-rk3588-core", "rockchip,rk3588-evb4-lp4-v10", "rockchip,rk3588";
+
+	chosen {
+		bootargs = "earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0 root=PARTLABEL=rootfsA rw rootwait";
+	};
+
+	/* EVB4 reserves this for PCIe EP; this board is not an EP. Free it. */
+	reserved-memory {
+		/delete-node/ dma-trans@3c000000;
+	};
+};
+
+/* Board UART is 115200 end-to-end (DDR / MiniLoader / Linux). */
+&fiq_debugger {
+	rockchip,baudrate = <115200>;
+};
+
+/* Physical RJ45 is on GMAC1 (confirmed with mainline bring-up + factory DT). */
+&gmac0 {
+	status = "disabled";
+};
+
+&gmac1 {
+	phy-mode = "rgmii-rxid";
+	clock_in_out = "output";
+	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+	snps,reset-active-low;
+	snps,reset-delays-us = <0 20000 100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&gmac1_miim
+		     &gmac1_tx_bus2
+		     &gmac1_rx_bus2
+		     &gmac1_rgmii_clk
+		     &gmac1_rgmii_bus>;
+	tx_delay = <0x44>;
+	rx_delay = <0x00>;
+	assigned-clocks = <&cru CLK_GMAC_125M>, <&cru CLK_GMAC_50M>;
+	assigned-clock-rates = <125000000>, <50000000>;
+	phy-supply = <&vcc_3v3_s0>;
+	phy-handle = <&rgmii_phy1>;
+	status = "okay";
+};
+
+&mdio1 {
+	/delete-node/ phy@1;
+
+	/* Factory node name is phy@1 but MDIO address is 0. */
+	rgmii_phy1: phy@1 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x0>;
+	};
+};
+
+/*
+ * Factory live DT places vdd_npu_s0 on i2c@fea90000 (i2c1) with i2c1m2 pins.
+ * Default i2c1m0 uses GPIO0_B5/B6 which FIQ debugger already claimed → NPU deferred.
+ */
+&i2c2 {
+	/delete-node/ rk8602@42;
+};
+
+&i2c1 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c1m2_xfer>;
+
+	vdd_npu_s0: vdd_npu_mem_s0: rk8602@42 {
+		compatible = "rockchip,rk8602";
+		reg = <0x42>;
+		vin-supply = <&vcc5v0_sys>;
+		regulator-compatible = "rk860x-reg";
+		regulator-name = "vdd_npu_s0";
+		regulator-min-microvolt = <550000>;
+		regulator-max-microvolt = <950000>;
+		regulator-ramp-delay = <2300>;
+		rockchip,suspend-voltage-selector = <1>;
+		regulator-boot-on;
+		regulator-always-on;
+		regulator-state-mem {
+			regulator-off-in-suspend;
+		};
+	};
+};
+
+&rknpu {
+	rknpu-supply = <&vdd_npu_s0>;
+	mem-supply = <&vdd_npu_s0>;
+	status = "okay";
+};
+
+&rknpu_mmu {
+	status = "okay";
+};
+
+/* HDMI1 — factory enable-gpios = GPIO4_PB2; route via VP1. */
+&hdmi1 {
+	enable-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
+&hdmi1_in_vp1 {
+	status = "okay";
+};
+
+&hdptxphy_hdmi1 {
+	status = "okay";
+};
+
+&route_hdmi1 {
+	status = "okay";
+	connect = <&vp1_out_hdmi1>;
+};
+
+/* Core board has no MIPI panel / Type-C / touch from EVB4. */
+&dsi0 {
+	status = "disabled";
+};
+
+&dsi0_panel {
+	status = "disabled";
+};
+
+&route_dsi0 {
+	status = "disabled";
+};
+
+&dp0 {
+	status = "disabled";
+};
+
+&gt1x {
+	status = "disabled";
+};
+
+&hynitron {
+	status = "disabled";
+};
+
+&i2c6 {
+	status = "disabled";
+};
+
+&usbc0 {
+	status = "disabled";
+};
+
+/*
+ * EVB4 forces PCIe3x4 into endpoint mode with dma_trans. This board uses
+ * normal RC (or leaves it off). Keep disabled until slot power is wired.
+ */
+&pcie3x4 {
+	compatible = "rockchip,rk3588-pcie", "snps,dw-pcie";
+	/delete-property/ memory-region;
+	/delete-property/ busno;
+	status = "disabled";
+};

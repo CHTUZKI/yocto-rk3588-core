@@ -1,0 +1,3 @@
+enable systemd-networkd.service
+enable sshd.socket
+enable sshd.service

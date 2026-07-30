@@ -1,0 +1,1124 @@
+
+[03:38:15.419]收←◆\0
+[03:38:15.771]收←◆DDR 3488111f83 cym 24/04/12-12:49:26,fwver: v1.17
+
+[03:38:15.835]收←◆LPDDR4X, 2112MHz
+channel[0] BW=16 Col=10 Bk=8 CS0 Row=1
+[03:38:15.916]收←◆6 CS1 Row=16 CS=2 Die BW=16 Size=2048MB
+channel[1] BW=16 Col=10 Bk=8 CS0 Row=16 CS1 Row=16 CS=2 Die BW=16 Size=2048MB
+channel[2] BW=16 Col=10 Bk=8 CS0 Row=16 CS1 Row=16 CS=2 Die BW=16 Size=2048MB
+channel[3] BW=16 Col=10 Bk=8 CS0 Row=16 CS1 Row=16 CS=2 Die BW=16 Size=2048MB
+Manufacturer ID:0x13
+CH0 RX Vref:27.5%, TX Vref:22.8%,21.8%DQ rds:
+h0 l0, h1 l0, h1 l0, h3 l0, h2 l0, h1 l0, h3 l0, h1 l0, 
+h0 l0, h1 l0, h5 l0, h2 l0, h2 l0, h5 l0, h5 l0, h1 l0, 
+
+CH1 RX Vref
+[03:38:15.946]收←◆:27.1%, TX Vref:24.8%,23.8%DQ rds:
+h0 l0, h2 l0, h1 l0, h2 l0, h0 l0, h6 l0, h2 l0, h0 l0, 
+h1 l0, h2 l0, h3 l0, h1 l0, h4 l0, h0 l0, h1 l0, h0 l1, 
+
+CH2 RX Vref:27.9%, TX Vref:23.8%,23.8%DQ rds:
+h7 l0, h1 l0, h1 l0, h2 l0, h2 l0, h4 l0, h5 l0, h1 l0, 
+h2 l0, h5 l0, h1 l0, h2 l0, h2 l0, h2 l0, h1 l0, h3 l0, 
+
+CH3 RX Vr
+[03:38:16.033]收←◆ef:27.5%, TX Vref:23.8%,23.8%DQ rds:
+h0 l0, h0 l0, h1 l0, h1 l0, h1 l0, h0 l0, h1 l0, h2 l0, 
+h4 l0, h6 l0, h3 l0, h0 l1, h6 l0, h3 l0, h4 l0, h2 l0, 
+
+stride=0x2, ddr_config=0x4
+hash ch_mask0-1 0x20 0x40, bank_mask0-3 0xa00 0x1400 0x2800 0x0, rank_mask0 0x401000
+change to F1: 528MHz
+change to F2: 1068MHz
+change to F3: 1560MHz
+change to F0: 2112MHz
+out
+U-Boot SPL board init
+[03:38:16.139]收←◆
+U-Boot SPL 2017.09-ge4e124926e-230922 #lxh (Sep 25 2023 - 10:58:38), fwver: v1.13
+unknown raw ID 0 0 0
+unrecognized JEDEC id bytes: 00, 00, 00
+Trying to boot from MMC2
+MMC: no card present
+mmc_init: -123, time 2
+spl: mmc init failed with error: -123
+Trying to boot from MMC1
+
+[03:38:16.227]收←◆SPL: A/B-slot: _a, successful: 0, tries-remain: 7
+Trying fit image at 0x4000 sector
+## Verified-boot: 0
+## Checking atf-1 0x00040000 ... sha256(6a4a192c10...) + OK
+## Checking u-boot 0x00a00000 ... sha256(3f1eabfb38...) + OK
+## Checking fdt-1 0x00aa5a00 ... sha256(211dc344ab...) + OK
+## Checking atf-2 0x000f0000 ... sha256(569ee96047...) + OK
+## Checking atf-3 0xff100000 ... sha256(70505bb764...) + OK
+Jumping to U-Boot(0x00a00000) via ARM Trusted Firmware(0x00040000)
+Total: 140.625/441.860 ms
+
+
+[03:38:16.292]收←◆INFO:    Preloader serial: 2
+NOTI
+[03:38:16.416]收←◆CE:  BL31: v2.3():v2.3-831-g92b1674a5:derrick.huang, fwver: v1.47
+NOTICE:  BL31: Built : 16:18:39, Sep  4 2024
+INFO:    spec: 0xa
+INFO:    code: 0x88
+INFO:    ext 32k is not valid
+INFO:    ddr: stride-en 4CH
+INFO:    GICv3 without legacy support detected.
+INFO:    ARM GICv3 driver initialized in EL3
+INFO:    valid_cpu_msk=0xff bcore0_rst = 0x0, bcore1_rst = 0x0
+INFO:    l3 cache partition cfg-0
+INFO:    system boots from cpu-hwid-0
+INFO:    bypass memory repair
+INFO:    idle_st=0x21fff, pd_st=0x11fff9, repair_st=0xfff70001
+INFO:    dfs DDR fsp_params[0].freq_mhz= 2112MHz
+INFO:    dfs DDR fsp_params[1].freq_mhz= 528MHz
+INFO:    dfs DDR fsp_params[2].freq_mhz= 1068MHz
+INFO:    dfs DDR fsp_params[3].freq_mhz= 1560MHz
+INFO:    BL31: Initialising Exception Handling Framework
+INFO:    BL31: Initializing runtime services
+WARNING: No OPTEE provided by BL2 boot loader, Booting device without OPTEE initialization. SMC`s destined for OPTEE will return SMC_UNK
+ERROR:   Error initializing runtime service opteed_fast
+INFO:    BL31: Preparing for EL3 exit to normal world
+INFO:    Entry point address = 0xa00000
+INFO:    SPSR = 0x3c9
+
+[03:38:16.896]收←◆
+
+U-Boot
+[03:38:16.917]收←◆ 2024.01 (Jan 08 2024 - 15:37:48 +0000)
+
+Model: Rockchip RK3588 EVB1 V10 Board
+DRAM:  
+[03:38:17.061]收←◆8 GiB (effective 7.7 GiB)
+
+[03:38:17.109]收←◆Core:  319 devices, 25 uclasses, devicetree: separate
+MM
+[03:38:17.137]收←◆C:   mmc@fe2e0000: 0
+Loading Environment from nowhere... OK
+In:    serial@feb50000
+Out:   serial@feb50000
+Err:   serial@feb50000
+Model: Rockchip RK3588 EVB1 V10 Board
+Net:   
+[03:38:17.249]收←◆eth0: ethernet@fe1b0000
+Hit any key to stop autoboot:  2 
+[03:38:18.272]收←◆ 1 
+[03:38:19.265]收←◆ 0 
+
+[03:38:19.884]收←◆
+Partition Map for MMC device 0  --   Partition Type: EFI
+
+Part	Start LBA	End LBA		Name
+	Attributes
+	Type GUID
+	Partition GUID
+  1	0x00004000	0x00005fff	"uboot"
+	attrs:	0x0000000000000000
+	type:	d55b0000-0000-4f05-8000-20650000541f
+	guid:	19090000-0000-4617-8000-6056000078eb
+  2	0x00006000	0x000067ff	"misc"
+	attrs:	0x0000000000000000
+	type:	48710000-0000-4b0b-8000-4a5d000036a7
+	guid:	c74d0000-0000-4366-8000-0efd00001c68
+  3	0x00006800	0x000667ff	"rootfsA"
+	attrs:	0x0000000000000000
+	type:	3a070000-0000-4341-8000-16fd00005483
+	guid:	874c0000-0000-4f5c-8000-14600000368e
+Trying mmc 0:3
+
+[03:38:20.295]收←◆14539368 bytes read in 323 ms (42.9 MiB/s)
+## Loading kernel from FIT Image at 02080000 ...
+   Using 'conf-hd-rk3588-core.dtb' configuration
+   Verifying Hash Integrity ... OK
+   Trying 'kernel-1' kernel subimage
+     Description:  Linux kernel
+     Type:         Kernel Image
+     Compression:  gzip compressed
+     Data Start:   0x02080108
+     Data Size:    14238263 Bytes = 13.6 MiB
+     Architecture: AArch64
+     OS:           Linux
+     Load Address: 0x06000000
+     Entry Point:  0x06000000
+     Hash algo:    sha256
+     Hash value:   83273cd9c2e6adb985d2f8bf9781d4a53c38a13d46580828fb3f1234cfc707d3
+   Verifying Hash Integrity ... sha256
+[03:38:20.703]收←◆+ OK
+## Loading fdt from FIT Image at 02080000 ...
+   Using 'conf-hd-rk3588-core.dtb' configuration
+   Verifying Hash Integrity ... OK
+   Trying 'fdt-hd-rk3588-core.dtb' fdt subimage
+     Description:  Flattened Device Tree blob
+     Type:         Flat Device Tree
+     Compression:  uncompressed
+     Data Start:   0x02e14454
+     Data Size:    299167 Bytes = 292.2 KiB
+     Architecture: AArch64
+     Hash algo:    sha256
+     Hash value:   d99b158d4f5ce391fc4aa243abf84d35e2e7bdc59618644b50e77f21a0227a0e
+   Verifying Hash Integrity ... sha256+ OK
+   Booting using the fdt blob at 0x2e14454
+Working FDT set to 2e14454
+   Uncompressing Kernel Image
+
+[03:38:21.400]收←◆ERROR: reserving fdt memory region failed (addr=0 size=0 flags=0)
+ERROR: reserving fdt memory region failed (addr=0 size=0 flags=0)
+
+[03:38:21.482]收←◆   Loading Device Tree to 00000000ecea7000, end 00000000ecef309e ... OK
+Working FDT set to ecea7000
+
+[03:38:21.532]收←◆
+Starting kernel ...
+
+
+[03:38:22.734]收←◆[    5.759817] Booting Linux on physical CPU 0x0000000000 [0x412fd050]
+[    5.759846] Linux version 6.1.141 (oe-user@oe-host) (aarch64-poky-linux-gcc (GCC) 13.4.0, GNU ld (GNU Binutils) 2.42.0.20240723) #1 SMP Fri Dec 26 10:23:13 UTC 2025
+[    5.770529] Machine model: Vanxak HD-RK3588-CORE (vanxoak-iot LP4)
+[    5.789937] Malformed early option 'earlycon'
+[    5.793458] efi: UEFI not found.
+[    5.796907] OF: fdt: Reserved memory: failed to reserve memory for node 'drm-logo@0': base 0x0000000000000000, size 0 MiB
+[    5.796925] OF: fdt: Reserved memory: failed to reserve memory for node 'drm-cubic-lut@0': base 0x0000000000000000, size 0 MiB
+[    5.797013] Reserved memory: created CMA memory pool at 0x00000001ff800000, size 8 MiB
+[    5.797019] OF: reserved mem: initialized node cma, compatible id shared-dma-pool
+[    5.973380] Zone ranges:
+[    5.973389]   DMA      [mem 0x0000000000200000-0x00000000ffffffff]
+[    5.973404]   DMA32    empty
+[    5.973409]   Normal   [mem 0x0000000100000000-0x00000001ffffffff]
+[    5.973417] Movable zone start for each node
+[    5.973419] Early memory node ranges
+[    5.973421]   node   0: [mem 0x0000000000200000-0x00000000efffffff]
+[    5.973430]   node   0: [mem 0x0000000100000000-0x00000001ffffffff]
+[    5.973439] Initmem setup node 0 [mem 0x0000000000200000-0x00000001ffffffff]
+[    6.009983] On node 0, zone DMA: 512 pages in unavailable ranges
+[    6.048959] cma: Reserved 32 MiB at 0x0000000100000000
+[    6.049197] psci: probing for conduit method from DT.
+[    6.049206] psci: PSCIv1.1 detected in firmware.
+[    6.049212] psci: Using standard PSCI v0.2 function IDs
+[    6.049217] psci: MIGRATE_INFO_TYPE not supported.
+[    6.049273] psci: SMC Calling Convention v1.2
+[    6.049705] percpu: Embedded 26 pages/cpu s69096 r8192 d29208 u106496
+[    6.049955] Detected VIPT I-cache on CPU0
+[    6.050008] CPU features: detected: GIC system register CPU interface
+[    6.050012] CPU features: detected: Virtualization Host Extensions
+[    6.050021] CPU features: detected: ARM errata 1165522, 1319367, or 1530923
+[    6.050027] alternatives: applying boot alternatives
+[    6.052480] Built 1 zonelists, mobility grouping on.  Total pages: 1999368
+[    6.052495] Kernel command line: root=PARTLABEL=rootfsA rootwait rw rootfstype=ext4 earlycon console=tty1 console=ttyFIQ0,115200n8
+[    6.053732] Dentry cache hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
+[    6.054282] Inode-cache hash table entries: 524288 (order: 10, 4194304 bytes, linear)
+[    6.054293] mem auto-init: stack:all(zero), heap alloc:off, heap free:off
+[    6.054300] software IO TLB: area num 8.
+[    6.071537] software IO TLB: mapped [mem 0x00000000e8ea7000-0x00000000ecea7000] (64MB)
+[    6.153145] Memory: 7754272K/8124416K available (20352K kernel code, 3650K rwdata, 7372K rodata, 7488K init, 662K bss, 329184K reserved, 40960K cma-reserved)
+[    6.153289] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=8, Nodes=1
+[    6.153327] ftrace: allocating 61293 entries in 240 pages
+[    6.273924] ftrace: allocated 240 pages with 4 groups
+[    6.274035] trace event string verifier disabled
+[    6.274259] rcu: Hierarchical RCU implementation.
+[    6.274264] rcu: 	RCU event tracing is enabled.
+[    6.274268] 	Rude variant of Tasks RCU enabled.
+[    6.274271] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+[    6.296041] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    6.299568] GICv3: GIC: Using split EOI/Deactivate mode
+[    6.299575] GICv3: 480 SPIs implemented
+[    6.299580] GICv3: 0 Extended SPIs implemented
+[    6.299619] Root IRQ handler: gic_handle_irq
+[    6.299637] GICv3: GICv3 features: 16 PPIs
+[    6.300255] GICv3: CPU0: found redistributor 0 region 0:0x00000000fe680000
+[    6.300665] ITS [mem 0xfe640000-0xfe65ffff]
+[    6.300733] ITS@0x00000000fe640000: allocated 8192 Devices @102200000 (indirect, esz 8, psz 64K, shr 
+[03:38:23.078]收←◆0)
+[    6.300771] ITS@0x00000000fe640000: allocated 32768 Interrupt Collections @102210000 (flat, esz 2, psz 64K, shr 0)
+[    6.300787] ITS: using cache flushing for cmd queue
+[    6.300824] ITS [mem 0xfe660000-0xfe67ffff]
+[    6.300880] ITS@0x00000000fe660000: allocated 8192 Devices @102230000 (indirect, esz 8, psz 64K, shr 0)
+[    6.300915] ITS@0x00000000fe660000: allocated 32768 Interrupt Collections @102240000 (flat, esz 2, psz 64K, shr 0)
+[    6.300930] ITS: using cache flushing for cmd queue
+[    6.301196] GICv3: using LPI property table @0x0000000102250000
+[    6.301369] GIC: using cache flushing for LPI property table
+[    6.301377] GICv3: CPU0: using allocated LPI pending table @0x0000000102260000
+[    6.301443] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    6.508837] arch_timer: cp15 timer(s) running at 24.00MHz (phys).
+[    6.508852] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
+[    6.508864] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
+[    6.510515] Console: colour dummy device 80x25
+[    6.511018] printk: console [tty1] enabled
+[    6.511076] Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=96000)
+[    6.511101] pid_max: default: 32768 minimum: 301
+[    6.511300] Mount-cache hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    6.511345] Mountpoint-cache hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    6.513138] cblist_init_generic: Setting adjustable number of callback queues.
+[    6.513164] cblist_init_generic: Setting shift to 3 and lim to 1.
+[    6.513376] rcu: Hierarchical SRCU implementation.
+[    6.513393] rcu: 	Max phase no-delay instances is 1000.
+[    6.514423] Platform MSI: msi-controller@fe640000 domain created
+[    6.514457] Platform MSI: msi-controller@fe660000 domain created
+[    6.514953] PCI/MSI: /interrupt-controller@fe600000/msi-controller@fe640000 domain created
+[    6.514992] PCI/MSI: /interrupt-controller@fe600000/msi-controller@fe660000 domain created
+[    6.515249] EFI services will not be available.
+[    6.515681] smp: Bringing up secondary CPUs ...
+[    6.516285] Detected VIPT I-cache on CPU1
+[    6.516383] GICv3: CPU1: found redistributor 100 region 0:0x00000000fe6a0000
+[    6.516407] GICv3: CPU1: using allocated LPI pending table @0x0000000102270000
+[    6.516455] CPU1: Booted secondary processor 0x0000000100 [0x412fd050]
+[    6.517120] Detected VIPT I-cache on CPU2
+[    6.517215] GICv3: CPU2: found redistributor 200 region 0:0x00000000fe6c0000
+[    6.517238] GICv3: CPU2: using allocated LPI pending table @0x0000000102280000
+[    6.517283] CPU2: Booted secondary processor 0x0000000200 [0x412fd050]
+[    6.517936] Detected VIPT I-cache on CPU3
+[    6.518028] GICv3: CPU3: found redistributor 300 region 0:0x00000000fe6e0000
+[    6.518050] GICv3: CPU3: using allocated LPI pending table @0x0000000102290000
+[    6.518091] CPU3: Booted secondary processor 0x0000000300 [0x412fd050]
+[    6.518707] CPU features: detected: Spectre-v4
+[    6.518712] CPU features: detected: Spectre-BHB
+[    6.518716] CPU features: detected: SSBS not fully self-synchronizing
+[    6.518719] Detected PIPT I-cache on CPU4
+[    6.518773] GICv3: CPU4: found redistributor 400 region 0:0x00000000fe700000
+[    6.518786] GICv3: CPU4: using allocated LPI pending table @0x00000001022a0000
+[    6.518813] CPU4: Booted secondary processor 0x0000000400 [0x414fd0b0]
+[    6.519406] Detected PIPT I-cache on CPU5
+[    6.519468] GICv3: CPU5: found redistributor 500 region 0:0x00000000fe720000
+[    6.519482] GICv3: CPU5: using allocated LPI pending table @0x00000001022b0000
+[    6.519510] CPU5: Booted secondary processor 0x0000000500 [0x414fd0b0]
+[    6.520108] Detected PIPT I-cache on CPU6
+[    6.520169] GICv3: CPU6: found redistributor 600 region 0:0x00000000fe740000
+
+[03:38:23.421]收←◆[    6.520182] GICv3: CPU6: using allocated LPI pending table @0x00000001022c0000
+[    6.520210] CPU6: Booted secondary processor 0x0000000600 [0x414fd0b0]
+[    6.520849] Detected PIPT I-cache on CPU7
+[    6.520914] GICv3: CPU7: found redistributor 700 region 0:0x00000000fe760000
+[    6.520927] GICv3: CPU7: using allocated LPI pending table @0x00000001022d0000
+[    6.520954] CPU7: Booted secondary processor 0x0000000700 [0x414fd0b0]
+[    6.521023] smp: Brought up 1 node, 8 CPUs
+[    6.521264] SMP: Total of 8 processors activated.
+[    6.521276] CPU features: detected: 32-bit EL0 Support
+[    6.521287] CPU features: detected: Data cache clean to the PoU not required for I/D coherence
+[    6.521302] CPU features: detected: Common not Private translations
+[    6.521313] CPU features: detected: CRC32 instructions
+[    6.521325] CPU features: detected: RCpc load-acquire (LDAPR)
+[    6.521336] CPU features: detected: LSE atomic instructions
+[    6.521347] CPU features: detected: Privileged Access Never
+[    6.521357] CPU features: detected: RAS Extension Support
+[    6.521369] CPU features: detected: Speculative Store Bypassing Safe (SSBS)
+[    6.521467] CPU: All CPU(s) started at EL2
+[    6.521479] alternatives: applying system-wide alternatives
+[    6.528350] devtmpfs: initialized
+[    6.543380] Registered cp15_barrier emulation handler
+[    6.543396] Registered setend emulation handler
+[    6.543477] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    6.543492] futex hash table entries: 2048 (order: 5, 131072 bytes, linear)
+[    6.543897] pinctrl core: initialized pinctrl subsystem
+[    6.544142] DMI not present or invalid.
+[    6.544404] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    6.545155] DMA: preallocated 1024 KiB GFP_KERNEL pool for atomic allocations
+[    6.545243] DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    6.545321] DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    6.546007] Registered FIQ tty driver
+[    6.546145] thermal_sys: Registered thermal governor 'fair_share'
+[    6.546149] thermal_sys: Registered thermal governor 'step_wise'
+[    6.546154] thermal_sys: Registered thermal governor 'user_space'
+[    6.546160] thermal_sys: Registered thermal governor 'power_allocator'
+[    6.546275] cpuidle: using governor menu
+[    6.546417] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
+[    6.546541] ASID allocator initialised with 65536 entries
+[    6.549094] ramoops: dmesg-0	0x18000@0x0000000000110000
+[    6.549104] ramoops: dmesg-1	0x18000@0x0000000000128000
+[    6.549125] ramoops: console	0x80000@0x0000000000140000
+[    6.549138] ramoops: pmsg	0x30000@0x00000000001c0000
+[    6.549429] printk: console [ramoops-1] enabled
+[    6.549436] pstore: Registered ramoops as persistent store backend
+[    6.549444] ramoops: using 0xe0000@0x110000, ecc: 0
+[    6.589159] /vop@fdd90000: Fixed dependency cycle(s) with /dsi@fde20000
+[    6.589201] /dsi@fde20000: Fixed dependency cycle(s) with /dsi@fde20000/panel@0
+[    6.589214] /dsi@fde20000: Fixed dependency cycle(s) with /vop@fdd90000
+[    6.589263] /dsi@fde20000/panel@0: Fixed dependency cycle(s) with /dsi@fde20000
+[    6.589435] /vop@fdd90000: Fixed dependency cycle(s) with /dp@fde50000
+[    6.589466] /dp@fde50000: Fixed dependency cycle(s) with /vop@fdd90000
+[    6.594461] rockchip_hwspinlock fe5a0000.hwspinlock: hwlock user id 1, locks 64, maximum user 15
+[    6.596970] /i2c@feca0000/fusb302@22: Fixed dependency cycle(s) with /usbdrd3_0/usb@fc000000
+[    6.597455] /i2c@feca0000/fusb302@22/connector: Fixed dependency cycle(s) with /phy@fed80000
+[    6.597490] /phy@fed80000: Fixed dependency cycle(s) with /i2c@feca0000/fusb302@22/connector
+[    6.604298] rockchip-gpio fd8a0000.gpio: probed /pinctrl/gpio@fd8a0000
+[    6.604567] rockchip-gpio fec20000.gpio: prob
+[03:38:23.766]收←◆ed /pinctrl/gpio@fec20000
+[    6.604807] rockchip-gpio fec30000.gpio: probed /pinctrl/gpio@fec30000
+[    6.605047] rockchip-gpio fec40000.gpio: probed /pinctrl/gpio@fec40000
+[    6.605282] rockchip-gpio fec50000.gpio: probed /pinctrl/gpio@fec50000
+[    6.605330] rockchip-pinctrl pinctrl: probed pinctrl
+[    6.614629] fiq_debugger fiq_debugger.0: error -ENXIO: IRQ fiq not found
+[    6.614648] fiq_debugger fiq_debugger.0: error -ENXIO: IRQ wakeup not found
+[    6.614658] fiq_debugger_probe: could not install nmi irq handler
+[    6.614920] printk: console [ttyFIQ0] enabled
+[    6.615025] Registered fiq debugger ttyFIQ0
+[    6.623553] iommu: Default domain type: Translated 
+[    6.623565] iommu: DMA domain TLB invalidation policy: strict mode 
+[    6.623726] SCSI subsystem initialized
+[    6.623810] usbcore: registered new interface driver usbfs
+[    6.623831] usbcore: registered new interface driver hub
+[    6.623849] usbcore: registered new device driver usb
+[    6.623911] mc: Linux media interface: v0.10
+[    6.623930] videodev: Linux video capture interface: v2.00
+[    6.623962] pps_core: LinuxPPS API ver. 1 registered
+[    6.623970] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    6.623983] PTP clock support registered
+[    6.624005] EDAC MC: Ver: 3.0.0
+[    6.624369] arm-scmi firmware:scmi: Enabled polling mode TX channel - prot_id:16
+[    6.624423] arm-scmi firmware:scmi: SCMI Notifications - Core Enabled.
+[    6.624461] arm-scmi firmware:scmi: SCMI Protocol v2.0 'rockchip:' Firmware version 0x0
+[    6.625782] Advanced Linux Sound Architecture Driver Initialized.
+[    6.625989] Bluetooth: Core ver 2.22
+[    6.626008] NET: Registered PF_BLUETOOTH protocol family
+[    6.626016] Bluetooth: HCI device and connection manager initialized
+[    6.626026] Bluetooth: HCI socket layer initialized
+[    6.626034] Bluetooth: L2CAP socket layer initialized
+[    6.626045] Bluetooth: SCO socket layer initialized
+[    6.627434] rockchip-cpuinfo cpuinfo: SoC		: 35881000
+[    6.627447] rockchip-cpuinfo cpuinfo: Serial		: 330ba29240951742
+[    6.628002] clocksource: Switched to clocksource arch_sys_counter
+[    6.633140] NET: Registered PF_INET protocol family
+[    6.633324] IP idents hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    6.637537] tcp_listen_portaddr_hash hash table entries: 4096 (order: 4, 65536 bytes, linear)
+[    6.637613] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    6.637644] TCP established hash table entries: 65536 (order: 7, 524288 bytes, linear)
+[    6.638144] TCP bind hash table entries: 65536 (order: 9, 2097152 bytes, linear)
+[    6.640025] TCP: Hash tables configured (established 65536 bind 65536)
+[    6.640078] UDP hash table entries: 4096 (order: 5, 131072 bytes, linear)
+[    6.640265] UDP-Lite hash table entries: 4096 (order: 5, 131072 bytes, linear)
+[    6.640514] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    6.640798] RPC: Registered named UNIX socket transport module.
+[    6.640809] RPC: Registered udp transport module.
+[    6.640816] RPC: Registered tcp transport module.
+[    6.640824] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    6.641292] PCI: CLS 0 bytes, default 64
+[    6.642146] rockchip-thermal fec00000.tsadc: Missing rockchip,grf property
+[    6.642388] thermal thermal_zone1: power_allocator: sustainable_power will be estimated
+[    6.642474] thermal thermal_zone2: power_allocator: sustainable_power will be estimated
+[    6.642556] thermal thermal_zone3: power_allocator: sustainable_power will be estimated
+[    6.642640] thermal thermal_zone4: power_allocator: sustainable_power will be estimated
+[    6.642723] thermal thermal_zone5: power_allocator: sustainable_power will be estimated
+[    6.642806] thermal thermal_zone6: power_allocator: sustainable_power will be estimated
+[    6.643065] rockchip-therm
+[03:38:24.110]收←◆al fec00000.tsadc: tsadc is probed successfully!
+[    6.644453] hw perfevents: enabled with armv8_pmuv3 PMU driver, 7 counters available
+[    7.038002] Initialise system trusted keyrings
+[    7.038175] workingset: timestamp_bits=62 max_order=21 bucket_order=0
+[    7.040211] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    7.040528] NFS: Registering the id_resolver key type
+[    7.040548] Key type id_resolver registered
+[    7.040555] Key type id_legacy registered
+[    7.040576] ntfs: driver 2.1.32 [Flags: R/O].
+[    7.040638] jffs2: version 2.2. (NAND) 漏 2001-2006 Red Hat, Inc.
+[    7.040749] fuse: init (API version 7.38)
+[    7.040917] SGI XFS with security attributes, no debug enabled
+[    7.072802] NET: Registered PF_ALG protocol family
+[    7.072815] Key type asymmetric registered
+[    7.072823] Asymmetric key parser 'x509' registered
+[    7.072850] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 241)
+[    7.072861] io scheduler mq-deadline registered
+[    7.072869] io scheduler kyber registered
+[    7.074154] rockchip-csi2-dphy-hw fedc0000.csi2-dphy0-hw: csi2 dphy hw probe successfully!
+[    7.074249] rockchip-csi2-dphy-hw fedc8000.csi2-dphy1-hw: csi2 dphy hw probe successfully!
+[    7.082928] pwm-backlight backlight: supply power not found, using dummy regulator
+[    7.083145] iep: Module initialized.
+[    7.083182] mpp_service mpp-srv: unknown mpp version for missing VCS info
+[    7.083193] mpp_service mpp-srv: probe start
+[    7.085105] mpp_vepu2 jpege-ccu: probing start
+[    7.085118] mpp_vepu2 jpege-ccu: probing finish
+[    7.086052] mpp_rkvdec2 fdc30000.rkvdec-ccu: rkvdec-ccu, probing start
+[    7.086125] mpp_rkvdec2 fdc30000.rkvdec-ccu: ccu-mode: 1
+[    7.086135] mpp_rkvdec2 fdc30000.rkvdec-ccu: probing finish
+[    7.086518] mpp_rkvenc2 rkvenc-ccu: probing start
+[    7.086530] mpp_rkvenc2 rkvenc-ccu: probing finish
+[    7.087086] mpp_service mpp-srv: probe success
+[    7.098374] dma-pl330 fea10000.dma-controller: Loaded driver for PL330 DMAC-241330
+[    7.098391] dma-pl330 fea10000.dma-controller: 	DBUFF-128x8bytes Num_Chans-8 Num_Peri-32 Num_Events-16
+[    7.099070] dma-pl330 fea30000.dma-controller: Loaded driver for PL330 DMAC-241330
+[    7.099084] dma-pl330 fea30000.dma-controller: 	DBUFF-128x8bytes Num_Chans-8 Num_Peri-32 Num_Events-16
+[    7.099758] dma-pl330 fed10000.dma-controller: Loaded driver for PL330 DMAC-241330
+[    7.099771] dma-pl330 fed10000.dma-controller: 	DBUFF-128x8bytes Num_Chans-8 Num_Peri-32 Num_Events-16
+[    7.100709] rockchip-system-monitor rockchip-system-monitor: system monitor probe
+[    7.101493] Serial: 8250/16550 driver, 15 ports, IRQ sharing disabled
+[    7.102713] random: crng init done
+[    7.107105] rk_iommu fdca0000.iommu: av1d iommu enabled
+[    7.109802] /dsi@fde20000: Fixed dependency cycle(s) with /dsi@fde20000/panel@0
+[    7.109864] /dsi@fde20000/panel@0: Fixed dependency cycle(s) with /dsi@fde20000
+[    7.119409] brd: module loaded
+[    7.121634] loop: module loaded
+[    7.121794] zram: Added device: zram0
+[    7.121930] lkdtm: No crash points registered, enable through debugfs
+[    7.123849] rockchip-spi feb20000.spi: no high_speed pinctrl state
+[    7.124170] /spi@feb20000/rk806single@0: Fixed dependency cycle(s) with /spi@feb20000/rk806single@0/regulators/DCDC_REG7
+[    7.124698] rk806 spi2.0: chip id: RK806,ver:0x2, 0x1
+[    7.124825] rk806 spi2.0: ON: 0x40 OFF:0x0
+[    7.124944] rk806 spi2.0: shutown_by_pwrctrln missing!
+[    7.124954] rk806 spi2.0: shutdown-sequence missing!
+[    7.124964] rk806 spi2.0: vb-shutdown-sequence missing!
+[    7.124972] rk806 spi2.0: dvs-suspend-control-by missing!
+[    7.132605] avdd_0v75_s0: Bringing 750000uV into 837500-837500uV
+[    7.136542] rk806 spi2.0: no power-off pinctrl state
+[    7.136554] rk806 spi2.0: no sleep-setting state
+[    7.136562] rk806 spi2.0: no reset-setting pinctrl state
+[    7.136570] rk806 spi2.0:
+[03:38:24.151]收←◆ no dvs-setting pinctrl state
+[    7.137147] rockchip-spi feb20000.spi: probed, poll=0, rsd=0, cs-inactive=0, ready=0
+[    7.138078] CAN device driver interface
+[    7.138857] rk_gmac-dwmac fe1c0000.ethernet: IRQ eth_lpi not found
+[    7.139022] rk_gmac-dwmac fe1c0000.ethernet: supply phy not found, using dumm
+[03:38:24.496]收←◆y regulator
+[    7.139079] rk_gmac-dwmac fe1c0000.ethernet: clock input or output? (output).
+[    7.139091] rk_gmac-dwmac fe1c0000.ethernet: TX delay(0x44).
+[    7.139101] rk_gmac-dwmac fe1c0000.ethernet: Can not read property: rx_delay.
+[    7.139110] rk_gmac-dwmac fe1c0000.ethernet: set rx_delay to 0xffffffff
+[    7.139124] rk_gmac-dwmac fe1c0000.ethernet: integrated PHY? (no).
+[    7.139136] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock mac_clk_rx
+[    7.139145] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock mac_clk_tx
+[    7.139163] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock clk_mac_speed
+[    7.139387] rk_gmac-dwmac fe1c0000.ethernet: init for RGMII_RXID
+[    7.139502] rk_gmac-dwmac fe1c0000.ethernet: User ID: 0x30, Synopsys ID: 0x51
+[    7.139514] rk_gmac-dwmac fe1c0000.ethernet: 	DWMAC4/5
+[    7.139524] rk_gmac-dwmac fe1c0000.ethernet: DMA HW capability register supported
+[    7.139534] rk_gmac-dwmac fe1c0000.ethernet: RX Checksum Offload Engine supported
+[    7.139544] rk_gmac-dwmac fe1c0000.ethernet: TX Checksum insertion supported
+[    7.139553] rk_gmac-dwmac fe1c0000.ethernet: Wake-Up On Lan supported
+[    7.139585] rk_gmac-dwmac fe1c0000.ethernet: TSO supported
+[    7.139593] rk_gmac-dwmac fe1c0000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+[    7.139604] rk_gmac-dwmac fe1c0000.ethernet: Enabled L3L4 Flow TC (entries=2)
+[    7.139614] rk_gmac-dwmac fe1c0000.ethernet: Enabled RFS Flow TC (entries=10)
+[    7.139623] rk_gmac-dwmac fe1c0000.ethernet: TSO feature enabled
+
+[    7.139632] rk_gmac-dwmac fe1c0000.ethernet: Using 32/32 bits DMA host/device width
+Welcome to [1mPoky (Yocto Project Reference Distro) 5.0.19 (scarthgap)[0m!
+[    7.273072] usbcore: registered new interface driver rtl8150
+
+[    7.273092] usbcore: registered new device driver r8152-cfgselector
+[    7.273113] usbcore: registered new interface driver r8152
+[    7.273423] /i2c@feca0000/fusb302@22: Fixed dependency cycle(s) with /usbdrd3_0/usb@fc000000
+[    7.273498] /usbdrd3_0/usb@fc000000: Fixed dependency cycle(s) with /i2c@feca0000/fusb302@22
+[    7.287545] phy phy-fd5d4000.syscon:usb2-phy@4000.1: illegal mode
+[    7.287564] xhci-hcd xhci-hcd.3.auto: xHCI Host Controller
+[    7.287652] xhci-hcd xhci-hcd.3.auto: new USB bus registered, assigned bus number 1
+[    7.287742] xhci-hcd xhci-hcd.3.auto: hcc params 0x0220fe64 hci version 0x110 quirks 0x0002008002010010
+[    7.287774] xhci-hcd xhci-hcd.3.auto: irq 68, io mem 0xfc400000
+[    7.287848] xhci-hcd xhci-hcd.3.auto: xHCI Host Controller
+[    7.287923] xhci-hcd xhci-hcd.3.auto: new USB bus registered, assigned bus number 2
+[    7.287937] xhci-hcd xhci-hcd.3.auto: Host supports USB 3.0 SuperSpeed
+[    7.288010] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 6.01
+[    7.288024] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    7.288036] usb usb1: Product: xHCI Host Controller
+[    7.288044] usb usb1: Manufacturer: Linux 6.1.141 xhci-hcd
+[    7.288054] usb usb1: SerialNumber: xhci-hcd.3.auto
+[    7.288270] hub 1-0:1.0: USB hub found
+[    7.288288] hub 1-0:1.0: 1 port detected
+[    7.288422] usb usb2: We don't know the algorithms for LPM for this host, disabling LPM.
+[    7.288462] usb usb2: New USB device found, idVendor=1d6b, idProduct=0003, bcdDevice= 6.01
+[    7.288475] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    7.288485] usb usb2: Product: xHCI Host Controller
+[    7.288494] usb usb2: Manufacturer: Linux 6.1.141 xhci-hcd
+[    7.288503] usb usb2: SerialNumber: xhci-hcd.3.auto
+[    7.288679] hub 2-0:1.0: USB hub found
+[    7.288695] hub 2-0:1.0: 1 port detected
+[    7.288835] usbcore: registered new interface driver cdc_acm
+[    7.288845] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+[    7.288958] usbcore: registered new interface driver uas
+[    7.288993] usbcore: registered new 
+[03:38:24.840]收←◆interface driver usb-storage
+[    7.289027] usbcore: registered new interface driver usbserial_generic
+[    7.289042] usbserial: USB Serial support registered for generic
+[[0;32m  OK  [0m] Created slice [0;1;39mSlice /system/getty[0m.
+[    7.289060] usbcore: registered new interface driver cp210x
+[[0;32m  OK  [0m] Created slice [0;1;39mSlice /system/modprobe[0m.
+[    7.289072] usbserial: USB Serial support registered for cp210x
+[[0;32m  OK  [0m] Created slice [0;1;39mSlice /system/serial-getty[0m.
+[    7.289095] usbcore: registered new interface driver ftdi_sio
+[[0;32m  OK  [0m] Created slice [0;1;39mUser and Session Slice[0m.
+[    7.289107] usbserial: USB Serial support registered for FTDI USB Serial Device
+[[0;32m  OK  [0m] Started [0;1;39mDispatch Password Requests to Console Directory Watch[0m.
+[    7.289145] usbcore: registered new interface driver keyspan
+[[0;32m  OK  [0m] Started [0;1;39mForward Password Requests to Wall Directory Watch[0m.
+[    7.289159] usbserial: USB Serial support registered for Keyspan - (without firmware)
+[[0;32m  OK  [0m] Reached target [0;1;39mPath Units[0m.
+[    7.289174] usbserial: USB Serial support registered for Keyspan 1 port adapter
+[[0;32m  OK  [0m] Reached target [0;1;39mRemote File Systems[0m.
+[    7.289187] usbserial: USB Serial support registered for Keyspan 2 port adapter
+[[0;32m  OK  [0m] Reached target [0;1;39mSlice Units[0m.
+[    7.289200] usbserial: USB Serial support registered for Keyspan 4 port adapter
+[[0;32m  OK  [0m] Reached target [0;1;39mSwaps[0m.
+[    7.289219] usbcore: registered new interface driver option
+[[0;32m  OK  [0m] Listening on [0;1;39mSyslog Socket[0m.
+[    7.289231] usbserial: USB Serial support registered for GSM modem (1-port)
+[[0;32m  OK  [0m] Listening on [0;1;39minitctl Compatibility Named Pipe[0m.
+[    7.289280] usbcore: registered new interface driver oti6858
+[[0;32m  OK  [0m] Listening on [0;1;39mJournal Socket (/dev/log)[0m.
+[    7.289293] usbserial: USB Serial support registered for oti6858
+[[0;32m  OK  [0m] Listening on [0;1;39mJournal Socket[0m.
+[    7.289311] usbcore: registered new interface driver pl2303
+[[0;32m  OK  [0m] Listening on [0;1;39mNetwork Service Netlink Socket[0m.
+[    7.289323] usbserial: USB Serial support registered for pl2303
+[[0;32m  OK  [0m] Listening on [0;1;39mudev Control Socket[0m.
+[    7.289343] usbcore: registered new interface driver qcserial
+[[0;32m  OK  [0m] Listening on [0;1;39mudev Kernel Socket[0m.
+[    7.289355] usbserial: USB Serial support registered for Qualcomm USB modem
+[[0;32m  OK  [0m] Listening on [0;1;39mUser Database Manager Socket[0m.
+[    7.289376] usbcore: registered new interface driver sierra
+         Mounting [0;1;39mKernel Debug File System[0m...
+[    7.289388] usbserial: USB Serial support registered for Sierra USB modem
+         Mounting [0;1;39mKernel Trace File System[0m...
+[    7.289732] usbcore: registered new interface driver usbtouchscreen
+         Mounting [0;1;39mTemporary Directory /tmp[0m...
+[    7.290632] input: rk805 pwrkey as /devices/platform/feb20000.spi/spi_master/spi2/spi2.0/rk805-pwrkey.1.auto/input/input0
+         Starting [0;1;39mLoad Kernel Module configfs[0m...
+[    7.290978] i2c_dev: i2c /dev entries driver
+         Starting [0;1;39mLoad Kernel Module drm[0m...
+[    7.305113] rockchip-pinctrl pinctrl: pin gpio0-13 already requested by fiq-debugger; cannot claim for fea90000.i2c
+         Starting [0;1;39mLoad Kernel Module fuse[0m...
+[    7.305131] rockchip-pinctrl pinctrl: pin-13 (fea90000.i2c) status -22
+         Starting [0;1;39mJournal Service[0m...
+[    7.305142] rockchip-pinctrl pinctrl: could not request pin 13 (gpio0-13) from group i2c1m0-xfer  on device rockchip-pinctrl
+         Starting [0;1;39mGenerate network units from Kernel command line[0m...
+[    7.305155] rk
+[03:38:25.184]收←◆3x-i2c fea90000.i2c: Error applying setting, reverse things back
+         Starting [0;1;39mRemount Root and Kernel File Systems[0m...
+[    7.308921] rockchip-mipi-csi2-hw fdd10000.mipi0-csi2-hw: enter mipi csi2 hw probe!
+         Starting [0;1;39mApply Kernel Variables[0m...
+[    7.309021] rockchip-mipi-csi2-hw fdd10000.mipi0-csi2-hw: probe success, v4l2_dev:mipi0-csi2-hw!
+         Starting [0;1;39mCreate Static Device Nodes in /dev gracefully[0m...
+[    7.309061] rockchip-mipi-csi2-hw fdd20000.mipi1-csi2-hw: enter mipi csi2 hw probe!
+         Starting [0;1;39mColdplug All udev Devices[0m...
+[    7.309131] rockchip-mipi-csi2-hw fdd20000.mipi1-csi2-hw: probe success, v4l2_dev:mipi1-csi2-hw!
+[[0;32m  OK  [0m] Mounted [0;1;39mKernel Debug File System[0m.
+[    7.309163] rockchip-mipi-csi2-hw fdd30000.mipi2-csi2-hw: enter mipi csi2 hw probe!
+[[0;32m  OK  [0m] Mounted [0;1;39mKernel Trace File System[0m.
+[    7.309229] rockchip-mipi-csi2-hw fdd30000.mipi2-csi2-hw: probe success, v4l2_dev:mipi2-csi2-hw!
+[[0;32m  OK  [0m] Mounted [0;1;39mTemporary Directory /tmp[0m.
+[    7.309261] rockchip-mipi-csi2-hw fdd40000.mipi3-csi2-hw: enter mipi csi2 hw probe!
+[[0;32m  OK  [0m] Finished [0;1;39mLoad Kernel Module configfs[0m.
+[    7.309326] rockchip-mipi-csi2-hw fdd40000.mipi3-csi2-hw: probe success, v4l2_dev:mipi3-csi2-hw!
+[[0;32m  OK  [0m] Finished [0;1;39mLoad Kernel Module drm[0m.
+[    7.309358] rockchip-mipi-csi2-hw fdd50000.mipi4-csi2-hw: enter mipi csi2 hw probe!
+[[0;32m  OK  [0m] Finished [0;1;39mLoad Kernel Module fuse[0m.
+[    7.309422] rockchip-mipi-csi2-hw fdd50000.mipi4-csi2-hw: probe success, v4l2_dev:mipi4-csi2-hw!
+[[0;32m  OK  [0m] Finished [0;1;39mGenerate network units from Kernel command line[0m.
+[    7.309453] rockchip-mipi-csi2-hw fdd60000.mipi5-csi2-hw: enter mipi csi2 hw probe!
+[[0;32m  OK  [0m] Finished [0;1;39mRemount Root and Kernel File Systems[0m.
+[    7.309516] rockchip-mipi-csi2-hw fdd60000.mipi5-csi2-hw: probe success, v4l2_dev:mipi5-csi2-hw!
+[[0;32m  OK  [0m] Reached target [0;1;39mPreparation for Network[0m.
+[    7.311400] usbcore: registered new interface driver uvcvideo
+         Mounting [0;1;39mFUSE Control File System[0m...
+[    7.312101] Bluetooth: HCI UART driver ver 2.3
+         Mounting [0;1;39mKernel Configuration File System[0m...
+[    7.312118] Bluetooth: HCI UART protocol H4 registered
+[[0;32m  OK  [0m] Finished [0;1;39mCreate Static Device Nodes in /dev gracefully[0m.
+[    7.312127] Bluetooth: HCI UART protocol ATH3K registered
+         Starting [0;1;39mCreate Static Device Nodes in /dev[0m...
+[    7.312156] usbcore: registered new interface driver bfusb
+[[0;32m  OK  [0m] Mounted [0;1;39mKernel Configuration File System[0m.
+[    7.312179] usbcore: registered new interface driver btusb
+[[0;32m  OK  [0m] Finished [0;1;39mApply Kernel Variables[0m.
+[    7.313350] cpu cpu0: bin=2
+[[0;32m  OK  [0m] Mounted [0;1;39mFUSE Control File System[0m.
+[    7.313538] cpu cpu0: idc=13
+[[0;32m  OK  [0m] Finished [0;1;39mCreate Static Device Nodes in /dev[0m.
+[    7.314954] cpu cpu0: pvtm=1411
+[[0;32m  OK  [0m] Reached target [0;1;39mPreparation for Local File Systems[0m.
+[    7.315065] cpu cpu0: pvtm-volt-sel=3
+         Mounting [0;1;39m/var/volatile[0m...
+[    7.317151] cpu cpu4: bin=2
+         Starting 
+[03:38:25.224]收←◆[0;1;39mRule-based Manager for Device Events and Files[0m...
+[    7.317332] cpu cpu4: idc=11
+[[0;32m  OK  [0m] Mounted [0;1;39m/var/volatile[0m.
+[    7.323879] cpu cpu4: pvtm=1635
+         Starting [0;1;39mLoad/Save OS Random Seed[0m...
+[    7.327865] cpu cpu4: pvtm-volt-sel=4
+[[0;32m  OK  [0m] Reached target [0;1;39mLocal File Systems[0m.
+[    7.330657] cpu cpu6: bin=2
+[[0;32m  OK  [0m] Started [0;1;39mJournal Service[0m.
+[    7.330833] cpu cpu6: idc=11
+         Starting [0;1;39mFlush Journal to Persistent S
+[03:38:25.529]收←◆torage[0m...
+[    7.337382] cpu cpu6: pvtm=1643
+[[0;32m  OK  [0m] Finished [0;1;39mLoad/Save OS Random Seed[0m.
+[    7.341385] cpu cpu6: pvtm-volt-sel=4
+[[0;32m  OK  [0m] Started [0;1;39mRule-based Manager for Device Events and Files[0m.
+[    7.343246] cpu cpu0: avs=0
+         Starting [0;1;39mNetwork Configuration[0m...
+[    7.343299] cpu cpu0: rockchip_pvtpll_set_volt_sel: error cfg clk_id=0 voltsel (-1)
+[[0;32m  OK  [0m] Finished [0;1;39mFlush Journal to Persistent Storage[0m.
+[    7.344282] cpu cpu4: avs=0
+         Starting [0;1;39mCreate System Files and Directories[0m...
+[    7.344331] cpu cpu4: rockchip_pvtpll_set_volt_sel: error cfg clk_id=2 voltsel (-1)
+         Starting [0;1;39mUser Database Manager[0m...
+[    7.345159] cpu cpu6: avs=0
+[[0;32m  OK  [0m] Finished [0;1;39mCreate System Files and Directories[0m.
+[    7.345207] cpu cpu6: rockchip_pvtpll_set_volt_sel: error cfg clk_id=3 voltsel (-1)
+         Starting [0;1;39mNetwork Name Resolution[0m...
+[    7.345293] cpu cpu0: l=15000 h=85000 hyst=5000 l_limit=0 h_limit=1608000000 h_table=0
+         Starting [0;1;39mNetwork Time Synchronization[0m...
+[    7.345556] cpu cpu0: EM: created perf domain
+         Starting [0;1;39mRecord System Boot/Shutdown in UTMP[0m...
+[    7.346059] cpu cpu4: l=15000 h=85000 hyst=5000 l_limit=0 h_limit=2208000000 h_table=0
+[[0;32m  OK  [0m] Started [0;1;39mUser Database Manager[0m.
+[    7.354088] cpu cpu4: EM: created perf domain
+[[0;32m  OK  [0m] Finished [0;1;39mRecord System Boot/Shutdown in UTMP[0m.
+[    7.354663] cpu cpu6: l=15000 h=85000 hyst=5000 l_limit=0 h_limit=2208000000 h_table=0
+[[0;32m  OK  [0m] Finished [0;1;39mColdplug All udev Devices[0m.
+[    7.371118] cpu cpu6: EM: created perf domain
+[[0;32m  OK  [0m] Started [0;1;39mNetwork Time Synchronization[0m.
+[    7.371609] sdhci: Secure Digital Host Controller Interface driver
+[[0;32m  OK  [0m] Started [0;1;39mNetwork Name Resolution[0m.
+[    7.371614] sdhci: Copyright(c) Pierre Ossman
+[[0;32m  OK  [0m] Reached target [0;1;39mHost and Network Name Lookups[0m.
+[    7.371617] Synopsys Designwa
+[03:38:25.583]收←◆re Multimedia Card Interface Driver
+[[0;32m  OK  [0m] Reached target [0;1;39mSystem Initialization[0m.
+[    7.371733] sdhci-pltfm: SDHCI platform and OF driver helper
+[[0;32m  OK  [0m] Started [0;1;39mDaily Cleanup of Temporary Directories[0m.
+[    7.372185] arm-scmi firmware:scmi: Failed. SCMI protocol 17 not active.
+[[0;32m  OK  [0m] Reached target [0;1;39mSystem Time Set[0m.
+[    7.372205] SMCCC: SOC_ID: ARCH_SOC_ID not implemented, skipping ....
+[[0;32m  OK  [0m] Reached target [0;1;39mTimer Units[0m.
+[    7.372582] cryptodev: driver 1.12 loaded.
+[[0;32m  OK  [0m] Listening on [0;1;39mD-Bus System Message Bus Socket[0m.
+[    7.372622] hid: raw HID events driver (C) Jiri Kosina
+         Starting [0;1;39msshd.socket[0m...
+[    7.372776] usbcore: registered new interface driver usbhid
+[[0;32m  OK  [0m] Started [0;1;39mNetwork Configuration[0m.
+[    7.372789] usbhid: USB HID core driver
+[[0;32m  OK  [0m] Created slice [0;1;39mSlice /system/systemd-backlight[0m.
+[    7.375189] mmc0: CQHCI version 5.10
+[[0;32m  OK  [0m] Reached target [0;1;39mNetwork[0m.
+[    7.380654] optee: probing for conduit method.
+         Starting [0;1;39mLoad/Save Screen Backligh鈥ightness of backlight:backlight[0m...
+[    7.380670] optee: api uid mismatch
+[[0;32m  OK  [0m] Listening on [0;1;39msshd.socket[0m.
+[    7.380681] optee: probe of firmware:optee failed with error -22
+[[0;32m  OK  [0m] Reached target [0;1;39mSocket Units[0m.
+[    7.381076] usbcore: registered new interface driver snd-usb-audio
+[[0;32m  OK  [0m] Reached target [0;1;39mBasic System[0m.
+[    7.385237] rockchip-i2s-tdm fe470000.i2s: Register PCM for TRCM mode
+[[0;32m  OK  [0m] Reached target [0;1;39mHardware activated USB ga
+[03:38:25.872]收←◆dget[0m.
+[    7.387558] Initializing XFRM netlink socket
+[[0;32m  OK  [0m] Started [0;1;39mKernel Logging Service[0m.
+[    7.387792] NET: Registered PF_INET6 protocol family
+[[0;32m  OK  [0m] Started [0;1;39mSystem Logging Service[0m.
+[    7.388269] Segment Routing with IPv6
+         Starting [0;1;39mD-Bus System Message Bus[0m...
+[    7.388281] In-situ OAM (IOAM) with IPv6
+[[0;32m  OK  [0m] Started [0;1;39mGetty on tty1[0m.
+[    7.388303] NET: Registered PF_PACKET protocol family
+[[0;32m  OK  [0m] Started [0;1;39mSerial Getty on ttyFIQ0[0m.
+[    7.388309] NET: Registered PF_KEY protocol family
+[[0;32m  OK  [0m] Reached target [0;1;39mLogin Prompts[0m.
+[    7.388313] can: controller area network core
+         Starting [0;1;39mUser Login Management[0m...
+[    7.388326] NET: Registered PF_CAN protocol family
+         Starting [0;1;39mOpenSSH Key Generation[0m...
+[    7.388330] can: raw protocol
+[[0;32m  OK  [0m] Finished [0;1;39mLoad/Save Screen Backlight Brightness of backlight:backlight[0m.
+[    7.388335] can: broadcast manager protocol
+[[0;32m  OK  [0m] Listening on [0;1;39mLoad/Save RF Kill Switch Status /dev/rfkill Watch[0m.
+[    7.388340] can: netlink gateway - max_hops=1
+         Starting [0;1;39mVirtual Console Setup[0m...
+[    7.388423] Bluetooth: RFCOMM TTY layer initialized
+[[0;32m  OK  [0m] Started [0;1;39mD-Bus System Message Bus[0m.
+[    7.388444] Bluetooth: RFCOMM socket layer initialized
+[[0;32m  OK  [0m] Started [0;1;39mUser Login Management[0m.
+[    7.388460] Bluetooth: RFCOMM ver 1.11
+[[0;32m  OK  [0m] Reached target [0;1;39mMulti-User System[0m.
+[    7.388472] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+         Starting [0;1;39mRecord Runlevel Change in UTMP[0m...
+[    7.388484] Bluetooth: HIDP socket layer initialized
+[[0;32m  OK  [0m] Finished [0;1;39mVirtual Console Setup[0m.
+[    7.388512] [BT_RFKILL]: Enter rfkill_rk_init
+[[0;32m  OK  [0m] Finished [0;1;39mRecord Runlevel Change in UTMP[0m.
+[    7.388521] [WLAN_RFKILL]: Enter rfkill_wlan_init
+[    7.388829] Key type dns_resolver registered
+[    7.389747] Loading compiled-in X.509 certificates
+[    7.390362] pstore: Using crash dump compression: deflate
+[    7.393580] rga3 fdb60000.rga: Adding to iommu group 2
+[    7.394024] rga3 fdb60000.rga: probe successfully, irq = 43, hw_version:3.0.76831
+[    7.394142] rga3 fdb70000.rga: Adding to iommu group 3
+[    7.394415] rga3 fdb70000.rga: probe successfully, irq = 44, hw_version:3.0.76831
+[    7.395025] rga2 fdb80000.rga: probe successfully, irq = 89, hw_version:3.2.63318
+[    7.395190] rga: IOMMU binding successfully, default mapping core[0x1]
+[    7.395308] rga: Module initialized. v1.3.11
+[    7.404090] mmc0: SDHCI controller on fe2e0000.mmc [fe2e0000.mmc] using ADMA
+[    7.416747] mpp_vdpu1 fdb51000.avsd-plus: Adding to iommu group 1
+[    7.417106] mpp_vdpu1 fdb51000.avsd-plus: probe device
+[    7.417309] mpp_vdpu1 fdb51000.avsd-plus: reset_group->rw_sem_on=0
+[    7.417327] mpp_vdpu1 fdb51000.avsd-plus: reset_group->rw_sem_on=0
+[    7.417389] mpp_vdpu1 fdb51000.avsd-plus: probing finish
+[    7.417566] mpp_vdpu2 fdb50400.vdpu: Adding to iommu group 1
+[    7.417621] mpp_vdpu2 fdb50400.vdpu: probe device
+[    7.417735] mpp_vdpu2 fdb50400.vdpu: reset_group->rw_sem_on=0
+[    7.417749] mpp_vdpu2 fdb50400.vdpu: reset_group->rw_sem_on=0
+[    7.417769] mpp_vdpu2 fdb50400.vdpu: probing finish
+[    7.417918] mpp_vepu2 fdb50000.vepu: Adding to iommu group 1
+[    7.417974] mpp_vepu2 fdb50000.vepu: probing start
+[    7.418101] mpp_vepu2 fdb50000.vepu: reset_group->rw_sem_on=0
+[    7.418115] mpp_vepu2 fdb50000.vepu: reset_group->rw_sem_on=0
+[    7.418148] mpp_vepu2 fdb50000.vepu: probing finish
+[    7.418328] mpp_vepu2 fdba0000.jpege-core: Adding to iommu group 5
+[    7.418417] mpp_vepu2 fdba0000.jpege-core: probing start
+[    7.418572] mpp_v
+[03:38:26.216]收←◆epu2 fdba0000.jpege-core: attach ccu success
+[    7.418607] mpp_vepu2 fdba0000.jpege-core: probing finish
+[    7.418765] mpp_vepu2 fdba4000.jpege-core: Adding to iommu group 6
+[    7.418852] mpp_vepu2 fdba4000.jpege-core: probing start
+[    7.418996] mpp_vepu2 fdba4000.jpege-core: attach ccu success
+[    7.419029] mpp_vepu2 fdba4000.jpege-core: probing finish
+[    7.419186] mpp_vepu2 fdba8000.jpege-core: Adding to iommu group 7
+[    7.419270] mpp_vepu2 fdba8000.jpege-core: probing start
+[    7.419489] mpp_vepu2 fdba8000.jpege-core: attach ccu success
+[    7.419524] mpp_vepu2 fdba8000.jpege-core: probing finish
+[    7.419678] mpp_vepu2 fdbac000.jpege-core: Adding to iommu group 8
+[[0;32m  OK  [0m] Finished [0;1;39mOpenSSH Key Generation[0m.
+[    7.419774] mpp_vepu2 fdbac000.jpege-core: probing start
+[    7.419941] mpp_vepu2 fdbac000.jpege-core: attach ccu success
+[    7.419977] mpp_vepu2 fdbac000.jpege-core: probing finish
+[    7.420143] mpp-iep2 fdbb0000.iep: Adding to iommu group 9
+[    7.420233] mpp-iep2 fdbb0000.iep: probe device
+[    7.420504] mpp-iep2 fdbb0000.iep: probing finish
+[    7.420585] mpp_jpgdec fdb90000.jpegd: Adding to iommu group 4
+[    7.420699] mpp_jpgdec fdb90000.jpegd: probe device
+[    7.420786] mpp_jpgdec fdb90000.jpegd: probing finish
+[    7.420853] mpp_rkvdec2 fdc38100.rkvdec-core: Adding to iommu group 12
+[    7.421000] mpp_rkvdec2 fdc38100.rkvdec-core: rkvdec-core, probing start
+[    7.421070] mpp_rkvdec2 fdc38100.rkvdec-core: shared_niu_a is not found!
+[    7.421075] rkvdec2_init:1250: No niu aclk reset resource define
+[    7.421080] mpp_rkvdec2 fdc38100.rkvdec-core: shared_niu_h is not found!
+[    7.421085] rkvdec2_init:1253: No niu hclk reset resource define
+[    7.421100] mpp_rkvdec2 fdc38100.rkvdec-core: no regulator, devfreq is disabled
+[    7.421141] mpp_rkvdec2 fdc38100.rkvdec-core: core_mask=00010001
+[    7.421146] mpp_rkvdec2 fdc38100.rkvdec-core: attach ccu as core 0
+[    7.421258] mpp_rkvdec2 fdc38100.rkvdec-core: sram_start 0x00000000ff001000
+[    7.421264] mpp_rkvdec2 fdc38100.rkvdec-core: rcb_iova 0x00000000fff00000
+[    7.421268] mpp_rkvdec2 fdc38100.rkvdec-core: sram_size 491520
+[    7.421273] mpp_rkvdec2 fdc38100.rkvdec-core: rcb_size 1048576
+[    7.421278] mpp_rkvdec2 fdc38100.rkvdec-core: min_width 512
+[    7.421283] mpp_rkvdec2 fdc38100.rkvdec-core: rcb_info_count 20
+[    7.421288] mpp_rkvdec2 fdc38100.rkvdec-core: [136, 24576]
+[    7.421293] mpp_rkvdec2 fdc38100.rkvdec-core: [137, 49152]
+[    7.421297] mpp_rkvdec2 fdc38100.rkvdec-core: [141, 90112]
+[    7.421301] mpp_rkvdec2 fdc38100.rkvdec-core: [140, 49152]
+[    7.421306] mpp_rkvdec2 fdc38100.rkvdec-core: [139, 180224]
+[    7.421310] mpp_rkvdec2 fdc38100.rkvdec-core: [133, 49152]
+[    7.421315] mpp_rkvdec2 fdc38100.rkvdec-core: [134, 8192]
+[    7.421319] mpp_rkvdec2 fdc38100.rkvdec-core: [135, 4352]
+[    7.421324] mpp_rkvdec2 fdc38100.rkvdec-core: [138, 13056]
+[    7.421328] mpp_rkvdec2 fdc38100.rkvdec-core: [142, 291584]
+[    7.421347] mpp_rkvdec2 fdc38100.rkvdec-core: probing finish
+[    7.421419] mpp_rkvdec2 fdc48100.rkvdec-core: Adding to iommu group 13
+[    7.421537] mpp_rkvdec2 fdc48100.rkvdec-core: rkvdec-core, probing start
+[    7.421602] mpp_rkvdec2 fdc48100.rkvdec-core: shared_niu_a is not found!
+[    7.421607] rkvdec2_init:1250: No niu aclk reset resource define
+[    7.421612] mpp_rkvdec2 fdc48100.rkvdec-core: shared_niu_h is not found!
+[    7.421616] rkvdec2_init:1253: No niu hclk reset resource define
+[    7.421630] mpp_rkvdec2 fdc48100.rkvdec-core: no regulator, devfreq is disabled
+[    7.421657] mpp_rkvdec2 fdc48100.rkvdec-core: core_mask=00020002
+[    7.421673] mpp_rkvdec2 fdc48100.rkvdec-core: attach ccu as core 1
+[    7.421790] mpp_rkvdec2 fdc48100.rkvdec-core: sram_start 0x00000000ff079000
+[    7.421795] mpp_rkvdec2 fdc48100.rkvdec-core: rcb_iova 0x00000000ffe00000
+[    7.421800] mpp_rkvdec2 fdc48100.rkvdec-core: 
+[03:38:26.560]收←◆sram_size 487424
+[    7.421804] mpp_rkvdec2 fdc48100.rkvdec-core: rcb_size 1048576
+[    7.421809] mpp_rkvdec2 fdc48100.rkvdec-core: min_width 512
+[    7.421814] mpp_rkvdec2 fdc48100.rkvdec-core: rcb_info_count 20
+[    7.421818] mpp_rkvdec2 fdc48100.rkvdec-core: [136, 24576]
+[    7.421823] mpp_rkvdec2 fdc48100.rkvdec-core: [137, 49152]
+[    7.421827] mpp_rkvdec2 fdc48100.rkvdec-core: [141, 90112]
+[    7.421832] mpp_rkvdec2 fdc48100.rkvdec-core: [140, 49152]
+[    7.421836] mpp_rkvdec2 fdc48100.rkvdec-core: [139, 180224]
+[    7.421841] mpp_rkvdec2 fdc48100.rkvdec-core: [133, 49152]
+[    7.421846] mpp_rkvdec2 fdc48100.rkvdec-core: [134, 8192]
+[    7.421850] mpp_rkvdec2 fdc48100.rkvdec-core: [135, 4352]
+[    7.421854] mpp_rkvdec2 fdc48100.rkvdec-core: [138, 13056]
+[    7.421859] mpp_rkvdec2 fdc48100.rkvdec-core: [142, 291584]
+[    7.421876] mpp_rkvdec2 fdc48100.rkvdec-core: probing finish
+[    7.421947] mpp_rkvenc2 fdbd0000.rkvenc-core: Adding to iommu group 10
+[    7.422036] mpp_rkvenc2 fdbd0000.rkvenc-core: probing start
+[    7.422359] mpp_rkvenc2 fdbd0000.rkvenc-core: bin=0
+[    7.422559] mpp_rkvenc2 fdbd0000.rkvenc-core: idc=15
+[    7.422566] mpp_rkvenc2 fdbd0000.rkvenc-core: idc-volt-sel=0
+[    7.423381] mpp_rkvenc2 fdbd0000.rkvenc-core: avs=0
+[    7.423580] mpp_rkvenc2 fdbd0000.rkvenc-core: l=-2147483648 h=2147483647 hyst=0 l_limit=0 h_limit=0 h_table=0
+[    7.423754] mpp_rkvenc2 fdbd0000.rkvenc-core: attach ccu as core 0
+[    7.423774] mpp_rkvenc2 fdbd0000.rkvenc-core: probing finish
+[    7.423855] mpp_rkvenc2 fdbe0000.rkvenc-core: Adding to iommu group 11
+[    7.423961] mpp_rkvenc2 fdbe0000.rkvenc-core: probing start
+[    7.424170] mpp_rkvenc2 fdbe0000.rkvenc-core: bin=0
+[    7.424340] mpp_rkvenc2 fdbe0000.rkvenc-core: idc=15
+[    7.424345] mpp_rkvenc2 fdbe0000.rkvenc-core: idc-volt-sel=0
+[    7.424996] mpp_rkvenc2 fdbe0000.rkvenc-core: avs=0
+[    7.425168] mpp_rkvenc2 fdbe0000.rkvenc-core: l=-2147483648 h=2147483647 hyst=0 l_limit=0 h_limit=0 h_table=0
+[    7.425311] mpp_rkvenc2 fdbe0000.rkvenc-core: attach ccu as core 1
+[    7.425328] mpp_rkvenc2 fdbe0000.rkvenc-core: probing finish
+[    7.425404] mpp_av1dec fdc70000.av1d: Adding to iommu group 14
+[    7.425536] mpp_av1dec fdc70000.av1d: probing start
+[    7.425640] mpp_av1dec fdc70000.av1d: probing finish
+[    7.425721] rockchip-vop2 fdd90000.vop: Adding to iommu group 15
+[    7.426070] panel-simple-dsi fde20000.dsi.0: Expected bpc in {6,8} but got: 0
+[    7.426478] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp0 assign plane mask: Cluster0 | Esmart0[0x5], primary plane phy id: Esmart0[2]
+[    7.426494] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp1 assign plane mask: Cluster1 | Esmart1[0xa], primary plane phy id: Esmart1[3]
+[    7.426504] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp2 assign plane mask: Cluster2 | Esmart2[0x140], primary plane phy id: Esmart2[8]
+[    7.426514] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp3 assign plane mask: Cluster3 | Esmart3[0x280], primary plane phy id: Esmart3[9]
+[    7.426608] [drm] Cluster0-win0(possible_vp_mask = 0x00000001) has no possible crtcs
+[    7.426629] [drm] Cluster0-win1(possible_vp_mask = 0x00000001) has no possible crtcs
+[    7.426634] [drm] failed to init overlay plane Cluster0-win1
+[    7.426638] [drm] Cluster1-win0(possible_vp_mask = 0x00000002) has no possible crtcs
+[    7.426656] [drm] Cluster1-win1(possible_vp_mask = 0x00000002) has no possible crtcs
+[    7.426661] [drm] failed to init overlay plane Cluster1-win1
+[    7.426678] [drm] failed to init overlay plane Cluster2-win1
+[    7.426698] [drm] failed to init overlay plane Cluster3-win1
+[    7.426702] [drm] Esmart0-win0(possible_vp_mask = 0x00000001) has no possible crtcs
+[    7.426713] [drm] Esmart1-win0(possible_vp_mask = 0x00000002) has no possible crtcs
+[    7.432282] rockchip-vop2 fdd90000.vop: bin=0
+[    7.432468] rockchip-vop2 fdd90000.vop: idc=41
+[    7.432474] roc
+[03:38:26.904]收←◆kchip-vop2 fdd90000.vop: idc-volt-sel=1
+[    7.432789] rockchip-vop2 fdd90000.vop: avs=0
+[    7.432870] rockchip-vop2 fdd90000.vop: l=-2147483648 h=2147483647 hyst=0 l_limit=0 h_limit=0 h_table=0
+[    7.433011] rockchip-vop2 fdd90000.vop: Supported VOP aclk dvfs, normal mode:500000000, reset mode:0, advanced mode:750000000
+[    7.433039] rockchip-drm display-subsystem: bound fdd90000.vop (ops 0xffffffc0094fec88)
+[    7.433077] rockchip-drm display-subsystem: bound fde20000.dsi (ops 0xffffffc00951c680)
+[    7.433401] rockchip-drm display-subsystem: bound fde50000.dp (ops 0xffffffc00951cce0)
+[    7.434383] [drm] Initialized rockchip 4.0.0 20140818 for display-subsystem on minor 0
+[    7.434413] rockchip-drm display-subsystem: failed to parse loader memory
+[    7.434555] rockchip-drm display-subsystem: [drm] run display error_event monitor
+[    7.434938] input: adc-keys as /devices/platform/adc-keys/input/input1
+[    7.435304] <<GTP-INF>>[gt1x_ts_probe:540] GTP Driver Version: V1.4<2015/07/10>
+[    7.435319] <<GTP-INF>>[gt1x_ts_probe:541] GTP I2C Address: 0x14
+[    7.437761] <<GTP-ERR>>[gt1x_parse_dt:338] vdd_ana not specified, fallback to power-supply
+[    7.441900] <<GTP-INF>>[gt1x_parse_dt:345] Power Invert,no 
+[    7.446248] <<GTP-INF>>[gt1x_reset_guitar:788] GTP RESET!
+[    7.462449] mmc0: Command Queue Engine enabled
+[    7.462468] mmc0: new HS400 Enhanced strobe MMC card at address 0001
+[    7.462724] mmcblk0: mmc0:0001 BJTD4R 29.1 GiB 
+[    7.464642]  mmcblk0: p1 p2 p3
+[    7.464989] mmcblk0boot0: mmc0:0001 BJTD4R 4.00 MiB 
+[    7.465462] mmcblk0boot1: mmc0:0001 BJTD4R 4.00 MiB 
+[    7.465959] mmcblk0rpmb: mmc0:0001 BJTD4R 4.00 MiB, chardev (234:0)
+[    7.498194] vendor storage:20190527 ret = 0
+[    7.524208] <<GTP-ERR>>[gt1x_do_i2c_write:432] I2c transfer error! (-6)
+[    7.524227] <<GTP-ERR>>[gt1x_init:2320] Reset guitar failed!
+[    7.524238] <<GTP-INF>>[gt1x_reset_guitar:788] GTP RESET!
+[    7.528148] phy phy-fd5d0000.syscon:usb2-phy@0.0: charger = USB_SDP_CHARGER
+[    7.596216] <<GTP-ERR>>[gt1x_do_i2c_write:432] I2c transfer error! (-6)
+[    7.596234] <<GTP-ERR>>[gt1x_init:2320] Reset guitar failed!
+[    7.596245] <<GTP-INF>>[gt1x_reset_guitar:788] GTP RESET!
+[    7.668215] <<GTP-ERR>>[gt1x_do_i2c_write:432] I2c transfer error! (-6)
+[    7.668233] <<GTP-ERR>>[gt1x_init:2320] Reset guitar failed!
+[    7.668244] <<GTP-INF>>[gt1x_reset_guitar:788] GTP RESET!
+[    7.740215] <<GTP-ERR>>[gt1x_do_i2c_write:432] I2c transfer error! (-6)
+[    7.740232] <<GTP-ERR>>[gt1x_init:2320] Reset guitar failed!
+[    7.740244] <<GTP-INF>>[gt1x_reset_guitar:788] GTP RESET!
+[    7.812216] <<GTP-ERR>>[gt1x_do_i2c_write:432] I2c transfer error! (-6)
+[    7.812234] <<GTP-ERR>>[gt1x_init:2320] Reset guitar failed!
+[    7.812245] <<GTP-ERR>>[gt1x_init:2346] Init failed, use default setting
+[    7.812404] <<GTP-ERR>>[gt1x_do_i2c_read:390] I2c Transfer error! (-6)
+[    7.812418] <<GTP-ERR>>[gt1x_get_chip_type:895] I2c communication error.
+[    7.812429] <<GTP-ERR>>[gt1x_init:2356] Get chip type failed!
+[    7.812446] <<GTP-ERR>>[gt1x_ts_probe:567] GTP init failed!!!
+[    7.812537] Goodix-TS-GT1X: probe of 6-0014 failed with error -1
+[    7.813366] rockchip-dmc dmc: bin=2
+[    7.813557] rockchip-dmc dmc: idc=41
+[    7.813575] rockchip-dmc dmc: idc-volt-sel=1
+[    7.813590] rockchip-dmc dmc: soc version=2, speed=1
+[    7.814812] rockchip-dmc dmc: avs=0
+[    7.814836] rockchip-dmc dmc: current ATF version 0x100
+[    7.815057] rockchip-dmc dmc: normal_rate = 1560000000
+[    7.815073] rockchip-dmc dmc: reboot_rate = 2112000000
+[    7.815085] rockchip-dmc dmc: suspend_rate = 528000000
+[    7.815098] rockchip-dmc dmc: video_4k_rate = 1560000000
+[    7.815110] rockchip-dmc dmc: video_4k_10b_rate = 1560000000
+[    7.815122] rockchip-dmc dmc: video_svep_rate = 1560000000
+[    7.815134] rockchip-dmc dmc: boost_rate = 2112000000
+[    7.815146] rockchip-dmc dmc: fixed_ra
+[03:38:27.248]收←◆te(isp|cif0|cif1|dualview) = 2112000000
+[    7.815159] rockchip-dmc dmc: performance_rate = 2112000000
+[    7.815171] rockchip-dmc dmc: hdmirx_rate = 2112000000
+[    7.815188] rockchip-dmc dmc: deep_suspend_rate = 2112000000
+[    7.815205] rockchip-dmc dmc: failed to get vop bandwidth to dmc rate
+[    7.815217] rockchip-dmc dmc: failed to get vop pn to msch rl
+[    7.815691] rockchip-dmc dmc: l=15000 h=2147483647 hyst=5000 l_limit=0 h_limit=0 h_table=0
+[    7.823630] [HYN]== Hynitron V2.11 20250217 ==
+
+[    7.823647] [HYN]vdd_ana not config
+Poky (Yocto Project Reference Distro) 5.0.19 hd-rk3588-core ttyFIQ0
+[    7.823657] [HYN]vdd_i2c not config
+
+[    7.823846] [HYN]dts x_res = 1080,y_res = 1920,touch-number = 5 swap_xy = 0 reversex = 0 reversey = 0
+hd-rk3588-core login: [    7.823863] [HYN]key not config
+[    8.388224] [HYN]cst3240_enter_boot failed
+[    8.388232] [HYN][Error]hyn_ts_probe:hyn_check_ic failed
+[    8.388249] hyn_ts: probe of 6-005a failed with error -2
+[    8.388698] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[    8.389913] cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    8.390159] cfg80211: Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+[    8.390198] platform regulatory.0: Direct firmware load for regulatory.db failed with error -2
+[    8.390207] cfg80211: failed to load regulatory.db
+[    8.390239] clk: Disabling unused clocks
+[    8.391067] rockchip-pm rockchip-suspend: not set pwm-regulator-config
+[    8.391303] rockchip-suspend not set sleep-mode-config for mem-lite
+[    8.391308] rockchip-suspend not set wakeup-config for mem-lite
+[    8.391313] rockchip-suspend not set sleep-mode-config for mem-ultra
+[    8.391318] rockchip-suspend not set wakeup-config for mem-ultra
+[    8.391785] I : [File] : /drivers/gpu/arm/mali400/mali/linux/mali_kernel_linux.c; [Line] : 407; [Func] : mali_module_init(); svn_rev_string_from_arm of this mali_ko is '', rk_ko_ver is '5', built at '10:23:13', on 'Dec 26 2025'.
+[    8.391950] Mali: 
+[    8.391951] Mali device driver loaded
+[    8.392097] ALSA device list:
+[    8.392103]   No soundcards found.
+[    8.421079] EXT4-fs (mmcblk0p3): recovery complete
+[    8.421695] EXT4-fs (mmcblk0p3): mounted filesystem with ordered data mode. Quota mode: disabled.
+[    8.421754] VFS: Mounted root (ext4 filesystem) on device 179:3.
+[    8.421984] devtmpfs: mounted
+[    8.426259] Freeing unused kernel memory: 7488K
+[    8.426369] Run /sbin/init as init process
+[    8.500371] systemd[1]: System time before build time, advancing clock.
+[    8.504563] systemd[1]: Failed to find module 'autofs4'
+[    8.513497] systemd[1]: systemd 255.21^ running in system mode (-PAM -AUDIT -SELINUX -APPARMOR +IMA -SMACK +SECCOMP -GCRYPT -GNUTLS -OPENSSL +ACL +BLKID -CURL -ELFUTILS -FIDO2 -IDN2 -IDN -IPTC +KMOD -LIBCRYPTSETUP +LIBFDISK -PCRE2 -PWQUALITY -P11KIT -QRENCODE -TPM2 -BZIP2 -LZ4 -XZ -ZLIB +ZSTD -BPF_FRAMEWORK +XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)
+[    8.513561] systemd[1]: Detected architecture arm64.
+[    8.515098] systemd[1]: Hostname set to <hd-rk3588-core>.
+[    8.560322] systemd-sysv-generator[224]: SysV service '/etc/init.d/sshd' lacks a native systemd unit file, automatically generating a unit file for compatibility.
+[    8.560349] systemd-sysv-generator[224]: Please update package to include a native systemd unit file.
+[    8.560356] systemd-sysv-generator[224]: ! This compatibility logic is deprecated, expect removal soon. !
+[    8.733030] systemd[1]: Queued start job for default target Multi-User System.
+[    8.738077] systemd[1]: Created slice Slice /system/getty.
+[    8.738506] systemd[1]: Created slice Slice /system/modprobe.
+[    8.738776] systemd[1]: Created slice Slice /system/serial-getty.
+[    8.738930] systemd[1]: Created slice User and Session Slice.
+[    8.739046] systemd[1]: Started Dispatch Password Requests to Conso
+[03:38:27.591]收←◆le Directory Watch.
+[    8.739116] systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[    8.739185] systemd[1]: Reached target Path Units.
+[    8.739222] systemd[1]: Reached target Remote File Systems.
+[    8.739254] systemd[1]: Reached target Slice Units.
+[    8.739294] systemd[1]: Reached target Swaps.
+[    8.739798] systemd[1]: Listening on Syslog Socket.
+[    8.739902] systemd[1]: Listening on initctl Compatibility Named Pipe.
+[    8.743573] systemd[1]: Journal Audit Socket was skipped because of an unmet condition check (ConditionSecurity=audit).
+[    8.743746] systemd[1]: Listening on Journal Socket (/dev/log).
+[    8.743899] systemd[1]: Listening on Journal Socket.
+[    8.744087] systemd[1]: Listening on Network Service Netlink Socket.
+[    8.744268] systemd[1]: Listening on udev Control Socket.
+[    8.744384] systemd[1]: Listening on udev Kernel Socket.
+[    8.744772] systemd[1]: Listening on User Database Manager Socket.
+[    8.744932] systemd[1]: Huge Pages File System was skipped because of an unmet condition check (ConditionPathExists=/sys/kernel/mm/hugepages).
+[    8.745015] systemd[1]: POSIX Message Queue File System was skipped because of an unmet condition check (ConditionPathExists=/proc/sys/fs/mqueue).
+[    8.772285] systemd[1]: Mounting Kernel Debug File System...
+[    8.773340] systemd[1]: Mounting Kernel Trace File System...
+[    8.774729] systemd[1]: Mounting Temporary Directory /tmp...
+[    8.774946] systemd[1]: Create List of Static Device Nodes was skipped because of an unmet condition check (ConditionFileNotEmpty=/lib/modules/6.1.141/modules.devname).
+[    8.776065] systemd[1]: Starting Load Kernel Module configfs...
+[    8.777402] systemd[1]: Starting Load Kernel Module drm...
+[    8.780046] systemd[1]: Starting Load Kernel Module fuse...
+[    8.780464] systemd[1]: File System Check on Root Device was skipped because of an unmet condition check (ConditionPathIsReadWrite=!/).
+[    8.781423] systemd[1]: systemd-journald.service: unit configures an IP firewall, but the local system does not support BPF/cgroup firewalling.
+[    8.781461] systemd[1]: systemd-journald.service: (This warning is only shown for the first unit using IP firewalling.)
+[    8.784158] systemd[1]: Starting Journal Service...
+[    8.785593] systemd[1]: Load Kernel Modules was skipped because no trigger condition checks were met.
+[    8.788048] systemd[1]: Starting Generate network units from Kernel command line...
+[    8.790765] systemd[1]: Starting Remount Root and Kernel File Systems...
+[    8.794026] systemd[1]: Starting Apply Kernel Variables...
+[    8.796762] systemd[1]: Starting Create Static Device Nodes in /dev gracefully...
+[    8.799713] systemd[1]: Starting Coldplug All udev Devices...
+[    8.802311] EXT4-fs (mmcblk0p3): re-mounted. Quota mode: disabled.
+[    8.806126] systemd[1]: Mounted Kernel Debug File System.
+[    8.806807] systemd[1]: Mounted Kernel Trace File System.
+[    8.807372] systemd[1]: Mounted Temporary Directory /tmp.
+[    8.808429] systemd[1]: modprobe@configfs.service: Deactivated successfully.
+[    8.808816] systemd[1]: Finished Load Kernel Module configfs.
+[    8.809638] systemd[1]: modprobe@drm.service: Deactivated successfully.
+[    8.809963] systemd[1]: Finished Load Kernel Module drm.
+[    8.810662] systemd[1]: modprobe@fuse.service: Deactivated successfully.
+[    8.810964] systemd[1]: Finished Load Kernel Module fuse.
+[    8.811529] systemd[1]: Finished Generate network units from Kernel command line.
+[    8.812004] systemd[1]: Finished Remount Root and Kernel File Systems.
+[    8.812351] systemd[1]: Reached target Preparation for Network.
+[    8.813353] systemd[1]: Mounting FUSE Control File System...
+[    8.814081] systemd[1]: Mounting Kernel Configuration File System...
+[    8.814967] systemd[1]: Rebuild Hardware Database was skipped because of an unmet condition check (ConditionNeedsUpdate=/et
+[03:38:27.811]收←◆c).
+[    8.815448] systemd[1]: Finished Create Static Device Nodes in /dev gracefully.
+[    8.815750] systemd[1]: Create System Users was skipped because no trigger condition checks were met.
+[    8.817190] systemd[1]: Starting Create Static Device Nodes in /dev...
+[    8.822184] systemd-journald[233]: Collecting audit messages is disabled.
+[    8.822436] systemd[1]: Mounted Kernel Configuration File System.
+[    8.823444] systemd[1]: Finished Apply Kernel Variables.
+[    8.828903] systemd[1]: Mounted FUSE Control File System.
+[    8.839053] systemd[1]: Finished Create Static Device Nodes in /dev.
+[    8.839264] systemd[1]: Reached target Preparation for Local File Systems.
+[    8.840792] systemd[1]: Mounting /var/volatile...
+[    8.843039] systemd[1]: Starting Rule-based Manager for Device Events and Files...
+[    8.858041] systemd[1]: Mounted /var/volatile.
+[    8.858617] systemd[1]: Bind mount volatile /var/cache was skipped because of an unmet condition check (ConditionPathIsReadWrite=!/var/cache).
+[    8.858734] systemd[1]: Bind mount volatile /var/lib was skipped because of an unmet condition check (ConditionPathIsReadWrite=!/var/lib).
+[    8.860789] systemd[1]: Starting Load/Save OS Random Seed...
+[    8.861039] systemd[1]: Bind mount volatile /var/spool was skipped because of an unmet condition check (ConditionPathIsReadWrite=!/var/spool).
+[    8.861135] systemd[1]: Bind mount volatile /srv was skipped because of an unmet condition check (ConditionPathIsReadWrite=!/srv).
+[    8.861204] systemd[1]: Reached target Local File Systems.
+[    8.861499] systemd[1]: Rebuild Dynamic Linker Cache was skipped because no trigger condition checks were met.
+[    8.871799] systemd[1]: Started Journal Service.
+[    8.911875] systemd-journald[233]: Received client request to flush runtime journal.
+[    9.020105] rk_gmac-dwmac fe1c0000.ethernet end1: renamed from eth0
+[    9.143442] rk_gmac-dwmac fe1c0000.ethernet end1: Register MEM_TYPE_PAGE_POOL RxQ-0
+[    9.144643] rk_gmac-dwmac fe1c0000.ethernet end1: PHY [stmmac-1:00] driver [Generic PHY] (irq=POLL)
+[   10.144786] rk_gmac-dwmac fe1c0000.ethernet: Failed to reset the dma
+[   10.144835] rk_gmac-dwmac fe1c0000.ethernet end1: stmmac_hw_setup: DMA engine initialization failed
+[   10.144854] rk_gmac-dwmac fe1c0000.ethernet end1: __stmmac_open: Hw setup failed
+
+[03:38:34.304]收←◆[   18.509127] platform mtd_vendor_storage: deferred probe pending
+[   18.509153] platform fdab0000.npu: deferred probe pending
+
+[03:38:56.041]收←◆[   40.268371] vdd_gpu_s0: disabling
+
+[03:39:04.587]发→◇root
+
+□
+[03:39:04.599]收←◆root
+
+
+
+
+[03:39:04.631]收←◆
+WARNING: Poky is a reference Yocto Project distribution that should be used for
+testing and development purposes only. It is recommended that you create your
+own distribution for production use.
+
+7[r[999;999H[6n
+[03:39:05.391]发→◇root
+
+□
+[03:39:05.399]收←◆8ot
+
+
+
+root@hd-rk3588-core:~# ot
+-sh: ot: not found
+root@hd-rk3588-core:~# 
+root@hd-rk3588-core:~# 
+root@hd-rk3588-core:~# 
+root@hd-rk3588-core:~# 
+[03:39:11.179]发→◇ip address
+
+□
+[03:39:11.188]收←◆i
+[03:39:11.253]收←◆p address
+
+
+
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: end1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 62:ce:56:81:dc:0b brd ff:ff:ff:ff:ff:ff
+root@hd-rk3588-core:~# 
+root@hd-rk3588-core:~# 
+root@hd-rk3588-core:~# 
+root@hd-rk3588-core:~# 
