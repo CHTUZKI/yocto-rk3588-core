@@ -1,0 +1,953 @@
+============================================================
+# 串口通信日志 - 2026-07-31 11:35:20
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:35:20.720] [<---] root@hd-rk3588-core:~#
+[11:35:20.720] [<---] ro
+[11:35:20.742] [<---] ot@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:35:25
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:35:25.827] [--->] ifconfig -a
+[11:35:25.838] [<---] ifconfig -a
+[11:35:25.838] [<---] end1      Link e
+[11:35:25.922] [<---] ncap:Ethernet  HWaddr 62:CE:56:81:DC:0B
+[11:35:25.922] [<---]           BROADCAST MULTICAST  MTU:1500  Metric:1
+[11:35:25.922] [<---]           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+[11:35:25.922] [<---]           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+[11:35:25.922] [<---]           collisions:0 txqueuelen:1000
+[11:35:25.922] [<---]           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+[11:35:25.922] [<---]           Interrupt:63
+[11:35:25.922] [<---] lo        Link encap:Local Loopback
+[11:35:25.922] [<---]           inet addr:127.0.0.1  Mask:255.0.0.0
+[11:35:25.922] [<---]           inet6 addr: ::1/128 Scope:Host
+[11:35:25.922] [<---]           UP LOOPBACK RUNNING  MTU:65536  Metric:1
+[11:35:25.922] [<---]           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+[11:35:25.922] [<---]           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+[11:35:25.922] [<---]           collisions:0 txqueuelen:1000
+[11:35:25.922] [<---]           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+[11:35:25.922] [<---] root@hd-rk3588-core:~#
+[11:35:25.922] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:35:38
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:35:38.335] [--->] dmesg | grep -iE 'gmac|phy|eth|stmmac|end'
+[11:35:38.345] [<---] dmesg | grep -iE 'gmac|phy|eth|
+[11:35:38.697] [<---] stmmac|end'
+[11:35:38.697] [<---] [    5.753480] Booting Linux on physical CPU 0x0000000000 [0x412fd050]
+[11:35:38.697] [<---] [    6.042648] psci: probing for conduit method from DT.
+[11:35:38.697] [<---] [    6.288861] GICv3: 0 Extended SPIs implemented
+[11:35:38.697] [<---] [    6.290684] GICv3: CPU0: using allocated LPI pending table @0x0000000102260000
+[11:35:38.697] [<---] [    6.498452] arch_timer: cp15 timer(s) running at 24.00MHz (phys).
+[11:35:38.697] [<---] [    6.506148] GICv3: CPU1: using allocated LPI pending table @0x0000000102270000
+[11:35:38.697] [<---] [    6.506981] GICv3: CPU2: using allocated LPI pending table @0x0000000102280000
+[11:35:38.697] [<---] [    6.507797] GICv3: CPU3: using allocated LPI pending table @0x0000000102290000
+[11:35:38.697] [<---] [    6.508537] GICv3: CPU4: using allocated LPI pending table @0x00000001022a0000
+[11:35:38.697] [<---] [    6.509234] GICv3: CPU5: using allocated LPI pending table @0x00000001022b0000
+[11:35:38.697] [<---] [    6.509935] GICv3: CPU6: using allocated LPI pending table @0x00000001022c0000
+[11:35:38.697] [<---] [    6.510669] GICv3: CPU7: using allocated LPI pending table @0x00000001022d0000
+[11:35:38.697] [<---] [    6.533118] Registered setend emulation handler
+[11:35:38.697] [<---] [    6.539232] pstore: Registered ramoops as persistent store backend
+[11:35:38.697] [<---] [    6.595061] /vop@fdd90000: Fixed dependency cycle(s) with /hdmi@fdea0000
+[11:35:38.697] [<---] [    6.595097] /hdmi@fdea0000: Fixed dependency cycle(s) with /vop@fdd90000
+[11:35:38.697] [<---] [    7.062789] rockchip-csi2-dphy-hw fedc0000.csi2-dphy0-hw: csi2 dphy hw probe successfully!
+[11:35:38.697] [<---] [    7.062884] rockchip-csi2-dphy-hw fedc8000.csi2-dphy1-hw: csi2 dphy hw probe successfully!
+[11:35:38.697] [<---] [    7.069633] rockchip-hdptx-phy-hdmi fed70000.hdmiphy: hdptx phy init success
+[11:35:38.697] [<---] [    7.114341] /spi@feb20000/rk806single@0: Fixed dependency cycle(s) with /spi@feb20000/rk806single@0/regulators/DCDC_REG7
+[11:35:38.697] [<---] [    7.115114] rk806 spi2.0: dvs-suspend-control-by missing!
+[11:35:38.697] [<---] [    7.129148] rk_gmac-dwmac fe1c0000.ethernet: IRQ eth_lpi not found
+[11:35:38.697] [<---] [    7.129455] rk_gmac-dwmac fe1c0000.ethernet: clock input or output? (output).
+[11:35:38.697] [<---] [    7.129469] rk_gmac-dwmac fe1c0000.ethernet: TX delay(0x44).
+[11:35:38.697] [<---] [    7.129479] rk_gmac-dwmac fe1c0000.ethernet: RX delay(0x0).
+[11:35:38.697] [<---] [    7.129508] rk_gmac-dwmac fe1c0000.ethernet: integrated PHY? (no).
+[11:35:38.697] [<---] [    7.129520] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock mac_clk_rx
+[11:35:38.697] [<---] [    7.129530] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock mac_clk_tx
+[11:35:38.697] [<---] [    7.129547] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock clk_mac_speed
+[11:35:38.697] [<---] [    7.129770] rk_gmac-dwmac fe1c0000.ethernet: init for RGMII_RXID
+[11:35:38.697] [<---] [    7.129894] rk_gmac-dwmac fe1c0000.ethernet: User ID: 0x30, Synopsys ID: 0x51
+[11:35:38.697] [<---] [    7.129907] rk_gmac-dwmac fe1c0000.ethernet: 	DWMAC4/5
+[11:35:38.697] [<---] [    7.129916] rk_gmac-dwmac fe1c0000.ethernet: DMA HW capability register supported
+[11:35:38.697] [<---] [    7.129926] rk_gmac-dwmac fe1c0000.ethernet: RX Checksum Offload Engine supported
+[11:35:38.697] [<---] [    7.129936] rk_gmac-dwmac fe1c0000.ethernet: TX Checksum insertion supported
+[11:35:38.697] [<---] [    7.129945] rk_gmac-dwmac fe1c0000.ethernet: Wake-Up On Lan supported
+[11:35:38.697] [<---] [    7.129977] rk_gmac-dwmac fe1c0000.ethernet: TSO supported
+[11:35:38.697] [<---] [    7.129985] rk_gmac-dwmac fe1c0000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+[11:35:38.697] [<---] [    7.129996] rk_gmac-dwmac fe1c0000.ethernet: Enabled L3L4 Flow TC (entries=2)
+[11:35:38.697] [<---] [    7.130006] rk_gmac-dwmac fe1c0000.ethernet: Enabled RFS Flow TC (entries=10)
+[11:35:38.697] [<---] [    7.130016] rk_gmac-dwmac fe1c0000.ethernet: TSO feature enabled
+[11:35:38.697] [<---] [    7.130025] rk_gmac-dwmac fe1c0000.ethernet: Using 32/32 bits DMA host/device width
+[11:35:38.697] [<---] [    7.281361] phy phy-fd5d4000.syscon:usb2-phy@4000.1: illegal mode
+[11:35:38.697] [<---] [    7.281824] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 6.01
+[11:35:38.697] [<---] [    7.282276] usb usb2: New USB device found, idVendor=1d6b, idProduct=0003, bcdDevice= 6.01
+[11:35:38.697] [<---] [    7.372681] optee: probing for conduit method.
+[11:35:38.697] [<---] [    7.443337] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp0 assign plane mask: Cluster0 | Esmart0[0x5], primary plane phy id: Esmart0[2]
+[11:35:38.697] [<---] [    7.443354] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp1 assign plane mask: Cluster1 | Esmart1[0xa], primary plane phy id: Esmart1[3]
+[11:35:38.697] [<---] [    7.443363] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp2 assign plane mask: Cluster2 | Esmart2[0x140], pri
+============================================================
+# 串口通信日志 - 2026-07-31 11:36:05
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:36:05.181] [--->] dmesg | grep -i phy
+[11:36:05.191] [<---] dmesg | grep -i phy
+[11:36:05.191] [<---] [    5.75
+[11:36:05.326] [<---] 3480] Booting Linux on physical CPU 0x0000000000 [0x412fd050]
+[11:36:05.326] [<---] [    6.498452] arch_timer: cp15 timer(s) running at 24.00MHz (phys).
+[11:36:05.326] [<---] [    7.062789] rockchip-csi2-dphy-hw fedc0000.csi2-dphy0-hw: csi2 dphy hw probe successfully!
+[11:36:05.326] [<---] [    7.062884] rockchip-csi2-dphy-hw fedc8000.csi2-dphy1-hw: csi2 dphy hw probe successfully!
+[11:36:05.326] [<---] [    7.069633] rockchip-hdptx-phy-hdmi fed70000.hdmiphy: hdptx phy init success
+[11:36:05.326] [<---] [    7.129508] rk_gmac-dwmac fe1c0000.ethernet: integrated PHY? (no).
+[11:36:05.326] [<---] [    7.281361] phy phy-fd5d4000.syscon:usb2-phy@4000.1: illegal mode
+[11:36:05.326] [<---] [    7.443337] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp0 assign plane mask: Cluster0 | Esmart0[0x5], primary plane phy id: Esmart0[2]
+[11:36:05.326] [<---] [    7.443354] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp1 assign plane mask: Cluster1 | Esmart1[0xa], primary plane phy id: Esmart1[3]
+[11:36:05.326] [<---] [    7.443363] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp2 assign plane mask: Cluster2 | Esmart2[0x140], primary plane phy id: Esmart2[8]
+[11:36:05.326] [<---] [    7.443373] rockchip-vop2 fdd90000.vop: [drm:vop2_bind] vp3 assign plane mask: Cluster3 | Esmart3[0x280], primary plane phy id: Esmart3[9]
+[11:36:05.326] [<---] [    7.525740] phy phy-fd5d0000.syscon:usb2-phy@0.0: charger = USB_SDP_CHARGER
+[11:36:05.326] [<---] [    8.397453] rk_gmac-dwmac fe1c0000.ethernet end1: PHY [stmmac-1:00] driver [Generic PHY] (irq=POLL)
+[11:36:05.326] [<---] root@hd-rk3588-core:~#
+[11:36:05.326] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:36:28
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:36:28.277] [--->] ls /sys/class/net/; echo ===; cat /proc/device-tree/aliases | tr \0
+[11:36:28.277] [--->]  | grep -i eth; echo ===; for d in /proc/device-tree/ethernet@*; do echo $d; cat $d/status; echo; done
+[11:36:28.282] [<---] ls /sys/class/net/; echo ===
+[11:36:28.324] [<---] ; cat /proc/device-tree/alias
+[11:36:28.324] [<---] es | tr \0
+[11:36:28.324] [<---] | grep -i etend1  lo
+[11:36:28.324] [<---] h===
+[11:36:28.324] [<---] ; echo ===;cat: read error: Is a directory
+[11:36:28.324] [<---]  for d iroot@hd-rk3588-core:~#  | grep -i eth; echo ===; for d in /proc/device-tree/ethe
+[11:36:28.324] [<---] rnet@*; do echo $d; cat $d/status; echo; done
+[11:36:28.324] [<---] -sh: syntax error: unexpected "|"
+[11:36:28.324] [<---] root@hd-rk3588-core:~#
+[11:36:28.324] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:36:45
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:36:45.122] [--->] cat /proc/device-tree/ethernet@fe1b0000/status
+[11:36:45.132] [<---] cat /proc/device-tree/ethernet
+[11:36:45.154] [<---] HEX: 4066653162303030302f7374617475730d0a0d0a64697361626c656400726f6f744068642d726b333538382d636f72653a7e23200d0a726f6f744068642d726b333538382d636f72653a7e2320
+============================================================
+# 串口通信日志 - 2026-07-31 11:36:57
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:36:57.728] [--->] cat /proc/device-tree/ethernet@fe1c0000/status
+[11:36:57.739] [<---] cat /proc/device-tree/ethernet
+[11:36:57.760] [<---] HEX: 4066653163303030302f7374617475730d0a0d0a6f6b617900726f6f744068642d726b333538382d636f72653a7e23200d0a726f6f744068642d726b333538382d636f72653a7e2320
+============================================================
+# 串口通信日志 - 2026-07-31 11:37:11
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:37:11.646] [--->] ls /proc/device-tree/aliases/
+[11:37:11.657] [<---] ls /proc/device-tree/alias
+[11:37:11.782] [<---] es/
+[11:37:11.782] [<---] csi2dcphy0        gpio3             i2c8              serial0
+[11:37:11.782] [<---] csi2dcphy1        gpio4             jpege0            serial1
+[11:37:11.782] [<---] csi2dphy0         hdcp0             jpege1            serial2
+[11:37:11.782] [<---] csi2dphy1         hdcp1             jpege2            serial3
+[11:37:11.782] [<---] csi2dphy2         hdmi0             jpege3            serial4
+[11:37:11.782] [<---] csi2dphy3         hdmi1             mmc0              serial5
+[11:37:11.782] [<---] csi2dphy4         hdmirx0           mmc1              serial6
+[11:37:11.782] [<---] csi2dphy5         hdptx0            mmc2              serial7
+[11:37:11.782] [<---] dp0               hdptx1            name              serial8
+[11:37:11.782] [<---] dp1               hdptxhdmi0        rkcif_mipi_lvds0  serial9
+[11:37:11.782] [<---] dsi0              hdptxhdmi1        rkcif_mipi_lvds1  spi0
+[11:37:11.782] [<---] dsi1              i2c0              rkcif_mipi_lvds2  spi1
+[11:37:11.782] [<---] edp0              i2c1              rkcif_mipi_lvds3  spi2
+[11:37:11.782] [<---] edp1              i2c2              rkcif_mipi_lvds4  spi3
+[11:37:11.782] [<---] ethernet0         i2c3              rkcif_mipi_lvds5  spi4
+[11:37:11.782] [<---] ethernet1         i2c4              rkvdec0           spi5
+[11:37:11.782] [<---] gpio0             i2c5              rkvdec1           usbdp0
+[11:37:11.782] [<---] gpio1             i2c6              rkvenc0           usbdp1
+[11:37:11.782] [<---] gpio2             i2c7              rkvenc1
+[11:37:11.782] [<---] root@hd-rk3588-core:~#
+[11:37:11.782] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:37:19
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:37:19.296] [--->] cat /proc/device-tree/aliases/ethernet0
+[11:37:19.306] [<---] cat /proc/device-tree/alia
+[11:37:19.328] [<---] HEX: 7365732f65746865726e6574300d0a0d0a2f65746865726e657440666531623030303000726f6f744068642d726b333538382d636f72653a7e23200d0a726f6f744068642d726b333538382d636f72653a7e2320
+============================================================
+# 串口通信日志 - 2026-07-31 11:37:39
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:37:39.274] [--->] ifconfig end1 up
+[11:37:39.284] [<---] i[  393.3236
+[11:37:39.315] [<---] 10] rk_gmac-dwmac fe1c0000.ethernet end1: Register MEM_TYPE_PAGE_POOL RxQ-0
+[11:37:39.315] [<---] fconfig end1 up
+[11:37:39.315] [<---] [  393.324472] rk_gmac-dwmac fe1c0000.ethernet end1: PHY [stmmac-1:00] driver [Generic PHY] (irq=POLL)
+============================================================
+# 串口通信日志 - 2026-07-31 11:37:47
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:37:47.358] [--->] cat /sys/class/net/end1/carrier; echo ---; cat /sys/class/net/end1/operstate
+[11:37:47.369] [<---] cat /sys/class/net/end1/carrier; e
+[11:37:47.401] [<---] cho ---; cat /sys/class
+[11:37:47.401] [<---] /net/end1/operstate
+[11:37:47.401] [<---] cat: read error: Invalid argument
+[11:37:47.401] [<---] ---
+[11:37:47.401] [<---] down
+[11:37:47.401] [<---] root@hd-rk3588-core:~#
+[11:37:47.401] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:37:59
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:37:59.730] [--->] ifconfig end1
+[11:37:59.740] [<---] ifconfig end1
+[11:37:59.740] [<---] end1      Link enc
+[11:37:59.793] [<---] ap:Ethernet  HWaddr 62:CE:56:81:DC:0B
+[11:37:59.793] [<---]           BROADCAST MULTICAST  MTU:1500  Metric:1
+[11:37:59.793] [<---]           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+[11:37:59.793] [<---]           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+[11:37:59.793] [<---]           collisions:0 txqueuelen:1000
+[11:37:59.793] [<---]           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+[11:37:59.793] [<---]           Interrupt:63
+[11:37:59.793] [<---] root@hd-rk3588-core:~#
+[11:37:59.793] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:38:17
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:38:18.007] [--->] ip link set end1 up; echo RC=$?
+[11:38:18.017] [<---] ip[  432.061543] rk_
+[11:38:18.049] [<---] gmac-dwmac fe1c0000.ethernet end1: Register MEM_TYPE_PAGE_POOL RxQ-0
+[11:38:18.049] [<---]  link set end1 up; echo RC=$?
+[11:38:18.049] [<---] [  432.062470] rk_gmac-dwmac fe1c0000.ethernet end1: PHY [stmmac-1:00] driver [Generic PHY] (irq=POLL)
+============================================================
+# 串口通信日志 - 2026-07-31 11:38:22
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:38:23.037] [--->] ethtool end1
+[11:38:23.048] [<---] ethtool end1
+[11:38:23.048] [<---] -sh: ethtool: not found
+[11:38:23.069] [<---] root@hd-rk3588-core:~#
+[11:38:23.069] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:38:35
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:38:35.401] [--->] ip link show end1
+[11:38:35.412] [<---] ip link show end1
+[11:38:35.412] [<---] 2: end1: <BROA
+[11:38:35.443] [<---] DCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+[11:38:35.443] [<---]     link/ether 62:ce:56:81:dc:0b brd ff:ff:ff:ff:ff:ff
+[11:38:35.443] [<---] root@hd-rk3588-core:~#
+[11:38:35.443] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:38:51
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:38:51.232] [--->] dmesg | tail -20
+[11:38:51.242] [<---] dmesg | tail -20
+[11:38:51.242] [<---] [    8.401654] mmc
+[11:38:51.387] [<---] 0: running CQE recovery
+[11:38:51.387] [<---] [    9.397565] rk_gmac-dwmac fe1c0000.ethernet: Failed to reset the dma
+[11:38:51.387] [<---] [    9.397615] rk_gmac-dwmac fe1c0000.ethernet end1: stmmac_hw_setup: DMA engine initialization failed
+[11:38:51.387] [<---] [    9.397633] rk_gmac-dwmac fe1c0000.ethernet end1: __stmmac_open: Hw setup failed
+[11:38:51.387] [<---] [   10.446010] mmc0: running CQE recovery
+[11:38:51.387] [<---] [   10.977833] mmc0: cqhci: Failed to halt
+[11:38:51.387] [<---] [   17.730369] platform mtd_vendor_storage: deferred probe pending
+[11:38:51.387] [<---] [   38.210044] vdd_gpu_s0: disabling
+[11:38:51.387] [<---] [   38.210253] vcc3v3_lcd0_n: disabling
+[11:38:51.387] [<---] [   68.418033] mmc0: running CQE recovery
+[11:38:51.387] [<---] [  393.323610] rk_gmac-dwmac fe1c0000.ethernet end1: Register MEM_TYPE_PAGE_POOL RxQ-0
+[11:38:51.387] [<---] [  393.324472] rk_gmac-dwmac fe1c0000.ethernet end1: PHY [stmmac-1:00] driver [Generic PHY] (irq=POLL)
+[11:38:51.387] [<---] [  394.324976] rk_gmac-dwmac fe1c0000.ethernet: Failed to reset the dma
+[11:38:51.387] [<---] [  394.325015] rk_gmac-dwmac fe1c0000.ethernet end1: stmmac_hw_setup: DMA engine initialization failed
+[11:38:51.387] [<---] [  394.325031] rk_gmac-dwmac fe1c0000.ethernet end1: __stmmac_open: Hw setup failed
+[11:38:51.387] [<---] [  432.061543] rk_gmac-dwmac fe1c0000.ethernet end1: Register MEM_TYPE_PAGE_POOL RxQ-0
+[11:38:51.387] [<---] [  432.062470] rk_gmac-dwmac fe1c0000.ethernet end1: PHY [stmmac-1:00] driver [Generic PHY] (irq=POLL)
+[11:38:51.387] [<---] [  433.062795] rk_gmac-dwmac fe1c0000.ethernet: Failed to reset the dma
+[11:38:51.387] [<---] [  433.062831] rk_gmac-dwmac fe1c0000.ethernet end1: stmmac_hw_setup: DMA engine initialization failed
+[11:38:51.387] [<---] [  433.062850] rk_gmac-dwmac fe1c0000.ethernet end1: __stmmac_open: Hw setup failed
+[11:38:51.387] [<---] root@hd-rk3588-core:~#
+[11:38:51.387] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:39:19
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:39:19.152] [--->] cat /sys/kernel/debug/pm_genpd/pm_genpd_summary
+[11:39:19.162] [<---] cat /sys/kernel/debug/pm_gen
+[11:39:19.513] [<---] pd/pm_genpd_summary
+[11:39:19.513] [<---] domain                          status          children                           performance
+[11:39:19.513] [<---]     /device                                             runtime status
+[11:39:19.513] [<---] ----------------------------------------------------------------------------------------------
+[11:39:19.513] [<---] sdmmc                           off-0                                              0
+[11:39:19.513] [<---] audio                           off-0                                              0
+[11:39:19.513] [<---]     /devices/platform/clocks/fd58c318.mclkout-i2s0      suspended                  0
+[11:39:19.513] [<---]     /devices/platform/clocks/fd58c318.mclkout-i2s2      suspended                  0
+[11:39:19.513] [<---]     /devices/platform/clocks/fd58c318.mclkout-i2s3      suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fe470000.i2s                      suspended                  0
+[11:39:19.513] [<---] sdio                            off-0                                              0
+[11:39:19.513] [<---] pcie                            off-0                                              0
+[11:39:19.513] [<---] gmac                            on                                                 0
+[11:39:19.513] [<---]     /devices/platform/fe1c0000.ethernet                 active                     0
+[11:39:19.513] [<---] usb                             on                                                 0
+[11:39:19.513] [<---]     /devices/platform/usbdrd3_0/fc000000.usb            suspended                  0
+[11:39:19.513] [<---]     /devices/platform/usbdrd3_1/fc400000.usb            active                     0
+[11:39:19.513] [<---]     /devices/platform/rockchip-suspend                  suspended                  0
+[11:39:19.513] [<---] rga31                           off-0                                              0
+[11:39:19.513] [<---]     /devices/platform/fdb70f00.iommu                    suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdb70000.rga                      suspended                  0
+[11:39:19.513] [<---] fec                             off-0                                              0
+[11:39:19.513] [<---] isp1                            off-0                                              0
+[11:39:19.513] [<---] vi                              off-0                                              0
+[11:39:19.513] [<---]                                                 isp1, fec
+[11:39:19.513] [<---] vo1                             on                                                 0
+[11:39:19.513] [<---]     /devices/platform/fdea0000.hdmi                     active                     0
+[11:39:19.513] [<---] vo0                             off-0                                              0
+[11:39:19.513] [<---] vop                             off-0                                              0
+[11:39:19.513] [<---]                                                 vo0
+[11:39:19.513] [<---]     /devices/platform/fdd90000.vop                      suspended                  0
+[11:39:19.513] [<---] rga30                           off-0                                              0
+[11:39:19.513] [<---]     /devices/platform/fdb60f00.iommu                    suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdb60000.rga                      suspended                  0
+[11:39:19.513] [<---] av1                             off-0                                              0
+[11:39:19.513] [<---]     /devices/platform/fdca0000.iommu                    suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdc70000.av1d                     suspended                  0
+[11:39:19.513] [<---] vdpu                            off-0                                              0
+[11:39:19.513] [<---]                                                 av1, rkvdec0, rkvdec1, rga30
+[11:39:19.513] [<---]     /devices/platform/fdb50800.iommu                    suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdb90480.iommu                    suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdba0800.iommu                    suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdba4800.iommu                    suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdba8800.iommu                    suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdbac800.iommu                    suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdbb0800.iommu                    suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdb80000.rga                      suspended                  0
+[11:39:19.513] [<---]     /devices/platform/fdb51000.avsd-plus
+============================================================
+# 串口通信日志 - 2026-07-31 11:39:24
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:39:24.780] [--->] mount -t debugfs none /sys/kernel/debug 2>/dev/null; cat /sys/kernel/debug/pm_genpd/pm_genpd_summary
+[11:39:24.790] [<---] mount -t debugfs none /sys/kerne
+[11:39:25.142] [<---] l/debug 2>/dev/null; cat
+[11:39:25.142] [<---] /sys/kernel/debug/pm_genpd/pm_genpd_summary
+[11:39:25.142] [<---] domain                          status          children                           performance
+[11:39:25.142] [<---]     /device                                             runtime status
+[11:39:25.142] [<---] ----------------------------------------------------------------------------------------------
+[11:39:25.142] [<---] sdmmc                           off-0                                              0
+[11:39:25.142] [<---] audio                           off-0                                              0
+[11:39:25.142] [<---]     /devices/platform/clocks/fd58c318.mclkout-i2s0      suspended                  0
+[11:39:25.142] [<---]     /devices/platform/clocks/fd58c318.mclkout-i2s2      suspended                  0
+[11:39:25.142] [<---]     /devices/platform/clocks/fd58c318.mclkout-i2s3      suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fe470000.i2s                      suspended                  0
+[11:39:25.142] [<---] sdio                            off-0                                              0
+[11:39:25.142] [<---] pcie                            off-0                                              0
+[11:39:25.142] [<---] gmac                            on                                                 0
+[11:39:25.142] [<---]     /devices/platform/fe1c0000.ethernet                 active                     0
+[11:39:25.142] [<---] usb                             on                                                 0
+[11:39:25.142] [<---]     /devices/platform/usbdrd3_0/fc000000.usb            suspended                  0
+[11:39:25.142] [<---]     /devices/platform/usbdrd3_1/fc400000.usb            active                     0
+[11:39:25.142] [<---]     /devices/platform/rockchip-suspend                  suspended                  0
+[11:39:25.142] [<---] rga31                           off-0                                              0
+[11:39:25.142] [<---]     /devices/platform/fdb70f00.iommu                    suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fdb70000.rga                      suspended                  0
+[11:39:25.142] [<---] fec                             off-0                                              0
+[11:39:25.142] [<---] isp1                            off-0                                              0
+[11:39:25.142] [<---] vi                              off-0                                              0
+[11:39:25.142] [<---]                                                 isp1, fec
+[11:39:25.142] [<---] vo1                             on                                                 0
+[11:39:25.142] [<---]     /devices/platform/fdea0000.hdmi                     active                     0
+[11:39:25.142] [<---] vo0                             off-0                                              0
+[11:39:25.142] [<---] vop                             off-0                                              0
+[11:39:25.142] [<---]                                                 vo0
+[11:39:25.142] [<---]     /devices/platform/fdd90000.vop                      suspended                  0
+[11:39:25.142] [<---] rga30                           off-0                                              0
+[11:39:25.142] [<---]     /devices/platform/fdb60f00.iommu                    suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fdb60000.rga                      suspended                  0
+[11:39:25.142] [<---] av1                             off-0                                              0
+[11:39:25.142] [<---]     /devices/platform/fdca0000.iommu                    suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fdc70000.av1d                     suspended                  0
+[11:39:25.142] [<---] vdpu                            off-0                                              0
+[11:39:25.142] [<---]                                                 av1, rkvdec0, rkvdec1, rga30
+[11:39:25.142] [<---]     /devices/platform/fdb50800.iommu                    suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fdb90480.iommu                    suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fdba0800.iommu                    suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fdba4800.iommu                    suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fdba8800.iommu                    suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fdbac800.iommu                    suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fdbb0800.iommu                    suspended                  0
+[11:39:25.142] [<---]     /devices/platform/fdb80000.rga                      suspended                  0
+============================================================
+# 串口通信日志 - 2026-07-31 11:39:36
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:39:36.841] [--->] mount -t debugfs none /sys/kernel/debug 2>/dev/null; cat /sys/kernel/debug/clk/clk_summary | grep -i gmac
+[11:39:36.851] [<---] mount -t debugfs none /sys/ker
+[11:39:37.019] [<---] nel/debug 2>/dev/null; cat
+[11:39:37.019] [<---] /sys/kernel/debug/clk/clk_summary | grep -i gmac
+[11:39:37.019] [<---]                 aclk_gmac1           1       2        0        396000000   0          0     50000      Y                  fe1c0000.ethernet               aclk_mac
+[11:39:37.019] [<---]                 aclk_gmac0           0       0        0        396000000   0          0     50000      N                  deviceless                      no_connection_id
+[11:39:37.019] [<---]           clk_gmac_50m               0       1        0        50000000    0          0     50000      N            ethernet@fe1c0000               no_connection_id
+[11:39:37.019] [<---]           clk_gmac_125m              1       2        0        125000000   0          0     50000      Y            fe1c0000.ethernet               stmmaceth
+[11:39:37.019] [<---]           clk_gmac1_ptp_ref          0       1        0        100000000   0          0     50000      N            fe1c0000.ethernet               ptp_ref
+[11:39:37.019] [<---]           clk_gmac0_ptp_ref          0       0        0        100000000   0          0     50000      N            deviceless                      no_connection_id
+[11:39:37.019] [<---]           mclk_gmac0_out             0       0        0        50000000    0          0     50000      N            deviceless                      no_connection_id
+[11:39:37.019] [<---]                 pclk_gmac1           2       3        0        150000000   0          0     50000      Y                  fe1c0000.ethernet               pclk_mac
+[11:39:37.019] [<---]                 pclk_gmac0           0       0        0        150000000   0          0     50000      N                  deviceless                      no_connection_id
+[11:39:37.019] [<---] root@hd-rk3588-core:~#
+[11:39:37.019] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:40:00
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:40:01.040] [--->] cat /sys/kernel/debug/pm_genpd/pm_genpd_summary
+[11:40:01.051] [<---] cat /sys/kernel/debug/pm
+[11:40:01.393] [<---] _genpd/pm_genpd_summary
+[11:40:01.393] [<---] domain                          status          children                           performance
+[11:40:01.393] [<---]     /device                                             runtime status
+[11:40:01.393] [<---] ----------------------------------------------------------------------------------------------
+[11:40:01.393] [<---] sdmmc                           off-0                                              0
+[11:40:01.393] [<---] audio                           off-0                                              0
+[11:40:01.393] [<---]     /devices/platform/clocks/fd58c318.mclkout-i2s0      suspended                  0
+[11:40:01.393] [<---]     /devices/platform/clocks/fd58c318.mclkout-i2s2      suspended                  0
+[11:40:01.393] [<---]     /devices/platform/clocks/fd58c318.mclkout-i2s3      suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fe470000.i2s                      suspended                  0
+[11:40:01.393] [<---] sdio                            off-0                                              0
+[11:40:01.393] [<---] pcie                            off-0                                              0
+[11:40:01.393] [<---] gmac                            on                                                 0
+[11:40:01.393] [<---]     /devices/platform/fe1c0000.ethernet                 active                     0
+[11:40:01.393] [<---] usb                             on                                                 0
+[11:40:01.393] [<---]     /devices/platform/usbdrd3_0/fc000000.usb            suspended                  0
+[11:40:01.393] [<---]     /devices/platform/usbdrd3_1/fc400000.usb            active                     0
+[11:40:01.393] [<---]     /devices/platform/rockchip-suspend                  suspended                  0
+[11:40:01.393] [<---] rga31                           off-0                                              0
+[11:40:01.393] [<---]     /devices/platform/fdb70f00.iommu                    suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdb70000.rga                      suspended                  0
+[11:40:01.393] [<---] fec                             off-0                                              0
+[11:40:01.393] [<---] isp1                            off-0                                              0
+[11:40:01.393] [<---] vi                              off-0                                              0
+[11:40:01.393] [<---]                                                 isp1, fec
+[11:40:01.393] [<---] vo1                             on                                                 0
+[11:40:01.393] [<---]     /devices/platform/fdea0000.hdmi                     active                     0
+[11:40:01.393] [<---] vo0                             off-0                                              0
+[11:40:01.393] [<---] vop                             off-0                                              0
+[11:40:01.393] [<---]                                                 vo0
+[11:40:01.393] [<---]     /devices/platform/fdd90000.vop                      suspended                  0
+[11:40:01.393] [<---] rga30                           off-0                                              0
+[11:40:01.393] [<---]     /devices/platform/fdb60f00.iommu                    suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdb60000.rga                      suspended                  0
+[11:40:01.393] [<---] av1                             off-0                                              0
+[11:40:01.393] [<---]     /devices/platform/fdca0000.iommu                    suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdc70000.av1d                     suspended                  0
+[11:40:01.393] [<---] vdpu                            off-0                                              0
+[11:40:01.393] [<---]                                                 av1, rkvdec0, rkvdec1, rga30
+[11:40:01.393] [<---]     /devices/platform/fdb50800.iommu                    suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdb90480.iommu                    suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdba0800.iommu                    suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdba4800.iommu                    suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdba8800.iommu                    suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdbac800.iommu                    suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdbb0800.iommu                    suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdb80000.rga                      suspended                  0
+[11:40:01.393] [<---]     /devices/platform/fdb51000.avsd-plus
+[11:40:01.662] [<---]          suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdb50400.vdpu                     suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdb50000.vepu                     suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdba0000.jpege-core               suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdba4000.jpege-core               suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdba8000.jpege-core               suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdbac000.jpege-core               suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdbb0000.iep                      suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdb90000.jpegd                    suspended                  0
+[11:40:01.662] [<---] venc1                           off-0                                              0
+[11:40:01.662] [<---]     /devices/platform/fdbef000.iommu                    suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdbe0000.rkvenc-core              suspended                  0
+[11:40:01.662] [<---] venc0                           off-0                                              0
+[11:40:01.662] [<---]                                                 venc1
+[11:40:01.662] [<---]     /devices/platform/fdbdf000.iommu                    suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdbd0000.rkvenc-core              suspended                  0
+[11:40:01.662] [<---] rkvdec1                         off-0                                              0
+[11:40:01.662] [<---]     /devices/platform/fdc48700.iommu                    suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdc48100.rkvdec-core              suspended                  0
+[11:40:01.662] [<---] rkvdec0                         off-0                                              0
+[11:40:01.662] [<---]     /devices/platform/fdc30000.rkvdec-ccu               suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdc38700.iommu                    suspended                  0
+[11:40:01.662] [<---]     /devices/platform/fdc38100.rkvdec-core              suspended                  0
+[11:40:01.662] [<---] vcodec                          off-0                                              0
+[11:40:01.662] [<---]                                                 rkvdec0, rkvdec1, venc0
+[11:40:01.662] [<---] gpu                             off-0                                              0
+[11:40:01.662] [<---] npu2                            off-0                                              0
+[11:40:01.662] [<---]     /devices/genpd:2:fdab0000.npu                       suspended                  0
+[11:40:01.662] [<---] npu1                            off-0                                              0
+[11:40:01.662] [<---]     /devices/genpd:1:fdab0000.npu                       suspended                  0
+[11:40:01.662] [<---] nputop                          off-0                                              0
+[11:40:01.662] [<---]                                                 npu1, npu2
+[11:40:01.662] [<---]     /devices/genpd:0:fdab0000.npu                       suspended                  0
+[11:40:01.662] [<---] npu                             off-0                                              0
+[11:40:01.662] [<---]                                                 nputop
+[11:40:01.662] [<---] root@hd-rk3588-core:~#
+[11:40:01.662] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:40:25
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:40:25.555] [--->] ls /proc/device-tree/ethernet@fe1c0000/
+[11:40:25.565] [<---] ls /proc/device-tree/ethernet@fe1
+[11:40:25.649] [<---] c0000/
+[11:40:25.649] [<---] assigned-clock-rates   phy-mode               snps,mixed-burst
+[11:40:25.649] [<---] assigned-clocks        phy-supply             snps,mtl-rx-config
+[11:40:25.649] [<---] clock-names            pinctrl-0              snps,mtl-tx-config
+[11:40:25.649] [<---] clock_in_out           pinctrl-names          snps,reset-active-low
+[11:40:25.649] [<---] clocks                 power-domains          snps,reset-delays-us
+[11:40:25.649] [<---] compatible             reg                    snps,reset-gpio
+[11:40:25.649] [<---] interrupt-names        reset-names            snps,tso
+[11:40:25.649] [<---] interrupts             resets                 status
+[11:40:25.649] [<---] local-mac-address      rockchip,grf           stmmac-axi-config
+[11:40:25.649] [<---] mdio                   rockchip,php_grf       tx-queues-config
+[11:40:25.649] [<---] name                   rx-queues-config       tx_delay
+[11:40:25.649] [<---] phandle                rx_delay
+[11:40:25.649] [<---] phy-handle             snps,axi-config
+[11:40:25.649] [<---] root@hd-rk3588-core:~#
+[11:40:25.649] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:40:33
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:40:33.292] [<---] echo ==clk==; cat /proc/device-tre
+[11:40:33.298] [--->] echo ==clk==; cat /proc/device-tree/ethernet@fe1c0000/clock-names; echo; echo ==reset==; cat /proc/device-tree/ethernet@fe1c0000/reset-names; echo; echo ==phy==; cat /proc/device-tree/ethernet@fe1c0000/phy-mode; echo; echo ==compat==; cat /proc/device-tree/ethernet@fe1c0000/compatible; echo
+[11:40:33.345] [<---] HEX: 652f65746865726e65744066653163303030302f636c6f0d0d0a636b2d6e616d65733b206563686f3b206563686f203d3d72657365743d3d3b20636174202f70726f632f6465766963652d747265652f65746865726e65744066653163303030302f72657365742d6e610d0d0a6d65733b206563686f3b206563686f203d3d7068793d3d3b20636174202f70726f632f6465766963652d747265652f65746865726e65744066653163303030302f7068792d6d6f64653b206563686f3b0d0d0a206563686f203d3d636f6d7061743d3d3b20636174202f70726f632f6465766963652d747265652f65746865726e65744066653163303030302f636f6d70617469626c653b206563686f0d0a3d3d636c6b3d3d0d0a73746d6d616365746800636c6b5f6d61635f7265660070636c6b5f6d61630061636c6b5f6d6163007074705f726566000d0a3d3d72657365743d3d0d0a73746d6d6163657468000d0a3d3d7068793d3d0d0a72676d69692d72786964000d0a3d3d636f6d7061743d3d0d0a726f636b636869702c726b333538382d676d616300736e70732c64776d61632d342e323061000d0a726f6f744068642d726b333538382d636f72653a7e23200d0a726f6f744068642d726b333538382d636f72653a7e2320
+============================================================
+# 串口通信日志 - 2026-07-31 11:41:01
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:41:01.698] [<---] echo ==inout==; cat /proc/device-
+[11:41:01.699] [--->] echo ==inout==; cat /proc/device-tree/ethernet@fe1c0000/clock_in_out; echo; echo ==delay==; xxd /proc/device-tree/ethernet@fe1c0000/tx_delay; echo ---; xxd /proc/device-tree/ethernet@fe1c0000/rx_delay
+[11:41:01.741] [<---] HEX: 747265652f65746865726e65744066653163303030302f630d0d0a6c6f636b5f696e5f6f75743b206563686f3b206563686f203d3d64656c61793d3d3b20787864202f70726f632f6465766963652d747265652f65746865726e65744066653163303030302f74785f64650d0d0a6c61793b206563686f202d2d2d3b20787864202f70726f632f6465766963652d747265652f65746865726e65744066653163303030302f72785f64656c61790d0a3d3d696e6f75743d3d0d0a6f7574707574000d0a3d3d64656c61793d3d0d0a2d73683a207878643a206e6f7420666f756e640d0a2d2d2d0d0a2d73683a207878643a206e6f7420666f756e640d0a726f6f744068642d726b333538382d636f72653a7e23200d0a726f6f744068642d726b333538382d636f72653a7e2320
+============================================================
+# 串口通信日志 - 2026-07-31 11:41:15
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:41:15.978] [--->] uname -a
+============================================================
+# 串口通信日志 - 2026-07-31 11:41:22
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:41:23.031] [--->] uname -a
+============================================================
+# 串口通信日志 - 2026-07-31 11:41:30
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+============================================================
+# 串口通信日志 - 2026-07-31 11:41:39
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:41:39.407] [--->] uname -a
+============================================================
+# 串口通信日志 - 2026-07-31 11:41:54
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+============================================================
+# 串口通信日志 - 2026-07-31 11:42:03
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+============================================================
+# 串口通信日志 - 2026-07-31 11:42:15
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:42:15.649] [--->] HEX: 03
+============================================================
+# 串口通信日志 - 2026-07-31 11:42:23
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+============================================================
+# 串口通信日志 - 2026-07-31 11:43:16
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:43:16.257] [<---] hd-rk3588-core login:
+[11:43:16.257] [<---] hd-rk3588-core login:
+============================================================
+# 串口通信日志 - 2026-07-31 11:43:24
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:43:24.275] [--->] root
+[11:43:24.286] [<---] root
+[11:43:24.328] [<---] HEX: 0d0a5741524e494e473a20506f6b792069732061207265666572656e636520596f63746f2050726f6a65637420646973747269627574696f6e20746861742073686f756c64206265207573656420666f720d0a74657374696e6720616e6420646576656c6f706d656e7420707572706f736573206f6e6c792e204974206973207265636f6d6d656e646564207468617420796f752063726561746520796f75720d0a6f776e20646973747269627574696f6e20666f722070726f64756374696f6e207573652e0d0a0d0a1b371b5b721b5b3939393b393939481b5b366e
+============================================================
+# 串口通信日志 - 2026-07-31 11:43:29
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:43:29.871] [<---] root@hd-rk3588-core:~#
+[11:43:29.871] [<---] root@hd-rk
+[11:43:29.893] [<---] 3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:43:36
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:43:36.706] [--->] dmesg | grep -iE gmac|stmmac|end1|dma | head -40
+[11:43:36.716] [<---] dmesg | grep -iE gmac|stmmac|end1|dma |
+[11:43:36.748] [<---]  head -40
+[11:43:36.748] [<---] -sh: stmmac: not found
+[11:43:36.748] [<---] -sh: end1: not found
+[11:43:36.748] [<---] -sh: dma: not found
+[11:43:36.748] [<---] head: invalid option -- '4'
+[11:43:36.748] [<---] BusyBox v1.36.1 () multi-call binary.
+[11:43:36.748] [<---] Usage: head [OPTIONS] [FILE]...
+[11:43:36.748] [<---] root@hd-rk3588-core:~#
+[11:43:36.748] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:43:44
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:43:44.783] [--->] dmesg | grep -i gmac
+[11:43:44.793] [<---] dmesg | grep -i gmac
+[11:43:45.000] [<---] [    7.111761] rk_gmac-dwmac fe1c0000.ethernet: IRQ eth_lpi not found
+[11:43:45.000] [<---] [    7.112067] rk_gmac-dwmac fe1c0000.ethernet: clock input or output? (output).
+[11:43:45.000] [<---] [    7.112081] rk_gmac-dwmac fe1c0000.ethernet: TX delay(0x44).
+[11:43:45.000] [<---] [    7.112091] rk_gmac-dwmac fe1c0000.ethernet: RX delay(0x0).
+[11:43:45.000] [<---] [    7.112119] rk_gmac-dwmac fe1c0000.ethernet: integrated PHY? (no).
+[11:43:45.000] [<---] [    7.112131] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock mac_clk_rx
+[11:43:45.000] [<---] [    7.112141] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock mac_clk_tx
+[11:43:45.000] [<---] [    7.112159] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock clk_mac_speed
+[11:43:45.000] [<---] [    7.112381] rk_gmac-dwmac fe1c0000.ethernet: init for RGMII_RXID
+[11:43:45.000] [<---] [    7.112510] rk_gmac-dwmac fe1c0000.ethernet: User ID: 0x30, Synopsys ID: 0x51
+[11:43:45.000] [<---] [    7.112523] rk_gmac-dwmac fe1c0000.ethernet: 	DWMAC4/5
+[11:43:45.000] [<---] [    7.112533] rk_gmac-dwmac fe1c0000.ethernet: DMA HW capability register supported
+[11:43:45.000] [<---] [    7.112543] rk_gmac-dwmac fe1c0000.ethernet: RX Checksum Offload Engine supported
+[11:43:45.000] [<---] [    7.112552] rk_gmac-dwmac fe1c0000.ethernet: TX Checksum insertion supported
+[11:43:45.000] [<---] [    7.112561] rk_gmac-dwmac fe1c0000.ethernet: Wake-Up On Lan supported
+[11:43:45.000] [<---] [    7.112593] rk_gmac-dwmac fe1c0000.ethernet: TSO supported
+[11:43:45.000] [<---] [    7.112601] rk_gmac-dwmac fe1c0000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+[11:43:45.000] [<---] [    7.112612] rk_gmac-dwmac fe1c0000.ethernet: Enabled L3L4 Flow TC (entries=2)
+[11:43:45.000] [<---] [    7.112622] rk_gmac-dwmac fe1c0000.ethernet: Enabled RFS Flow TC (entries=10)
+[11:43:45.000] [<---] [    7.112631] rk_gmac-dwmac fe1c0000.ethernet: TSO feature enabled
+[11:43:45.000] [<---] [    7.112640] rk_gmac-dwmac fe1c0000.ethernet: Using 32/32 bits DMA host/device width
+[11:43:45.000] [<---] [    8.247442] rk_gmac-dwmac fe1c0000.ethernet end1: renamed from eth0
+[11:43:45.000] [<---] [    8.351907] rk_gmac-dwmac fe1c0000.ethernet end1: Register MEM_TYPE_PAGE_POOL RxQ-0
+[11:43:45.000] [<---] [    8.352864] rk_gmac-dwmac fe1c0000.ethernet end1: PHY [stmmac-1:00] driver [Generic PHY] (irq=POLL)
+[11:43:45.000] [<---] [    9.353389] rk_gmac-dwmac fe1c0000.ethernet: Failed to reset the dma
+[11:43:45.000] [<---] [    9.353438] rk_gmac-dwmac fe1c0000.ethernet end1: stmmac_hw_setup: DMA engine initialization failed
+[11:43:45.000] [<---] [    9.353456] rk_gmac-dwmac fe1c0000.ethernet end1: __stmmac_open: Hw setup failed
+[11:43:45.000] [<---] root@hd-rk3588-core:~#
+[11:43:45.000] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:44:50
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:44:50.394] [--->] uname -r
+[11:44:50.405] [<---] uname -r
+[11:44:50.405] [<---] 6.1.141
+[11:44:50.405] [<---] root@hd-rk358
+[11:44:50.426] [<---] 8-core:~#
+[11:44:50.426] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:46:02
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:46:03.057] [--->] ls /sys/bus/mdio_devices/devices/
+[11:46:03.068] [<---] ls /sys/bus
+[11:46:03.100] [<---] /mdio_devices/devices/
+[11:46:03.100] [<---] ls: /sys/bus/mdio_devices/devices/: No such file or directory
+[11:46:03.100] [<---] root@hd-rk3588-core:~#
+[11:46:03.100] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:46:09
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:46:09.542] [--->] ls /sys/class/mdio_bus/
+[11:46:09.553] [<---] ls /sys/class/mdio_bus/
+[11:46:09.553] [<---] fixe
+[11:46:09.575] [<---] d-0   stmmac-1
+[11:46:09.575] [<---] root@hd-rk3588-core:~#
+[11:46:09.575] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:46:15
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:46:15.479] [--->] ls /sys/class/mdio_bus/stmmac-1/
+[11:46:15.491] [<---] ls /sys/class/mdio_bus/stmmac-1/
+[11:46:15.523] [<---] device                statistics            uevent
+[11:46:15.523] [<---] of_node               stmmac-1:00           waiting_for_supplier
+[11:46:15.523] [<---] power                 subsystem
+[11:46:15.523] [<---] root@hd-rk3588-core:~#
+[11:46:15.523] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:46:31
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:46:32.049] [--->] cat /sys/class/mdio_bus/stmmac-1/stmmac-1:00/power/control
+[11:46:32.059] [<---] cat /sys/class/mdio_bus/stmmac-1
+[11:46:32.080] [<---] /stmmac-1:00/power/contro
+[11:46:32.080] [<---] l
+[11:46:32.080] [<---] auto
+[11:46:32.080] [<---] root@hd-rk3588-core:~#
+[11:46:32.080] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:46:41
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:46:41.617] [--->] which mii-tool ethtool devmem mdio 2>/dev/null; echo ---; ls /sbin/ /usr/sbin/ 2>/dev/null | grep -iE 'mii|eth|mdio|phy'
+[11:46:41.628] [<---] which mii-tool ethtool devmem md
+[11:46:41.659] [<---] io 2>/dev/null; echo ---;
+[11:46:41.659] [<---]  ls /sbin/ /usr/sbin/ 2>/dev/null | grep -iE 'mii|eth|mdio|phy'
+[11:46:41.659] [<---] ---
+[11:46:41.659] [<---] root@hd-rk3588-core:~#
+[11:46:41.659] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:46:54
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:46:54.297] [--->] od -An -tx4 /proc/device-tree/ethernet@fe1c0000/snps,reset-delays-us
+[11:46:54.307] [<---] od -An -tx4 /proc/device-tree/
+[11:46:54.339] [<---] ethernet@fe1c0000/snps,rese
+[11:46:54.339] [<---] t-delays-us
+[11:46:54.339] [<---] od: invalid option -- 'A'
+[11:46:54.339] [<---] BusyBox v1.36.1 () multi-call binary.
+[11:46:54.339] [<---] Usage: od [-aBbcDdeFfHhIiLlOovXx] [FILE]
+[11:46:54.339] [<---] root@hd-rk3588-core:~#
+[11:46:54.339] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:47:04
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:47:04.211] [--->] od -x /proc/device-tree/ethernet@fe1c0000/snps,reset-delays-us
+[11:47:04.221] [<---] od -x /proc/device-tree/e
+[11:47:04.253] [<---] thernet@fe1c0000/snps,reset-dela
+[11:47:04.253] [<---] ys-us
+[11:47:04.253] [<---] 0000000     0000    0000    0000    204e    0100    a086
+[11:47:04.253] [<---] 0000014
+[11:47:04.253] [<---] root@hd-rk3588-core:~#
+[11:47:04.253] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:47:31
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:47:31.713] [--->] lsmod 2>/dev/null; echo ---; ls /lib/modules/ 2>/dev/null; echo ---; cat /proc/modules 2>/dev/null | head
+[11:47:31.723] [<---] lsmod 2>/dev/null; echo ---; ls
+[11:47:31.755] [<---] /lib/modules/ 2>/dev/null
+[11:47:31.755] [<---] ; echo ---; cat /proc/modules 2>/dev/null | head
+[11:47:31.755] [<---] Module                  Size  Used by
+[11:47:31.755] [<---] ---
+[11:47:31.755] [<---] 6.1.141
+[11:47:31.755] [<---] ---
+[11:47:31.755] [<---] root@hd-rk3588-core:~#
+[11:47:31.755] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:47:39
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:47:39.901] [--->] ls /sys/bus/platform/drivers/dwmac-rk/
+[11:47:39.911] [<---] ls /sys/bus/platform/drivers/dwm
+[11:47:39.943] [<---] ac-rk/
+[11:47:39.943] [<---] ls: /sys/bus/platform/drivers/dwmac-rk/: No such file or directory
+[11:47:39.943] [<---] root@hd-rk3588-core:~#
+[11:47:39.943] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:47:46
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:47:46.370] [--->] ls /sys/bus/platform/drivers/ | grep -i dwmac
+[11:47:46.381] [<---] ls /sys/bus/platform/drivers/ | g
+[11:47:46.403] [<---] rep -i dwmac
+[11:47:46.403] [<---] rk_gmac-dwmac
+[11:47:46.403] [<---] root@hd-rk3588-core:~#
+[11:47:46.403] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:47:51
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:47:51.670] [--->] ls /sys/bus/platform/drivers/rk_gmac-dwmac/
+[11:47:51.681] [<---] ls /sys/bus/platform/drivers/rk
+[11:47:51.713] [<---] _gmac-dwmac/
+[11:47:51.713] [<---] bind               fe1c0000.ethernet  uevent             unbind
+[11:47:51.713] [<---] root@hd-rk3588-core:~#
+[11:47:51.713] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:48:03
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:48:04.042] [--->] echo fe1c0000.ethernet > /sys/bus/platform/drivers/rk_gmac-dwmac/unbind
+[11:48:04.053] [<---] echo fe1
+[11:48:04.084] [<---] c0000.ethernet > /sys/bus/platform/drivers/rk_gma
+[11:48:04.084] [<---] c-dwmac/unbind
+[11:48:04.084] [<---] [  330.027170] rk_gmac-dwmac fe1c0000.ethernet end1: stmmac_dvr_remove: removing driver
+[11:48:04.147] [<---] root@hd-rk3
+[11:48:04.159] [<---] 588-core:~#
+[11:48:04.159] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:48:11
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:48:12.093] [--->] sleep 3; echo fe1c0000.ethernet > /sys/bus/platform/drivers/rk_gmac-dwmac/bind
+[11:48:12.104] [<---] sleep 3; echo fe1c0000.ethernet
+[11:48:12.125] [<---]  > /sys/bus/platform/drive
+[11:48:12.125] [<---] rs/rk_gmac-dwmac/bind
+============================================================
+# 串口通信日志 - 2026-07-31 11:48:19
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:48:19.306] [<---] root@hd-rk3588-core:~#
+[11:48:19.306] [<---] root@hd-rk3
+[11:48:19.328] [<---] 588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:48:25
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:48:25.726] [--->] dmesg | tail -15
+[11:48:25.737] [<---] dmesg | tail -
+[11:48:25.862] [<---] 15
+[11:48:25.862] [<---] [  341.081740] rk_gmac-dwmac fe1c0000.ethernet: User ID: 0x30, Synopsys ID: 0x51
+[11:48:25.862] [<---] [  341.081766] rk_gmac-dwmac fe1c0000.ethernet: 	DWMAC4/5
+[11:48:25.862] [<---] [  341.081782] rk_gmac-dwmac fe1c0000.ethernet: DMA HW capability register supported
+[11:48:25.862] [<---] [  341.081795] rk_gmac-dwmac fe1c0000.ethernet: RX Checksum Offload Engine supported
+[11:48:25.862] [<---] [  341.081811] rk_gmac-dwmac fe1c0000.ethernet: TX Checksum insertion supported
+[11:48:25.862] [<---] [  341.081825] rk_gmac-dwmac fe1c0000.ethernet: Wake-Up On Lan supported
+[11:48:25.862] [<---] [  341.081838] rk_gmac-dwmac fe1c0000.ethernet: TSO supported
+[11:48:25.862] [<---] [  341.081851] rk_gmac-dwmac fe1c0000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+[11:48:25.862] [<---] [  341.081868] rk_gmac-dwmac fe1c0000.ethernet: Enabled L3L4 Flow TC (entries=2)
+[11:48:25.862] [<---] [  341.081883] rk_gmac-dwmac fe1c0000.ethernet: Enabled RFS Flow TC (entries=10)
+[11:48:25.862] [<---] [  341.081899] rk_gmac-dwmac fe1c0000.ethernet: TSO feature enabled
+[11:48:25.862] [<---] [  341.081914] rk_gmac-dwmac fe1c0000.ethernet: Using 32/32 bits DMA host/device width
+[11:48:25.862] [<---] [  341.082472] rk_gmac-dwmac fe1c0000.ethernet: error -EBUSY: Cannot register the MDIO bus
+[11:48:25.862] [<---] [  341.082496] rk_gmac-dwmac fe1c0000.ethernet: error -EBUSY: stmmac_dvr_probe: MDIO bus (id: 1) registration failed
+[11:48:25.862] [<---] [  341.127588] rk_gmac-dwmac: probe of fe1c0000.ethernet failed with error -16
+[11:48:25.862] [<---] root@hd-rk3588-core:~#
+[11:48:25.862] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:48:38
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:48:38.405] [--->] ls /sys/class/mdio_bus/; echo ---; ls /sys/bus/platform/drivers/rk_gmac-dwmac/
+[11:48:38.416] [<---] ls /sys/class/mdio_bus/; echo --
+[11:48:38.447] [<---] -; ls /sys/bus/platform/d
+[11:48:38.447] [<---] rivers/rk_gmac-dwmac/
+[11:48:38.447] [<---] fixed-0
+[11:48:38.447] [<---] ---
+[11:48:38.447] [<---] bind    uevent  unbind
+[11:48:38.447] [<---] root@hd-rk3588-core:~#
+[11:48:38.447] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:48:45
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:48:46.043] [--->] echo fe1c0000.ethernet > /sys/bus/platform/drivers/rk_gmac-dwmac/bind
+[11:48:46.054] [<---] echo fe1c0000.ethernet > /sy
+[11:48:46.251] [<---] s/bus/platform/drivers/rk_gma
+[11:48:46.251] [<---] c-dwmac/bind
+[11:48:46.251] [<---] [  372.031408] rk_gmac-dwmac fe1c0000.ethernet: IRQ eth_lpi not found
+[11:48:46.251] [<---] [  372.031895] rk_gmac-dwmac fe1c0000.ethernet: clock input or output? (output).
+[11:48:46.251] [<---] [  372.031919] rk_gmac-dwmac fe1c0000.ethernet: TX delay(0x44).
+[11:48:46.251] [<---] [  372.031934] rk_gmac-dwmac fe1c0000.ethernet: RX delay(0x0).
+[11:48:46.251] [<---] [  372.031956] rk_gmac-dwmac fe1c0000.ethernet: integrated PHY? (no).
+[11:48:46.251] [<---] [  372.031976] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock mac_clk_rx
+[11:48:46.251] [<---] [  372.031991] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock mac_clk_tx
+[11:48:46.251] [<---] [  372.032018] rk_gmac-dwmac fe1c0000.ethernet: cannot get clock clk_mac_speed
+[11:48:46.251] [<---] sh: write error: Device or resource busy
+[11:48:46.251] [<---] [  372.032257] rk_gmac-dwmac fe1c0000.ethernet: init for RGMII_RXID
+[11:48:46.251] [<---] root@hd-rk3588-core:~#
+[11:48:46.251] [<---] [  372.032543] rk_gmac-dwmac fe1c0000.ethernet: User ID: 0x30, Synopsys ID: 0x51
+[11:48:46.251] [<---] root@hd-rk3588-core:~# [  372.032564] rk_gmac-dwmac fe1c0000.ethernet: 	DWMAC4/5
+[11:48:46.251] [<---] [  372.032580] rk_gmac-dwmac fe1c0000.ethernet: DMA HW capability register supported
+[11:48:46.251] [<---] [  372.032594] rk_gmac-dwmac fe1c0000.ethernet: RX Checksum Offload Engine supported
+[11:48:46.251] [<---] [  372.032608] rk_gmac-dwmac fe1c0000.ethernet: TX Checksum insertion supported
+[11:48:46.251] [<---] [  372.032622] rk_gmac-dwmac fe1c0000.ethernet: Wake-Up On Lan supported
+[11:48:46.251] [<---] [  372.032635] rk_gmac-dwmac fe1c0000.ethernet: TSO supported
+[11:48:46.251] [<---] [  372.032648] rk_gmac-dwmac fe1c0000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+[11:48:46.251] [<---] [  372.032663] rk_gmac-dwmac fe1c0000.ethernet: Enabled L3L4 Flow TC (entries=2)
+[11:48:46.251] [<---] [  372.032678] rk_gmac-dwmac fe1c0000.ethernet: Enabled RFS Flow TC (entries=10)
+[11:48:46.251] [<---] [  372.032692] rk_gmac-dwmac fe1c0000.ethernet: TSO feature enabled
+[11:48:46.251] [<---] [  372.032707] rk_gmac-dwmac fe1c0000.ethernet: Using 32/32 bits DMA host/device width
+[11:48:46.251] [<---] [  372.033400] rk_gmac-dwmac fe1c0000.ethernet: error -EBUSY: Cannot register the MDIO bus
+[11:48:46.251] [<---] [  372.033425] rk_gmac-dwmac fe1c0000.ethernet: error -EBUSY: stmmac_dvr_probe: MDIO bus (id: 1) registration failed
+[11:48:46.251] [<---] [  372.083604] rk_gmac-dwmac: probe of fe1c0000.ethernet failed with error -16
+============================================================
+# 串口通信日志 - 2026-07-31 11:49:25
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:49:25.149] [--->] cat /proc/device-tree/ethernet@fe1c0000/snps,reset-active-low; echo; echo ---gpio---; od -x /proc/device-tree/ethernet@fe1c0000/snps,reset-gpio
+[11:49:25.154] [<---] cat /proc/device-tree/ethernet@fe1c
+[11:49:25.196] [<---] 0000/snps,reset-active
+[11:49:25.196] [<---] -low; echo; echo ---gpio---; od -x /proc/device-tree/ethernet@fe1c0000/snps,rese
+[11:49:25.196] [<---] t-gpio
+[11:49:25.196] [<---] ---gpio---
+[11:49:25.196] [<---] 0000000     0000    4301    0000    0f00    0000    0100
+[11:49:25.196] [<---] 0000014
+[11:49:25.196] [<---] root@hd-rk3588-core:~#
+[11:49:25.196] [<---] root@hd-rk3588-core:~#
+============================================================
+# 串口通信日志 - 2026-07-31 11:50:19
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:50:19.269] [--->] ls /sys/class/net/; echo ---; ls /sys/bus/platform/drivers/rk_gmac-dwmac/
+============================================================
+# 串口通信日志 - 2026-07-31 11:50:27
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:50:27.393] [--->] ls /sys/class/net/
+============================================================
+# 串口通信日志 - 2026-07-31 11:50:36
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+============================================================
+# 串口通信日志 - 2026-07-31 11:50:45
+# 串口: COM7, 波特率: 115200
+# 格式: [时间戳] [方向(--->/<---)] 数据内容
+------------------------------------------------------------
+[11:50:45.241] [--->] HEX: 03

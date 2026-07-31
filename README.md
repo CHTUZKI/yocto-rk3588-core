@@ -1,3 +1,9 @@
+# 万象奥科评估板
+
+![万象奥科评估板 1](images/1.png)
+
+![万象奥科评估板 2](images/2.png)
+
 # RK3588 CORE Yocto 项目
 
 基于 Yocto Project **scarthgap（5.0 LTS）** 的 **Vanxak HD-RK3588-CORE** 核心板嵌入式 Linux 构建环境。

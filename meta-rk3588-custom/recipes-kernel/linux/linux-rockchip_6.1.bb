@@ -17,6 +17,10 @@ LINUX_VERSION_EXTENSION = "-rockchip"
 SRC_URI = " \
     git://github.com/rockchip-linux/kernel.git;protocol=https;branch=develop-6.1 \
     file://hd-rk3588-core.dts \
+    file://mali-valhall.cfg \
+    file://0001-stmmac-resume-PHY-before-DMA-soft-reset.patch \
+    file://0002-dwmac-rk-enable-clk-mac-and-default-rgmii-1g.patch \
+    file://0003-dw-hdmi-rockchip-drive-enable-gpio-high-at-probe.patch \
 "
 # develop-6.1 tip as of plan implementation (reproducible pin)
 SRCREV = "b4ef083dc0c3608e744deabb43dc6b781aadbe6e"
@@ -38,6 +42,11 @@ do_configure:prepend() {
 		cp -f "${S}/arch/${ARCH}/configs/${KBUILD_DEFCONFIG}" "${WORKDIR}/defconfig"
 	else
 		bbfatal "KBUILD_DEFCONFIG ${KBUILD_DEFCONFIG} not found under ${S}/arch/${ARCH}/configs/"
+	fi
+
+	# Plain inherit kernel does not auto-merge .cfg fragments; append Valhall GPU.
+	if [ -f "${WORKDIR}/mali-valhall.cfg" ]; then
+		cat "${WORKDIR}/mali-valhall.cfg" >> "${WORKDIR}/defconfig"
 	fi
 }
 
