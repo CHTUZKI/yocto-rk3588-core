@@ -267,11 +267,10 @@
 
 /*
  * No Type-C controller on this core board (Buildroot has no fusb302).
- * Run DWC3_0 as host; strip EVB4 OTG/role-switch and usbdp Type-C wiring.
+ * Delete fusb302 entirely — disabling alone still leaves phandle refs to
+ * dwc3/usbdp endpoints that we strip below.
  */
-&usbc0 {
-	status = "disabled";
-};
+/delete-node/ &usbc0;
 
 &i2c8 {
 	status = "disabled";
@@ -314,6 +313,15 @@
 &pcie30phy {
 	rockchip,pcie30-phymode = <PHY_MODE_PCIE_AGGREGATION>;
 	status = "okay";
+};
+
+/* EVB4 does not define this label; match EVB / Buildroot clkreq GPIO4_PB4. */
+&pinctrl {
+	pcie30x4 {
+		pcie30x4_clkreqn_m1: pcie30x4-clkreqn-m1 {
+			rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_down>;
+		};
+	};
 };
 
 &pcie3x4 {
