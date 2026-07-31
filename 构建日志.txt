@@ -1,0 +1,115 @@
+|   STUBCPY drivers/firmware/efi/libstub/systable.stub.o
+|   STUBCPY drivers/firmware/efi/libstub/tpm.stub.o
+|   STUBCPY drivers/firmware/efi/libstub/vsprintf.stub.o
+|   AR      drivers/firmware/efi/libstub/lib.a
+|   CC      drivers/firmware/efi/efi-init.o
+|   CC      drivers/rknpu/rknpu_drv.o
+|   CC      drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.o
+|   AR      drivers/devfreq/built-in.a
+|   AR      drivers/iio/imu/st_lsm9ds0/built-in.a
+|   CC      drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.o
+|   CC      drivers/headset_observe/rk_headset_irq_hook_adc.o
+|   CC      drivers/tee/tee_core.o
+|   CC      drivers/tee/optee/device.o
+|   CC      drivers/iio/light/tsl2563.o
+|   AR      drivers/nvmem/built-in.a
+|   CC      drivers/iio/light/tsl2583.o
+|   CC      drivers/firmware/efi/arm-runtime.o
+|   CC      drivers/tee/tee_shm.o
+|   CC      drivers/tee/optee/smc_abi.o
+|   CC      drivers/tee/optee/ffa_abi.o
+|   CC      drivers/media/platform/rockchip/isp/isp_sditf.o
+|   CC      drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.o
+|   CC      drivers/rknpu/rknpu_reset.o
+|   AR      drivers/headset_observe/built-in.a
+|   CC      drivers/media/platform/rockchip/isp/capture_v35.o
+|   CC      drivers/firmware/efi/earlycon.o
+|   CC      drivers/tee/tee_shm_pool.o
+|   CC      drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.o
+|   AR      drivers/iio/multiplexer/built-in.a
+|   CC      drivers/media/platform/rockchip/isp/isp_params_v35.o
+|   AR      drivers/iio/orientation/built-in.a
+|   CC      drivers/rknpu/rknpu_job.o
+|   CC      drivers/rknpu/rknpu_debugger.o
+|   AR      drivers/iio/light/built-in.a
+|   CC      drivers/rknpu/rknpu_iommu.o
+|   CC      drivers/rknpu/rknpu_devfreq.o
+|   CC      drivers/rknpu/rknpu_gem.o
+|   AR      drivers/firmware/efi/built-in.a
+|   AR      drivers/iio/position/built-in.a
+|   AR      drivers/firmware/built-in.a
+|   CC      drivers/media/platform/rockchip/isp/isp_stats_v35.o
+|   AR      drivers/iio/potentiometer/built-in.a
+|   AR      drivers/iio/potentiostat/built-in.a
+|   AR      drivers/iio/pressure/built-in.a
+|   AR      drivers/iio/proximity/built-in.a
+|   AR      drivers/iio/resolver/built-in.a
+|   AR      drivers/iio/temperature/built-in.a
+|   AR      drivers/tee/optee/built-in.a
+|   AR      drivers/iio/test/built-in.a
+|   AR      drivers/tee/built-in.a
+|   CC      drivers/iio/trigger/iio-trig-sysfs.o
+|   CC      drivers/iio/industrialio-core.o
+|   CC      drivers/iio/industrialio-event.o
+|   AR      drivers/iio/imu/st_lsm6dsx/built-in.a
+|   AR      drivers/iio/imu/built-in.a
+|   CC      drivers/iio/inkern.o
+|   CC      drivers/iio/industrialio-buffer.o
+|   AR      drivers/iio/trigger/built-in.a
+|   CC      drivers/iio/industrialio-trigger.o
+|   AR      drivers/rknpu/built-in.a
+|   AR      drivers/iio/built-in.a
+|   AR      drivers/media/platform/rockchip/isp/built-in.a
+|   AR      drivers/media/platform/rockchip/built-in.a
+|   AR      drivers/media/platform/built-in.a
+|   AR      drivers/media/built-in.a
+|   AR      drivers/built-in.a
+|   AR      built-in.a
+|   AR      vmlinux.a
+|   LD      vmlinux.o
+|   OBJCOPY modules.builtin.modinfo
+|   GEN     modules.builtin
+|   MODPOST vmlinux.symvers
+|   CC      .vmlinux.export.o
+|   UPD     include/generated/utsversion.h
+|   CC      init/version-timestamp.o
+|   LD      .tmp_vmlinux.kallsyms1
+|   NM      .tmp_vmlinux.kallsyms1.syms
+|   KSYMS   .tmp_vmlinux.kallsyms1.S
+|   AS      .tmp_vmlinux.kallsyms1.o
+|   LD      .tmp_vmlinux.kallsyms2
+|   NM      .tmp_vmlinux.kallsyms2.syms
+|   KSYMS   .tmp_vmlinux.kallsyms2.S
+|   AS      .tmp_vmlinux.kallsyms2.o
+|   LD      vmlinux
+|   NM      System.map
+|   SORTTAB vmlinux
+|   OBJCOPY arch/arm64/boot/Image
+| NOTE: make -j 12 CC=aarch64-poky-linux-gcc    -fuse-ld=bfd -fcanon-prefix-map  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/git=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/git=/usr/src/debug/linux-rockchip/6.1.141+git  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/build=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/build=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot=  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot=  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native=   -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source=/usr/src/kernel  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source=/usr/src/kernel  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-build-artifacts=/usr/src/kernel  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-build-artifacts=/usr/src/kernel  LD=aarch64-poky-linux-ld.bfd   OBJCOPY=aarch64-poky-linux-objcopy  STRIP=aarch64-poky-linux-strip HOSTCC=gcc  HOSTCFLAGS=-isystem/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/usr/include -O2 -pipe HOSTLDFLAGS=-L/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/usr/lib                         -L/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/lib                         -Wl,--enable-new-dtags                         -Wl,-rpath-link,/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/usr/lib                         -Wl,-rpath-link,/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/lib                         -Wl,-rpath,/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/usr/lib                         -Wl,-rpath,/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/lib                         -Wl,-O1 -Wl,--allow-shlib-undefined -Wl,--dynamic-linker=/home/xuning/yocto-rk3588-core/build/tmp/sysroots-uninative/x86_64-linux/lib/ld-linux-x86-64.so.2 -pthread HOSTCPP=gcc  -E HOSTCXX=g++  HOSTCXXFLAGS=-isystem/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/usr/include -O2 -pipe HOSTPKG_CONFIG=pkg-config-native rockchip/hd-rk3588-core.dtb CC=aarch64-poky-linux-gcc    -fuse-ld=bfd -fcanon-prefix-map  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/git=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/git=/usr/src/debug/linux-rockchip/6.1.141+git  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/build=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/build=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot=  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot=  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native=   -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source=/usr/src/kernel  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source=/usr/src/kernel  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-build-artifacts=/usr/src/kernel  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-build-artifacts=/usr/src/kernel    LD=aarch64-poky-linux-ld.bfd   OBJCOPY=aarch64-poky-linux-objcopy  STRIP=aarch64-poky-linux-strip
+|   SYNC    include/config/auto.conf
+|   GEN     Makefile
+|   DTC     arch/arm64/boot/dts/rockchip/hd-rk3588-core.dtb
+| /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/rk3588-evb4-lp4.dtsi:313.31-315.7: ERROR (phandle_references): /i2c@feca0000/fusb302@22/ports/port@0/endpoint@0: Reference to non-existent node or label "dwc3_0_role_switch"
+|
+| /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/rk3588-evb4-lp4.dtsi:348.31-350.8: ERROR (phandle_references): /i2c@feca0000/fusb302@22/connector/ports/port@0/endpoint: Reference to non-existent node or label "usbdp_phy0_orientation_switch"
+|
+| /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/rk3588-evb4-lp4.dtsi:355.31-357.8: ERROR (phandle_references): /i2c@feca0000/fusb302@22/connector/ports/port@1/endpoint: Reference to non-existent node or label "usbdp_phy0_dp_altmode_mux"
+|
+| /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/rk3588.dtsi:457.25-510.4: ERROR (phandle_references): /pcie@fe150000: Reference to non-existent node or label "pcie30x4_clkreqn_m1"
+|
+|   also defined at /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/rk3588-evb4-lp4.dtsi:386.10-390.3
+|   also defined at /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/hd-rk3588-core.dts:319.10-328.3
+| ERROR: Input tree has errors, aborting (use -f to force output)
+| make[2]: *** [/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/scripts/Makefile.lib:423: arch/arm64/boot/dts/rockchip/hd-rk3588-core.dtb] Error 2
+| make[1]: *** [/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/scripts/Makefile.build:503: arch/arm64/boot/dts/rockchip] Error 2
+| make: *** [/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/Makefile:1486: rockchip/hd-rk3588-core.dtb] Error 2
+| ERROR: oe_runmake failed
+| WARNING: exit code 1 from a shell command.
+ERROR: Task (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_compile) failed with exit code '1'
+NOTE: Tasks Summary: Attempted 4423 tasks of which 4410 didn't need to be rerun and 1 failed.
+
+Summary: 1 task failed:
+  /home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_compile
+    log: /home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/temp/log.do_compile.549309
+Summary: There were 2 ERROR messages, returning a non-zero exit code.
+xuning@DESKTOP-JKHRNDR:~/yocto-rk3588-core/build$

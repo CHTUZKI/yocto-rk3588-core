@@ -12,6 +12,7 @@ IMAGE_INSTALL = " \
     openssh-sftp-server \
     hd-rk3588-netconfig \
     iproute2 \
+    packagegroup-rk3588-tools \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
 
