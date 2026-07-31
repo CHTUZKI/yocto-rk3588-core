@@ -1,8 +1,6 @@
-# 万象奥科评估板
+![板卡实物 1](images/1.png)
 
-![万象奥科评估板 1](images/1.png)
-
-![万象奥科评估板 2](images/2.png)
+![板卡实物 2](images/2.png)
 
 # RK3588 CORE Yocto 项目
 
