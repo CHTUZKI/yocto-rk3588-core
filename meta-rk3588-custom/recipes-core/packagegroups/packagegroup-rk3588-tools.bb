@@ -11,4 +11,8 @@ RDEPENDS:${PN} = " \
     iperf3 \
     ethtool \
     tcpdump \
+    python3 \
+    python3-modules \
+    python3-pip \
+    python3-flask \
 "

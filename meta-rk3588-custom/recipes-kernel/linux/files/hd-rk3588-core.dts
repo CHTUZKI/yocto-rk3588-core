@@ -221,6 +221,16 @@
 	status = "okay";
 };
 
+/*
+ * eMMC (mmc@fe2e0000): drop CQE.
+ * Boot log showed repeated "mmc0: running CQE recovery" /
+ * "cqhci: Failed to halt" on BJTD4R; heavy writes then hang eth.
+ * Driver only enables CQE when DT has supports-cqe (rk3588s.dtsi).
+ */
+&sdhci {
+	/delete-property/ supports-cqe;
+};
+
 /* USB2 host — undo EVB4 disables (match Buildroot / EVB). */
 &u2phy2 {
 	status = "okay";

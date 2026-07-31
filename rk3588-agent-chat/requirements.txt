@@ -1,0 +1,3 @@
+# RK3588 板上 Agent 中文命令行客户端（跑在 PC/WSL）
+paramiko>=3.4.0
+prompt_toolkit>=3.0.47

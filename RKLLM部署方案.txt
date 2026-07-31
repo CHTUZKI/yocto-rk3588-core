@@ -1,0 +1,86 @@
+============================================================
+ RK3588 部署 Qwen3-4B RKLLM — 实施计划与进度
+============================================================
+
+更新：2026-08-01
+板卡：Vanxak HD-RK3588-CORE | ssh root@192.168.1.14 / root
+选型：Qwen3-4B | RKLLM release-v1.2.3
+
+------------------------------------------------------------
+ 进度
+------------------------------------------------------------
+
+  [x] 镜像：静态 IP、rootfsA 固定 ~29GiB、关 CQE（删 supports-cqe）
+  [x] Python3.12 + Flask3 进 packagegroup-rk3588-tools
+  [x] Qwen3-4B + RKLLM runtime + Flask server + 板上 Agent 打入 Yocto
+      （packagegroup-rk3588-llm → rk3588-image-minimal）
+  [x] 开机 systemd 自启 rkllm-server（:8080）
+  [ ] 烧录含 4B 的新 update.img 后板上冒烟
+
+------------------------------------------------------------
+ 整镜像用法（推荐）
+------------------------------------------------------------
+
+  构建前准备（大文件不在 git）：
+    1) deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm  (~4.6G)
+    2) deploy/rkllm/ 下 runtime 二进制
+    3) 生成 Agent 依赖包：
+         ./scripts/fetch-qwen-agent-aarch64.sh
+       → deploy/vendor/qwen-agent-aarch64-site.tar.gz
+
+  构建：
+    source poky/oe-init-build-env build
+    bitbake rk3588-image-minimal
+    # 产物：build/latest/update.img（含模型，体积很大）
+
+  烧录：RKDevTool 刷 update.img，日志须出现 Start to download rootfsA
+
+  烧录后自检：
+    ping 192.168.1.14
+    ssh root@192.168.1.14
+    systemctl status rkllm-server
+    # 模型加载可能需数分钟；TimeoutStartSec=600
+    curl -sS http://127.0.0.1:8080/v1/models
+    ls -lh /opt/models /opt/rkllm /opt/rkllm_server /opt/qwen_agent
+
+  PC 客户端：
+    cd rk3588-agent-chat && ./run.sh
+
+------------------------------------------------------------
+ 板上路径（镜像内置）
+------------------------------------------------------------
+
+  /opt/rkllm/          librkllmrt.so + llm_demo + libstdc++/libgcc/libgomp
+  /opt/models/         Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm
+  /opt/rkllm_server/   flask_server.py（systemd: rkllm-server.service）
+  /opt/qwen_agent/     qwen_agent_onboard.py + agent_session.py + site-packages/
+
+  手动启停：
+    systemctl stop|start|restart rkllm-server
+    /opt/rkllm_server/start_server.sh
+
+  单次 Agent 冒烟：
+    python3 /opt/qwen_agent/qwen_agent_onboard.py "用一句话介绍你自己"
+    python3 /opt/qwen_agent/qwen_agent_onboard.py "请用工具执行 df -h 并说明磁盘情况"
+
+------------------------------------------------------------
+ 废弃：热 SCP 部署
+------------------------------------------------------------
+
+  以前把 deploy/ 拷到板上的流程已由 Yocto recipe 替代，分发镜像即可，
+  无需再 SCP 模型/Agent。仅调试改脚本时可临时 scp 覆盖 /opt 下小文件。
+
+------------------------------------------------------------
+ 踩坑摘要
+------------------------------------------------------------
+
+  1. rootfsA:grow → RKDevTool 不写 rootfs（改固定 0x03A00000）
+  2. mmc CQE → 大文件写 eMMC 易卡死（设备树删 supports-cqe）
+  3. 模型与 runtime 版本对齐：RKLLM 1.2.3 + NPU 0.9.8
+  4. 大文件 SCP 中断可导致 EXT4 journal abort → 无法挂载 root → 需重刷
+  5. 4B ~4.6G + Agent deps，主机构建需预留充足磁盘；烧录较慢属正常
+
+主机备份：
+  build/latest/update.img
+  deploy/models/  deploy/rkllm/  deploy/vendor/
+============================================================

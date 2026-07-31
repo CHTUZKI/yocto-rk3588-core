@@ -1,115 +1,187 @@
-|   STUBCPY drivers/firmware/efi/libstub/systable.stub.o
-|   STUBCPY drivers/firmware/efi/libstub/tpm.stub.o
-|   STUBCPY drivers/firmware/efi/libstub/vsprintf.stub.o
-|   AR      drivers/firmware/efi/libstub/lib.a
-|   CC      drivers/firmware/efi/efi-init.o
-|   CC      drivers/rknpu/rknpu_drv.o
-|   CC      drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.o
-|   AR      drivers/devfreq/built-in.a
-|   AR      drivers/iio/imu/st_lsm9ds0/built-in.a
-|   CC      drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.o
-|   CC      drivers/headset_observe/rk_headset_irq_hook_adc.o
-|   CC      drivers/tee/tee_core.o
-|   CC      drivers/tee/optee/device.o
-|   CC      drivers/iio/light/tsl2563.o
-|   AR      drivers/nvmem/built-in.a
-|   CC      drivers/iio/light/tsl2583.o
-|   CC      drivers/firmware/efi/arm-runtime.o
-|   CC      drivers/tee/tee_shm.o
-|   CC      drivers/tee/optee/smc_abi.o
-|   CC      drivers/tee/optee/ffa_abi.o
-|   CC      drivers/media/platform/rockchip/isp/isp_sditf.o
-|   CC      drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.o
-|   CC      drivers/rknpu/rknpu_reset.o
-|   AR      drivers/headset_observe/built-in.a
-|   CC      drivers/media/platform/rockchip/isp/capture_v35.o
-|   CC      drivers/firmware/efi/earlycon.o
-|   CC      drivers/tee/tee_shm_pool.o
-|   CC      drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.o
-|   AR      drivers/iio/multiplexer/built-in.a
-|   CC      drivers/media/platform/rockchip/isp/isp_params_v35.o
-|   AR      drivers/iio/orientation/built-in.a
-|   CC      drivers/rknpu/rknpu_job.o
-|   CC      drivers/rknpu/rknpu_debugger.o
-|   AR      drivers/iio/light/built-in.a
-|   CC      drivers/rknpu/rknpu_iommu.o
-|   CC      drivers/rknpu/rknpu_devfreq.o
-|   CC      drivers/rknpu/rknpu_gem.o
-|   AR      drivers/firmware/efi/built-in.a
-|   AR      drivers/iio/position/built-in.a
-|   AR      drivers/firmware/built-in.a
-|   CC      drivers/media/platform/rockchip/isp/isp_stats_v35.o
-|   AR      drivers/iio/potentiometer/built-in.a
-|   AR      drivers/iio/potentiostat/built-in.a
-|   AR      drivers/iio/pressure/built-in.a
-|   AR      drivers/iio/proximity/built-in.a
-|   AR      drivers/iio/resolver/built-in.a
-|   AR      drivers/iio/temperature/built-in.a
-|   AR      drivers/tee/optee/built-in.a
-|   AR      drivers/iio/test/built-in.a
-|   AR      drivers/tee/built-in.a
-|   CC      drivers/iio/trigger/iio-trig-sysfs.o
-|   CC      drivers/iio/industrialio-core.o
-|   CC      drivers/iio/industrialio-event.o
-|   AR      drivers/iio/imu/st_lsm6dsx/built-in.a
-|   AR      drivers/iio/imu/built-in.a
-|   CC      drivers/iio/inkern.o
-|   CC      drivers/iio/industrialio-buffer.o
-|   AR      drivers/iio/trigger/built-in.a
-|   CC      drivers/iio/industrialio-trigger.o
-|   AR      drivers/rknpu/built-in.a
-|   AR      drivers/iio/built-in.a
-|   AR      drivers/media/platform/rockchip/isp/built-in.a
-|   AR      drivers/media/platform/rockchip/built-in.a
-|   AR      drivers/media/platform/built-in.a
-|   AR      drivers/media/built-in.a
-|   AR      drivers/built-in.a
-|   AR      built-in.a
-|   AR      vmlinux.a
-|   LD      vmlinux.o
-|   OBJCOPY modules.builtin.modinfo
-|   GEN     modules.builtin
-|   MODPOST vmlinux.symvers
-|   CC      .vmlinux.export.o
-|   UPD     include/generated/utsversion.h
-|   CC      init/version-timestamp.o
-|   LD      .tmp_vmlinux.kallsyms1
-|   NM      .tmp_vmlinux.kallsyms1.syms
-|   KSYMS   .tmp_vmlinux.kallsyms1.S
-|   AS      .tmp_vmlinux.kallsyms1.o
-|   LD      .tmp_vmlinux.kallsyms2
-|   NM      .tmp_vmlinux.kallsyms2.syms
-|   KSYMS   .tmp_vmlinux.kallsyms2.S
-|   AS      .tmp_vmlinux.kallsyms2.o
-|   LD      vmlinux
-|   NM      System.map
-|   SORTTAB vmlinux
-|   OBJCOPY arch/arm64/boot/Image
-| NOTE: make -j 12 CC=aarch64-poky-linux-gcc    -fuse-ld=bfd -fcanon-prefix-map  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/git=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/git=/usr/src/debug/linux-rockchip/6.1.141+git  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/build=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/build=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot=  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot=  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native=   -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source=/usr/src/kernel  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source=/usr/src/kernel  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-build-artifacts=/usr/src/kernel  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-build-artifacts=/usr/src/kernel  LD=aarch64-poky-linux-ld.bfd   OBJCOPY=aarch64-poky-linux-objcopy  STRIP=aarch64-poky-linux-strip HOSTCC=gcc  HOSTCFLAGS=-isystem/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/usr/include -O2 -pipe HOSTLDFLAGS=-L/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/usr/lib                         -L/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/lib                         -Wl,--enable-new-dtags                         -Wl,-rpath-link,/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/usr/lib                         -Wl,-rpath-link,/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/lib                         -Wl,-rpath,/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/usr/lib                         -Wl,-rpath,/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/lib                         -Wl,-O1 -Wl,--allow-shlib-undefined -Wl,--dynamic-linker=/home/xuning/yocto-rk3588-core/build/tmp/sysroots-uninative/x86_64-linux/lib/ld-linux-x86-64.so.2 -pthread HOSTCPP=gcc  -E HOSTCXX=g++  HOSTCXXFLAGS=-isystem/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native/usr/include -O2 -pipe HOSTPKG_CONFIG=pkg-config-native rockchip/hd-rk3588-core.dtb CC=aarch64-poky-linux-gcc    -fuse-ld=bfd -fcanon-prefix-map  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/git=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/git=/usr/src/debug/linux-rockchip/6.1.141+git  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/build=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/build=/usr/src/debug/linux-rockchip/6.1.141+git  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot=  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot=  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/recipe-sysroot-native=   -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source=/usr/src/kernel  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source=/usr/src/kernel  -fdebug-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-build-artifacts=/usr/src/kernel  -fmacro-prefix-map=/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-build-artifacts=/usr/src/kernel    LD=aarch64-poky-linux-ld.bfd   OBJCOPY=aarch64-poky-linux-objcopy  STRIP=aarch64-poky-linux-strip
-|   SYNC    include/config/auto.conf
-|   GEN     Makefile
-|   DTC     arch/arm64/boot/dts/rockchip/hd-rk3588-core.dtb
-| /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/rk3588-evb4-lp4.dtsi:313.31-315.7: ERROR (phandle_references): /i2c@feca0000/fusb302@22/ports/port@0/endpoint@0: Reference to non-existent node or label "dwc3_0_role_switch"
-|
-| /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/rk3588-evb4-lp4.dtsi:348.31-350.8: ERROR (phandle_references): /i2c@feca0000/fusb302@22/connector/ports/port@0/endpoint: Reference to non-existent node or label "usbdp_phy0_orientation_switch"
-|
-| /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/rk3588-evb4-lp4.dtsi:355.31-357.8: ERROR (phandle_references): /i2c@feca0000/fusb302@22/connector/ports/port@1/endpoint: Reference to non-existent node or label "usbdp_phy0_dp_altmode_mux"
-|
-| /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/rk3588.dtsi:457.25-510.4: ERROR (phandle_references): /pcie@fe150000: Reference to non-existent node or label "pcie30x4_clkreqn_m1"
-|
-|   also defined at /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/rk3588-evb4-lp4.dtsi:386.10-390.3
-|   also defined at /home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/arch/arm64/boot/dts/rockchip/hd-rk3588-core.dts:319.10-328.3
-| ERROR: Input tree has errors, aborting (use -f to force output)
-| make[2]: *** [/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/scripts/Makefile.lib:423: arch/arm64/boot/dts/rockchip/hd-rk3588-core.dtb] Error 2
-| make[1]: *** [/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/scripts/Makefile.build:503: arch/arm64/boot/dts/rockchip] Error 2
-| make: *** [/home/xuning/yocto-rk3588-core/build/tmp/work-shared/hd-rk3588-core/kernel-source/Makefile:1486: rockchip/hd-rk3588-core.dtb] Error 2
-| ERROR: oe_runmake failed
-| WARNING: exit code 1 from a shell command.
-ERROR: Task (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_compile) failed with exit code '1'
-NOTE: Tasks Summary: Attempted 4423 tasks of which 4410 didn't need to be rerun and 1 failed.
+Loading cache...done.
+Loaded 4690 entries from dependency cache.
+NOTE: Resolving any missing task queue dependencies
 
-Summary: 1 task failed:
-  /home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_compile
-    log: /home/xuning/yocto-rk3588-core/build/tmp/work/hd_rk3588_core-poky-linux/linux-rockchip/6.1.141+git/temp/log.do_compile.549309
-Summary: There were 2 ERROR messages, returning a non-zero exit code.
-xuning@DESKTOP-JKHRNDR:~/yocto-rk3588-core/build$
+Build Configuration:
+BB_VERSION           = "2.8.1"
+BUILD_SYS            = "x86_64-linux"
+NATIVELSBSTRING      = "universal"
+TARGET_SYS           = "aarch64-poky-linux"
+MACHINE              = "hd-rk3588-core"
+DISTRO               = "poky"
+DISTRO_VERSION       = "5.0.19"
+TUNE_FEATURES        = "aarch64 cortexa76-cortexa55 crypto"
+TARGET_FPU           = ""
+meta-rk3588-custom   = "qwen3_4b:ae5ba85c95c25939095c1c8e1b0f55e976ebdea9"
+meta-rockchip-updateimg = "main:dad8520b90bc59ee6593eb7671f3cffd5ae50752"
+meta-rockchip        = "scarthgap:9690180b7e9953361958c962b80d891eda8c1028"
+meta-arm             
+meta-arm-toolchain   = "scarthgap:045eb74bd9abe7d9ccf365a2417e440ce83bcbb0"
+meta                 
+meta-poky            
+meta-yocto-bsp       = "scarthgap:9916b7471edd0e9a95d94364398c241d1c3bac33"
+meta-oe              
+meta-python          
+meta-networking      = "scarthgap:7eb94107580092f79ff1b639a87762fe6f96aa12"
+
+Initialising tasks...WARNING: /home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_compile is tainted from a forced run
+Sstate summary: Wanted 23 Local 0 Mirrors 0 Missed 23 Current 2293 (0% match, 99% complete)
+Removing 15 stale sstate objects for arch hd_rk3588_core...done.
+Removing 7 stale sstate objects for arch cortexa76-cortexa55-crypto...done.
+NOTE: Executing Tasks
+NOTE: Running task 2848 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_fetch)
+NOTE: Running task 2940 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_shared_workdir)
+NOTE: Running task 2941 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_kernel_link_images)
+NOTE: Running task 2942 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_kernel_generate_rsa_keys)
+NOTE: Running task 2943 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_transform_kernel)
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_fetch: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_fetch: Succeeded
+NOTE: Running task 3013 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_unpack)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_shared_workdir: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_kernel_link_images: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_kernel_generate_rsa_keys: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_transform_kernel: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_unpack: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_kernel_link_images: Succeeded
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_kernel_generate_rsa_keys: Succeeded
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_unpack: Succeeded
+NOTE: Running task 3220 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_assemble_fitimage)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_transform_kernel: Succeeded
+NOTE: Running task 3221 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_patch)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_shared_workdir: Succeeded
+NOTE: Running task 3235 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_compile_kernelmodules)
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_patch: Started
+NOTE: Running task 3395 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_prepare_recipe_sysroot)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_assemble_fitimage: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_compile_kernelmodules: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_patch: Succeeded
+NOTE: Running task 3461 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_deploy_source_date_epoch)
+NOTE: Running task 3548 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_collect_spdx_deps)
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_prepare_recipe_sysroot: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_prepare_recipe_sysroot: Succeeded
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_deploy_source_date_epoch: Started
+NOTE: Running task 3640 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_collect_spdx_deps)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_collect_spdx_deps: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_deploy_source_date_epoch: Succeeded
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_collect_spdx_deps: Started
+NOTE: Running task 3810 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_configure)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_collect_spdx_deps: Succeeded
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_collect_spdx_deps: Succeeded
+NOTE: Running task 3981 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_populate_lic)
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_configure: Started
+NOTE: Running task 4000 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_populate_lic)
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_configure: Succeeded
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_populate_lic: Started
+NOTE: Running task 4283 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_compile)
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_populate_lic: Succeeded
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_populate_lic: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_populate_lic: Succeeded
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_compile: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_compile: Succeeded
+NOTE: Running task 4504 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_install)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_assemble_fitimage: Succeeded
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_install: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_install: Succeeded
+NOTE: Running task 4752 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_package)
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_package: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_package: Succeeded
+NOTE: Running task 4753 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_packagedata)
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_packagedata: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_packagedata: Succeeded
+NOTE: Running task 4754 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_create_spdx)
+NOTE: Running task 4755 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_package_write_ipk)
+NOTE: Running task 4756 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_package_qa)
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_create_spdx: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_package_write_ipk: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_package_qa: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_create_spdx: Succeeded
+NOTE: Running task 4757 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/hd-rk3588-rootfs-expand/hd-rk3588-rootfs-expand.bb:do_create_runtime_spdx)
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_package_qa: Succeeded
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_create_runtime_spdx: Started
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_create_runtime_spdx: Succeeded
+NOTE: recipe hd-rk3588-rootfs-expand-1.0-r0: task do_package_write_ipk: Succeeded
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_compile_kernelmodules: Succeeded
+NOTE: Running task 4758 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_strip)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_strip: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_strip: Succeeded
+NOTE: Running task 4759 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_sizecheck)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_sizecheck: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_sizecheck: Succeeded
+NOTE: Running task 4760 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_install)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_install: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_install: Succeeded
+NOTE: Running task 4761 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_package)
+NOTE: Running task 4762 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_bundle_initramfs)
+NOTE: Running task 4763 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_populate_sysroot)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_bundle_initramfs: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_populate_sysroot: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_package: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_bundle_initramfs: Succeeded
+NOTE: Running task 4764 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_assemble_fitimage_initramfs)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_populate_sysroot: Succeeded
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_assemble_fitimage_initramfs: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_assemble_fitimage_initramfs: Succeeded
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_package: Succeeded
+NOTE: Running task 4765 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_packagedata)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_packagedata: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_packagedata: Succeeded
+NOTE: Running task 4766 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_create_spdx)
+NOTE: Running task 4767 of 4796 (/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-core/packagegroups/packagegroup-core-boot.bb:do_package_write_ipk)
+NOTE: Running task 4768 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_package_write_ipk)
+NOTE: Running task 4777 of 4796 (/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-core/packagegroups/packagegroup-core-boot.bb:do_package_qa)
+NOTE: Running task 4778 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_package_qa)
+NOTE: Running task 4779 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_deploy)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_create_spdx: Started
+NOTE: recipe packagegroup-core-boot-1.0-r0: task do_package_write_ipk: Started
+NOTE: recipe packagegroup-core-boot-1.0-r0: task do_package_qa: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_package_write_ipk: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_deploy: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_package_qa: Started
+NOTE: recipe packagegroup-core-boot-1.0-r0: task do_package_qa: Succeeded
+NOTE: recipe packagegroup-core-boot-1.0-r0: task do_package_write_ipk: Succeeded
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_deploy: Succeeded
+NOTE: Running task 4780 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_fixup_wks)
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_fixup_wks: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_fixup_wks: Succeeded
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_package_write_ipk: Succeeded
+WARNING: linux-rockchip-6.1.141+git-r0 do_package_qa: QA Issue: File /usr/src/debug/linux-rockchip/6.1.141+git/lib/oid_registry_data.c in package linux-rockchip-src contains reference to TMPDIR
+File /usr/src/debug/linux-rockchip/6.1.141+git/drivers/tty/vt/consolemap_deftbl.c in package linux-rockchip-src contains reference to TMPDIR [buildpaths]
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_create_spdx: Succeeded
+NOTE: Running task 4781 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_create_runtime_spdx)
+NOTE: Running task 4786 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-kernel/linux/linux-rockchip_6.1.bb:do_create_runtime_spdx)
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_create_runtime_spdx: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_create_runtime_spdx: Started
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_package_qa: Succeeded
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_create_runtime_spdx: Succeeded
+NOTE: recipe linux-rockchip-6.1.141+git-r0: task do_create_runtime_spdx: Succeeded
+NOTE: Running task 4787 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_rootfs)
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_rootfs: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_rootfs: Succeeded
+NOTE: Running task 4788 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_flush_pseudodb)
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_flush_pseudodb: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_flush_pseudodb: Succeeded
+NOTE: Running task 4789 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_image_qa)
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_image_qa: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_image_qa: Succeeded
+NOTE: Running task 4790 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_image)
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_image: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_image: Succeeded
+NOTE: Running task 4791 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_rootfs_wicenv)
+NOTE: Running task 4792 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_image_ext4)
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_rootfs_wicenv: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_rootfs_wicenv: Succeeded
+NOTE: Running task 4793 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_image_wic)
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_image_ext4: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_image_wic: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_image_ext4: Succeeded
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_image_wic: Succeeded
+NOTE: Running task 4794 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_image_complete)
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_image_complete: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_image_complete: Succeeded
+NOTE: Running task 4795 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_populate_lic_deploy)
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_populate_lic_deploy: Started
+NOTE: recipe rk3588-image-minimal-1.0-r0: task do_populate_lic_deploy: Succeeded
+NOTE: Running noexec task 4796 of 4796 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-minimal.bb:do_build)
+NOTE: Tasks Summary: Attempted 4796 tasks of which 4745 didn't need to be rerun and all succeeded.
+
+Summary: There were 2 WARNING messages.

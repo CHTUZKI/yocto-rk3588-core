@@ -11,8 +11,11 @@ IMAGE_INSTALL = " \
     openssh \
     openssh-sftp-server \
     hd-rk3588-netconfig \
+    hd-rk3588-rootfs-expand \
     iproute2 \
+    curl \
     packagegroup-rk3588-tools \
+    packagegroup-rk3588-llm \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
 
@@ -23,6 +26,9 @@ IMAGE_FEATURES += " \
 
 IMAGE_FSTYPES += "ext4"
 
+# Leave headroom in the ext4 image; first-boot resize2fs fills the GPT part (~29GiB).
+IMAGE_ROOTFS_EXTRA_SPACE = "524288"
+
 # Vendor-like update.img layout + board MiniLoader (DDR @ 115200).
 # Cold boot: MiniLoader IDB → u-boot.itb @ 0x4000 → rootfsA (fitImage).
 # Console baud is 115200 (confirmed with 参考文件/update.img).
@@ -31,7 +37,10 @@ VENDOR_IMG_DIR = "${TOPDIR}/../参考文件/ImageUbuntu_RK3588-B2B"
 RK_UPDATEIMG_SOC = "auto"
 RK_UPDATEIMG_FLASH_IDBLOCK = "0"
 RK_UPDATEIMG_PARAMETER_MODE = "manual"
-RK_UPDATEIMG_PARAMETER_CMDLINE = "mtdparts=:0x00002000@0x00004000(uboot),0x00000800@0x00006000(misc),0x00060000@0x00006800(rootfsA)"
+# uboot 4MiB @ 8MiB, misc 1MiB @ 12MiB.
+# rootfsA fixed ~29.0GiB (NOT :grow — RKDevTool skips writing image data for grow parts).
+# eMMC ≈ 61071360 sectors; start 0x6800; 0x3A00000 leaves a small spare at end.
+RK_UPDATEIMG_PARAMETER_CMDLINE = "mtdparts=:0x00002000@0x00004000(uboot),0x00000800@0x00006000(misc),0x03A00000@0x00006800(rootfsA)"
 RK_UPDATEIMG_ROOTDEV = "PARTLABEL=rootfsA"
 RK_UPDATEIMG_ROOTFS_TYPE = "ext4"
 RK_UPDATEIMG_EXTRA_DEPENDS += "rockchip-rkbin:do_deploy"

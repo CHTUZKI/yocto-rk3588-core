@@ -37,3 +37,14 @@ auto.conf.cmd
 *.wic.bz2
 *.ext4
 *.iso
+
+# Large AI blobs / local staging (fetched or built outside git)
+deploy/models/
+deploy/vendor/
+deploy/qwen-agent-venv/
+deploy/python-stage/
+deploy/rknn-llm/
+deploy/workspace/
+deploy/rkllm_server/lib/
+rk3588-agent-chat/.venv/
+

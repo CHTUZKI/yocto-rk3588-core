@@ -1,6 +1,8 @@
 [Match]
-Name=eth* en*
+Name=end* eth* en*
 
 [Network]
-DHCP=yes
+Address=192.168.1.14/24
+Gateway=192.168.1.1
+DNS=192.168.1.1
 LLMNR=no
