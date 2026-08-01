@@ -181,10 +181,13 @@ def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
 
     history.append({"role": "user", "content": query})
     history.append({"role": "assistant", "content": reply})
-    if len(history) > 12:
-        del history[:-12]
-        if history and history[0].get("role") != "user":
-            history.pop(0)
+    # Keep prefill bounded: long chat history costs more than it helps on a 4K context.
+    while len(history) > 8:
+        del history[:2]
+    while sum(len(m.get("content", "")) for m in history) > 10000:
+        del history[:2]
+    if history and history[0].get("role") != "user":
+        history.pop(0)
 
     return reply, tools
 

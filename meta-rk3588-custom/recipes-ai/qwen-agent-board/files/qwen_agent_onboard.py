@@ -123,7 +123,7 @@ def build_bot(with_tools: bool = True) -> Assistant:
         "model_type": "oai",
         "generate_cfg": {
             "top_p": 0.8,
-            "max_tokens": 1024,
+            "max_tokens": 512,
             "use_raw_api": True,
             "extra_body": {"enable_thinking": False},
         },

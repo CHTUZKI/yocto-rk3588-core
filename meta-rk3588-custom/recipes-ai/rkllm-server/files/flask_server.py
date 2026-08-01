@@ -7,6 +7,7 @@ import threading
 import time
 import argparse
 import json
+from collections import deque
 from flask import Flask, request, jsonify, Response
 import re
 
@@ -184,12 +185,11 @@ is_blocking = False
 
 # Define global variables to store the callback function output for displaying in the Gradio interface
 system_prompt = ''
-global_text = []
+global_text = deque()
 global_state = -1
 split_byte_data = bytes(b"") # Used to store the segmented byte data
 # Last RKLLM PerfStat captured from callback (filled on FINISH / last NORMAL).
 global_last_perf = None
-
 recevied_messages = []
 
 
@@ -295,13 +295,16 @@ class RKLLM(object):
         rkllm_param = RKLLMParam()
         rkllm_param.model_path = bytes(model_path, 'utf-8')
 
-        rkllm_param.max_context_len = 4096
-        rkllm_param.max_new_tokens = 4096
+        # Keep generation bounded: the RKLLM C API fixes this at init time and
+        # does not honor OpenAI max_tokens per request. 4096 caused runaway
+        # generations on this 3B model and made short prompts take minutes.
+        rkllm_param.max_context_len = int(os.environ.get("RKLLM_MAX_CONTEXT", "4096"))
+        rkllm_param.max_new_tokens = int(os.environ.get("RKLLM_MAX_NEW_TOKENS", "1024"))
         rkllm_param.skip_special_token = True
         rkllm_param.n_keep = -1
         rkllm_param.top_k = 1
-        rkllm_param.top_p = 0.9
-        rkllm_param.temperature = 0.8
+        rkllm_param.top_p = 0.8
+        rkllm_param.temperature = 0.7
         rkllm_param.repeat_penalty = 1.1
         rkllm_param.frequency_penalty = 0.0
         rkllm_param.presence_penalty = 0.0
@@ -350,10 +353,25 @@ class RKLLM(object):
         self.set_function_tools_.argtypes = [RKLLM_Handle_t, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
         self.set_function_tools_.restype = ctypes.c_int
         
-        # system_prompt = "<|im_start|>system You are a helpful assistant. <|im_end|>"
-        # prompt_prefix = "<|im_start|>user"
-        # prompt_postfix = "<|im_end|><|im_start|>assistant"
-        # self.set_chat_template(self.handle, ctypes.c_char_p(system_prompt.encode('utf-8')), ctypes.c_char_p(prompt_prefix.encode('utf-8')), ctypes.c_char_p(prompt_postfix.encode('utf-8')))
+        # Keep the runtime's built-in template by default. The published
+        # Qwen2.5 RKLLM artifact is documented for the stock server template;
+        # an explicit template can be enabled for a re-exported model.
+        if os.environ.get("RKLLM_USE_CHAT_TEMPLATE", "0") == "1":
+            system_prompt = os.environ.get(
+                "RKLLM_CHAT_SYSTEM",
+                "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n",
+            )
+            prompt_prefix = os.environ.get("RKLLM_CHAT_PREFIX", "<|im_start|>user\n")
+            prompt_postfix = os.environ.get(
+                "RKLLM_CHAT_POSTFIX",
+                "<|im_end|>\n<|im_start|>assistant\n",
+            )
+            self.set_chat_template(
+                self.handle,
+                ctypes.c_char_p(system_prompt.encode("utf-8")),
+                ctypes.c_char_p(prompt_prefix.encode("utf-8")),
+                ctypes.c_char_p(prompt_postfix.encode("utf-8")),
+            )
 
         self.rkllm_destroy = rkllm_lib.rkllm_destroy
         self.rkllm_destroy.argtypes = [RKLLM_Handle_t]
@@ -615,7 +633,7 @@ if __name__ == "__main__":
     def _prepare_rkllm_run(role, enable_thinking, input_prompt, tools, sys_prompt):
         """Reset buffers and start inference thread; caller drains global_text."""
         global global_text, global_state, system_prompt, global_last_perf
-        global_text = []
+        global_text = deque()
         global_state = -1
         global_last_perf = None
         if tools is not None:
@@ -634,14 +652,16 @@ if __name__ == "__main__":
         return model_thread
 
     def _run_rkllm(role, enable_thinking, input_prompt, tools, sys_prompt):
-        model_thread = _prepare_rkllm_run(role, enable_thinking, input_prompt, tools, sys_prompt)
+        model_thread = _prepare_rkllm_run(
+            role, enable_thinking, input_prompt, tools, sys_prompt
+        )
         rkllm_output = ""
         while True:
             while len(global_text) > 0:
-                rkllm_output += global_text.pop(0)
+                rkllm_output += global_text.popleft()
             if not model_thread.is_alive():
                 while len(global_text) > 0:
-                    rkllm_output += global_text.pop(0)
+                    rkllm_output += global_text.popleft()
                 break
             model_thread.join(timeout=0.005)
         return rkllm_output
@@ -693,8 +713,18 @@ if __name__ == "__main__":
                 return jsonify({'status': 'error', 'message': 'Invalid JSON data!'}), 400
 
             sys_prompt, role, input_prompt, enable_thinking, tools = _extract_chat_request(data)
-            print("Received messages:", data.get('messages'))
-            print("Parsed role/prompt:", role, (input_prompt[:120] + '...') if isinstance(input_prompt, str) and len(input_prompt) > 120 else input_prompt)
+            requested_max_tokens = data.get("max_tokens")
+            print(
+                "Request: messages=%d prompt_chars=%d tools=%s max_tokens=%s stream=%s"
+                % (
+                    len(data.get("messages") or []),
+                    len(input_prompt or ""),
+                    bool(tools),
+                    requested_max_tokens,
+                    bool(data.get("stream")),
+                ),
+                flush=True,
+            )
 
             if input_prompt is None or input_prompt == '':
                 _release()
@@ -703,7 +733,6 @@ if __name__ == "__main__":
             use_stream = bool(data.get('stream'))
             model_name = data.get("model", "Qwen2.5-Coder-3B")
             created = int(time.time())
-
             # True token streaming: push SSE as RKLLM callback produces text.
             # When tools are enabled, buffer first: Qwen2.5-Coder often emits
             # tool JSON as plain text; streaming it confuses Qwen-Agent.
@@ -720,13 +749,13 @@ if __name__ == "__main__":
                         yield _sse_chunk(model_name, created, {"role": "assistant", "content": ""})
                         while True:
                             while len(global_text) > 0:
-                                piece = global_text.pop(0)
+                                piece = global_text.popleft()
                                 full += piece
                                 if not buffer_for_tools:
                                     yield _sse_chunk(model_name, created, {"content": piece})
                             if not model_thread.is_alive():
                                 while len(global_text) > 0:
-                                    piece = global_text.pop(0)
+                                    piece = global_text.popleft()
                                     full += piece
                                     if not buffer_for_tools:
                                         yield _sse_chunk(model_name, created, {"content": piece})
@@ -786,7 +815,9 @@ if __name__ == "__main__":
                     content_type="text/event-stream; charset=utf-8",
                 )
 
-            rkllm_output = _run_rkllm(role, enable_thinking, input_prompt, tools, sys_prompt)
+            rkllm_output = _run_rkllm(
+                role, enable_thinking, input_prompt, tools, sys_prompt
+            )
             tool_calls, content = _maybe_parse_tool_calls(rkllm_output)
 
             message = {"role": "assistant", "content": content}

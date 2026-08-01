@@ -13,7 +13,9 @@ fi
 
 # shellcheck disable=SC1091
 source .venv/bin/activate
-pip install -q -r requirements.txt
+if ! .venv/bin/python -c 'import requests, prompt_toolkit' 2>/dev/null; then
+  .venv/bin/python -m pip install -q -r requirements.txt
+fi
 export PYTHONIOENCODING=utf-8
 export PYTHONUTF8=1
 export LANG="${LANG:-C.UTF-8}"

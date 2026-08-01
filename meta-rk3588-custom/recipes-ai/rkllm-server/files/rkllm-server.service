@@ -10,6 +10,9 @@ Type=simple
 WorkingDirectory=/opt/rkllm_server
 Environment=LD_LIBRARY_PATH=/opt/rkllm
 Environment=PYTHONUNBUFFERED=1
+# RKLLM fixes max_new_tokens during init; keep responses bounded for low latency.
+Environment=RKLLM_MAX_CONTEXT=4096
+Environment=RKLLM_MAX_NEW_TOKENS=512
 ExecStart=/usr/bin/python3 /opt/rkllm_server/flask_server.py \
 	--rkllm_model_path /opt/models/Qwen2.5-Coder-3B-Instruct-w8a8-rk3588.rkllm \
 	--target_platform rk3588

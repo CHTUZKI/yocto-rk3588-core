@@ -107,6 +107,8 @@ def iter_sse_chat(
     messages: list[dict[str, str]],
     connect_timeout: float,
     read_timeout: float,
+    max_tokens: int,
+    enable_thinking: bool,
     session: requests.Session | None = None,
 ) -> Iterator[str]:
     """Yield content deltas from OpenAI-compatible SSE stream."""
@@ -115,6 +117,8 @@ def iter_sse_chat(
         "model": model,
         "messages": messages,
         "stream": True,
+        "max_tokens": max_tokens,
+        "enable_thinking": enable_thinking,
     }
     http = session or requests
     with http.post(
@@ -167,6 +171,8 @@ def chat_once_stream_with_wait(
     messages: list[dict[str, str]],
     connect_timeout: float,
     read_timeout: float,
+    max_tokens: int,
+    enable_thinking: bool,
 ) -> str:
     """SSE 逐字打印；首 token 前显示计时 spinner。Ctrl+C 打断。"""
     import queue
@@ -184,6 +190,8 @@ def chat_once_stream_with_wait(
                 messages,
                 connect_timeout,
                 read_timeout,
+                max_tokens,
+                enable_thinking,
                 session=session,
             ):
                 q.put(("tok", piece))
@@ -273,8 +281,12 @@ def print_help() -> None:
     )
 
 
-def trim_history(messages: list[dict[str, str]], max_n: int) -> None:
+def trim_history(
+    messages: list[dict[str, str]], max_n: int, max_chars: int
+) -> None:
     while len(messages) > max_n:
+        messages.pop(0)
+    while messages and sum(len(m.get("content", "")) for m in messages) > max_chars:
         messages.pop(0)
     if messages and messages[0].get("role") != "user":
         messages.pop(0)
@@ -286,6 +298,12 @@ def main() -> int:
     parser.add_argument("--model", default=config.MODEL)
     parser.add_argument("--connect-timeout", type=float, default=config.CONNECT_TIMEOUT)
     parser.add_argument("--read-timeout", type=float, default=config.READ_TIMEOUT)
+    parser.add_argument("--max-tokens", type=int, default=config.MAX_TOKENS)
+    parser.add_argument(
+        "--thinking",
+        action="store_true",
+        help="启用思考模式（延迟和输出长度会明显增加）",
+    )
     args = parser.parse_args()
 
     cprint(f"检查板上服务 {args.base_url} ...", Style.DIM)
@@ -329,7 +347,7 @@ def main() -> int:
             continue
 
         history.append({"role": "user", "content": user_text})
-        trim_history(history, config.MAX_HISTORY)
+        trim_history(history, config.MAX_HISTORY, config.MAX_HISTORY_CHARS)
 
         try:
             reply = chat_once_stream_with_wait(
@@ -338,6 +356,8 @@ def main() -> int:
                 history,
                 args.connect_timeout,
                 args.read_timeout,
+                max(1, min(args.max_tokens, 1024)),
+                config.ENABLE_THINKING or args.thinking,
             )
         except GenerationInterrupted:
             if history and history[-1].get("role") == "user":
@@ -350,7 +370,7 @@ def main() -> int:
             continue
 
         history.append({"role": "assistant", "content": reply})
-        trim_history(history, config.MAX_HISTORY)
+        trim_history(history, config.MAX_HISTORY, config.MAX_HISTORY_CHARS)
 
     return 0
 
