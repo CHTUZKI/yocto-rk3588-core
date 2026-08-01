@@ -15,4 +15,6 @@ RDEPENDS:${PN} = " \
     python3-modules \
     python3-pip \
     python3-flask \
+    exfatprogs \
+    dosfstools \
 "

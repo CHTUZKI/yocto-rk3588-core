@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shlex
 import sys
 import time
 from pathlib import Path
@@ -52,6 +53,7 @@ import config
 
 ROOT = Path(__file__).resolve().parent
 REMOTE_SESSION_LOCAL = ROOT / "remote" / "agent_session.py"
+_active_remote_session = config.REMOTE_SESSION
 
 _USE_COLOR = sys.stdout.isatty() and os.environ.get("NO_COLOR") is None
 
@@ -114,27 +116,70 @@ def run(client: paramiko.SSHClient, cmd: str, timeout: int = 60) -> tuple[int, s
     return code, out, err
 
 
+def _remote_writable(client: paramiko.SSHClient, path: str) -> bool:
+    code, _, _ = run(
+        client,
+        f'touch "{path}/.rw_probe" 2>/dev/null && rm -f "{path}/.rw_probe" && echo OK',
+        timeout=10,
+    )
+    return code == 0
+
+
 def ensure_remote_ready(client: paramiko.SSHClient) -> None:
-    """上传会话脚本，并确保板上 RKLLM HTTP 服务在跑。"""
+    """上传会话脚本，并在根分区只读时回退到 /tmp。"""
+    global _active_remote_session
+    dest = config.REMOTE_SESSION
+    dest_dir = str(Path(dest).parent)
+    if not _remote_writable(client, dest_dir):
+        dest = "/tmp/agent_session.py"
+        dest_dir = "/tmp"
+        cprint(
+            "警告：板上 /opt 不可写，已将 Agent 会话脚本上传到 /tmp；"
+            "建议后续离线检查 eMMC 文件系统。",
+            Style.YELLOW,
+        )
+
     sftp = client.open_sftp()
     try:
         try:
-            sftp.stat("/opt/qwen_agent")
+            sftp.stat(dest_dir)
         except FileNotFoundError:
-            run(client, "mkdir -p /opt/qwen_agent")
-        sftp.put(str(REMOTE_SESSION_LOCAL), config.REMOTE_SESSION)
-        run(client, f"chmod +x {config.REMOTE_SESSION}")
+            run(client, f"mkdir -p {dest_dir}")
+        sftp.put(str(REMOTE_SESSION_LOCAL), dest)
+        run(client, f"chmod +x {dest}")
     finally:
         sftp.close()
+    _active_remote_session = dest
 
     _, out, _ = run(client, "ps | grep flask_server | grep -v grep || true", timeout=10)
     if "flask_server" not in out:
-        cprint("板上 RKLLM 服务未运行，正在启动（首次加载模型可能要几十秒）...", Style.YELLOW)
+        candidates = []
+        if config.REMOTE_MODEL:
+            candidates.append(config.REMOTE_MODEL)
+        candidates.extend([
+            "/opt/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm",
+            "/mnt/usb/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm",
+        ])
+        checks = " ".join(
+            f'[ -f "{path}" ] && echo "{path}" && exit 0;'
+            for path in candidates
+        )
+        _, model_out, _ = run(client, f"sh -c '{checks} exit 1'", timeout=10)
+        remote_model = model_out.strip().splitlines()[-1] if model_out.strip() else ""
+        if not remote_model:
+            raise RuntimeError(
+                "板上找不到 Qwen3 模型；请放到 /opt/models 或挂载到 "
+                "/mnt/usb/models，或设置 RK3588_REMOTE_MODEL"
+            )
+        cprint(
+            f"板上 RKLLM 服务未运行，使用模型：{remote_model}，正在启动...",
+            Style.YELLOW,
+        )
         start = (
             f"cd {config.REMOTE_SERVER_DIR} && "
             f"export LD_LIBRARY_PATH={config.REMOTE_SERVER_DIR}/lib:/opt/rkllm && "
             f"nohup python3 flask_server.py "
-            f"--rkllm_model_path {config.REMOTE_MODEL} "
+            f"--rkllm_model_path {remote_model} "
             f"--target_platform rk3588 > /tmp/rkllm_server.log 2>&1 &"
         )
         run(client, start, timeout=10)
@@ -159,7 +204,8 @@ def open_agent_session(client: paramiko.SSHClient):
     """打开远端 Python 会话通道（UTF-8 JSON 行协议）。"""
     remote_cmd = (
         "export LANG=C.UTF-8 LC_ALL=C.UTF-8 PYTHONIOENCODING=utf-8 PYTHONUTF8=1; "
-        f"exec python3 -u {config.REMOTE_SESSION}"
+        "cd /tmp; "
+        f"exec python3 -u {_active_remote_session}"
     )
     transport = client.get_transport()
     assert transport is not None

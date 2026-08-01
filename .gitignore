@@ -45,7 +45,9 @@ deploy/qwen-agent-venv/
 deploy/python-stage/
 deploy/rknn-llm/
 deploy/workspace/
+deploy/qwen3-transfer/
 deploy/rkllm_server/lib/
 rk3588-agent-chat/.venv/
 rk3588-qwen-chat/.venv/
+rk3588-qwen3-bench/.venv/
 

@@ -4,9 +4,14 @@
 BASE_URL = "http://192.168.1.14:8080/v1"
 MODEL = "Qwen3-4B"
 
-# 请求超时（秒）。板上推理可能较慢。
+# 服务端已限制单次生成，首 token 正常应较快到达。
 CONNECT_TIMEOUT = 5
-READ_TIMEOUT = 600
+READ_TIMEOUT = 180
 
-# 多轮对话保留的消息条数（user+assistant 合计）
-MAX_HISTORY = 20
+# Qwen3 低延迟默认值；可用 --thinking 显式打开思考模式。
+MAX_TOKENS = 512
+ENABLE_THINKING = False
+
+# 控制 prefill 延迟和 4K context 内的历史膨胀。
+MAX_HISTORY = 8
+MAX_HISTORY_CHARS = 12000

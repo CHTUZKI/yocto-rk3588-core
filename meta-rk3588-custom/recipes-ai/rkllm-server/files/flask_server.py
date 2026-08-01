@@ -7,6 +7,7 @@ import threading
 import time
 import argparse
 import json
+from collections import deque
 from flask import Flask, request, jsonify, Response
 import re
 
@@ -184,23 +185,63 @@ is_blocking = False
 
 # Define global variables to store the callback function output for displaying in the Gradio interface
 system_prompt = ''
-global_text = []
+global_text = deque()
 global_state = -1
 split_byte_data = bytes(b"") # Used to store the segmented byte data
+# Last RKLLM performance sample, exposed in OpenAI usage for the benchmark tool.
+global_last_perf = None
 
 recevied_messages = []
+
+
+def _capture_perf(result):
+    global global_last_perf
+    try:
+        p = result.contents.perf
+        sample = {
+            "prefill_time_ms": float(p.prefill_time_ms),
+            "prefill_tokens": int(p.prefill_tokens),
+            "generate_time_ms": float(p.generate_time_ms),
+            "generate_tokens": int(p.generate_tokens),
+            "memory_usage_mb": float(p.memory_usage_mb),
+        }
+    except Exception:
+        return
+    if any(sample.values()):
+        global_last_perf = sample
+
+
+def _usage_from_perf(perf):
+    if not perf:
+        return {"prompt_tokens": None, "completion_tokens": None, "total_tokens": None}
+    prompt = int(perf["prefill_tokens"])
+    completion = int(perf["generate_tokens"])
+    prefill_ms = float(perf["prefill_time_ms"])
+    generate_ms = float(perf["generate_time_ms"])
+    return {
+        "prompt_tokens": prompt,
+        "completion_tokens": completion,
+        "total_tokens": prompt + completion,
+        "rkllm": {
+            **perf,
+            "prefill_tokens_per_sec": prompt / (prefill_ms / 1000) if prefill_ms > 0 else None,
+            "generate_tokens_per_sec": completion / (generate_ms / 1000) if generate_ms > 0 else None,
+        },
+    }
 
 # Define the callback function
 def callback_impl(result, userdata, state):
     global global_text, global_state, split_byte_data
     if state == LLMCallState.RKLLM_RUN_FINISH:
         global_state = state
+        _capture_perf(result)
         print("\n", flush=True)
     elif state == LLMCallState.RKLLM_RUN_ERROR:
         global_state = state
         print("run error", flush=True)
     elif state == LLMCallState.RKLLM_RUN_NORMAL:
         global_state = state
+        _capture_perf(result)
         # Append whole token/chunk strings (not char-extend) for stream consumers.
         text = result.contents.text.decode('utf-8')
         if text:
@@ -219,13 +260,15 @@ class RKLLM(object):
         rkllm_param = RKLLMParam()
         rkllm_param.model_path = bytes(model_path, 'utf-8')
 
-        rkllm_param.max_context_len = 4096
-        rkllm_param.max_new_tokens = 4096
+        # Bound generation for interactive Qwen3 use. The RKLLM ABI fixes
+        # max_new_tokens at init, so the service setting is the hard ceiling.
+        rkllm_param.max_context_len = int(os.environ.get("RKLLM_MAX_CONTEXT", "4096"))
+        rkllm_param.max_new_tokens = int(os.environ.get("RKLLM_MAX_NEW_TOKENS", "768"))
         rkllm_param.skip_special_token = True
         rkllm_param.n_keep = -1
         rkllm_param.top_k = 1
-        rkllm_param.top_p = 0.9
-        rkllm_param.temperature = 0.8
+        rkllm_param.top_p = 0.8
+        rkllm_param.temperature = 0.7
         rkllm_param.repeat_penalty = 1.1
         rkllm_param.frequency_penalty = 0.0
         rkllm_param.presence_penalty = 0.0
@@ -490,9 +533,10 @@ if __name__ == "__main__":
 
     def _prepare_rkllm_run(role, enable_thinking, input_prompt, tools, sys_prompt):
         """Reset buffers and start inference thread; caller drains global_text."""
-        global global_text, global_state, system_prompt
-        global_text = []
+        global global_text, global_state, system_prompt, global_last_perf
+        global_text = deque()
         global_state = -1
+        global_last_perf = None
         if tools is not None:
             system_prompt = sys_prompt or system_prompt or "You are a helpful assistant."
             rkllm_model.set_function_tools(
@@ -513,15 +557,15 @@ if __name__ == "__main__":
         rkllm_output = ""
         while True:
             while len(global_text) > 0:
-                rkllm_output += global_text.pop(0)
+                rkllm_output += global_text.popleft()
             if not model_thread.is_alive():
                 while len(global_text) > 0:
-                    rkllm_output += global_text.pop(0)
+                    rkllm_output += global_text.popleft()
                 break
             model_thread.join(timeout=0.005)
         return rkllm_output
 
-    def _sse_chunk(model_name, created, delta, finish_reason=None):
+    def _sse_chunk(model_name, created, delta, finish_reason=None, usage=None):
         payload = {
             "id": "rkllm_chat",
             "object": "chat.completion.chunk",
@@ -533,6 +577,8 @@ if __name__ == "__main__":
                 "finish_reason": finish_reason,
             }],
         }
+        if usage is not None:
+            payload["usage"] = usage
         return "data: {}\n\n".format(json.dumps(payload, ensure_ascii=False))
 
     # Create a function to receive data sent by the user using a request
@@ -566,8 +612,17 @@ if __name__ == "__main__":
                 return jsonify({'status': 'error', 'message': 'Invalid JSON data!'}), 400
 
             sys_prompt, role, input_prompt, enable_thinking, tools = _extract_chat_request(data)
-            print("Received messages:", data.get('messages'))
-            print("Parsed role/prompt:", role, (input_prompt[:120] + '...') if isinstance(input_prompt, str) and len(input_prompt) > 120 else input_prompt)
+            print(
+                "Request: messages=%d prompt_chars=%d tools=%s thinking=%s stream=%s"
+                % (
+                    len(data.get("messages") or []),
+                    len(input_prompt or ""),
+                    bool(tools),
+                    bool(enable_thinking),
+                    bool(data.get("stream")),
+                ),
+                flush=True,
+            )
 
             if input_prompt is None or input_prompt == '':
                 _release()
@@ -590,12 +645,12 @@ if __name__ == "__main__":
                         yield _sse_chunk(model_name, created, {"role": "assistant", "content": ""})
                         while True:
                             while len(global_text) > 0:
-                                piece = global_text.pop(0)
+                                piece = global_text.popleft()
                                 full += piece
                                 yield _sse_chunk(model_name, created, {"content": piece})
                             if not model_thread.is_alive():
                                 while len(global_text) > 0:
-                                    piece = global_text.pop(0)
+                                    piece = global_text.popleft()
                                     full += piece
                                     yield _sse_chunk(model_name, created, {"content": piece})
                                 break
@@ -616,7 +671,13 @@ if __name__ == "__main__":
                                     } for i, tc in enumerate(tool_calls)],
                                 },
                             )
-                        yield _sse_chunk(model_name, created, {}, finish_reason=finish)
+                        yield _sse_chunk(
+                            model_name,
+                            created,
+                            {},
+                            finish_reason=finish,
+                            usage=_usage_from_perf(global_last_perf),
+                        )
                         yield "data: [DONE]\n\n"
                         normal_done = True
                     except GeneratorExit:
@@ -666,11 +727,7 @@ if __name__ == "__main__":
                     "logprobs": None,
                     "finish_reason": finish,
                 }],
-                "usage": {
-                    "prompt_tokens": None,
-                    "completion_tokens": None,
-                    "total_tokens": None,
-                },
+                "usage": _usage_from_perf(global_last_perf),
             })
             _release()
             return resp, 200

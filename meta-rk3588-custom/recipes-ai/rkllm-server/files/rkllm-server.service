@@ -10,6 +10,9 @@ Type=simple
 WorkingDirectory=/opt/rkllm_server
 Environment=LD_LIBRARY_PATH=/opt/rkllm
 Environment=PYTHONUNBUFFERED=1
+# Keep interactive Qwen3 responses bounded; RKLLM fixes this at init.
+Environment=RKLLM_MAX_CONTEXT=4096
+Environment=RKLLM_MAX_NEW_TOKENS=768
 ExecStart=/usr/bin/python3 /opt/rkllm_server/flask_server.py \
 	--rkllm_model_path /opt/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm \
 	--target_platform rk3588

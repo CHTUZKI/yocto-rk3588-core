@@ -18,6 +18,7 @@ SRC_URI = " \
     git://github.com/rockchip-linux/kernel.git;protocol=https;branch=develop-6.1 \
     file://hd-rk3588-core.dts \
     file://mali-valhall.cfg \
+    file://usb-storage-filesystems.cfg \
     file://0001-stmmac-resume-PHY-before-DMA-soft-reset.patch \
     file://0002-dwmac-rk-enable-clk-mac-and-default-rgmii-1g.patch \
     file://0003-dw-hdmi-rockchip-drive-enable-gpio-high-at-probe.patch \
@@ -44,10 +45,12 @@ do_configure:prepend() {
 		bbfatal "KBUILD_DEFCONFIG ${KBUILD_DEFCONFIG} not found under ${S}/arch/${ARCH}/configs/"
 	fi
 
-	# Plain inherit kernel does not auto-merge .cfg fragments; append Valhall GPU.
-	if [ -f "${WORKDIR}/mali-valhall.cfg" ]; then
-		cat "${WORKDIR}/mali-valhall.cfg" >> "${WORKDIR}/defconfig"
-	fi
+	# Plain inherit kernel does not auto-merge .cfg fragments; append board features.
+	for fragment in mali-valhall.cfg usb-storage-filesystems.cfg; do
+		if [ -f "${WORKDIR}/${fragment}" ]; then
+			cat "${WORKDIR}/${fragment}" >> "${WORKDIR}/defconfig"
+		fi
+	done
 }
 
 do_configure:append() {
