@@ -1,0 +1,3 @@
+# RK3588 Qwen3 直连中文命令行客户端（跑在 PC/WSL）
+requests>=2.31.0
+prompt_toolkit>=3.0.47

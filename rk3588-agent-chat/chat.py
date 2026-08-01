@@ -204,6 +204,107 @@ def recv_json_line(channel, timeout: float = 300.0) -> dict:
     raise TimeoutError("等待板上 Agent 响应超时")
 
 
+class GenerationInterrupted(Exception):
+    """User pressed Ctrl+C while the agent was generating."""
+
+
+def abort_board_rkllm(client: paramiko.SSHClient) -> None:
+    """Stop in-flight RKLLM generation on the board."""
+    run(
+        client,
+        "curl -sf -X POST http://127.0.0.1:8080/v1/abort >/dev/null 2>&1 || "
+        "curl -sf http://127.0.0.1:8080/v1/abort >/dev/null 2>&1 || true",
+        timeout=5,
+    )
+
+
+def reopen_agent_session(client: paramiko.SSHClient, channel):
+    """Close a broken/interrupted session channel and start a fresh one."""
+    try:
+        channel.close()
+    except Exception:
+        pass
+    abort_board_rkllm(client)
+    time.sleep(0.3)
+    new_ch = open_agent_session(client)
+    ready = recv_json_line(new_ch, timeout=120)
+    if not ready.get("ok"):
+        raise RuntimeError(f"重新启动 Agent 会话失败: {ready}")
+    return new_ch
+
+
+def handle_chat_stream(channel, timeout: float = 600.0) -> tuple[dict, bool]:
+    """
+    消费板上流式事件直到本轮最终 reply/error。
+    返回 (最终响应, 是否已打印过 delta 正文)。
+    Ctrl+C → GenerationInterrupted。
+    """
+    prefix = f"{Style.GREEN}{Style.BOLD}Agent> {Style.RESET}" if _USE_COLOR else "Agent> "
+    spinner = "|/-\\"
+    spin_i = 0
+    started = time.time()
+    first_delta = True
+    saw_delta = False
+    deadline = time.time() + timeout
+
+    try:
+        while time.time() < deadline:
+            remaining = max(0.1, deadline - time.time())
+            poll = min(0.15, remaining)
+            try:
+                resp = recv_json_line(channel, timeout=poll)
+            except TimeoutError:
+                if first_delta:
+                    elapsed = time.time() - started
+                    ch = spinner[spin_i % len(spinner)]
+                    spin_i += 1
+                    msg = f"Agent> {ch} 思考中... {elapsed:.1f}s（Ctrl+C 打断）"
+                    print(
+                        f"\r{Style.DIM}{Style.YELLOW}{msg}{Style.RESET}",
+                        end="",
+                        flush=True,
+                    )
+                continue
+
+            event = resp.get("event")
+            if event == "delta":
+                text = resp.get("text") or ""
+                if first_delta:
+                    print("\r" + " " * 64 + "\r", end="", flush=True)
+                    print(prefix, end="", flush=True)
+                    first_delta = False
+                print(text, end="", flush=True)
+                saw_delta = True
+                continue
+            if event == "status":
+                if not first_delta:
+                    print(flush=True)
+                    first_delta = True
+                print("\r" + " " * 64 + "\r", end="", flush=True)
+                cprint(f"Agent> {resp.get('text', '')}", Style.DIM, Style.YELLOW)
+                continue
+            if event == "tool":
+                if not first_delta:
+                    print(flush=True)
+                    first_delta = True
+                print("\r" + " " * 64 + "\r", end="", flush=True)
+                cprint(f"工具: {resp.get('text', '')}", Style.MAGENTA)
+                continue
+
+            if not first_delta:
+                print(flush=True)
+            else:
+                print("\r" + " " * 64 + "\r", end="", flush=True)
+            return resp, saw_delta
+
+        raise TimeoutError("等待板上 Agent 响应超时")
+    except KeyboardInterrupt:
+        print("\r" + " " * 64 + "\r", end="", flush=True)
+        if not first_delta:
+            print(flush=True)
+        raise GenerationInterrupted() from None
+
+
 def read_user_line(prefix: str = "你> ") -> str:
     """用 prompt_toolkit 读入一行，正确处理中文显示宽度与退格删除。"""
     if _USE_COLOR:
@@ -217,7 +318,8 @@ def print_help() -> None:
         f"  {Style.CYAN}/help{Style.RESET}     显示帮助\n"
         f"  {Style.CYAN}/clear{Style.RESET}    清空板上对话历史\n"
         f"  {Style.CYAN}/quit{Style.RESET}     退出\n"
-        "直接输入中文即可与板上 Agent 对话。"
+        f"  {Style.CYAN}Ctrl+C{Style.RESET}   生成中打断；在输入提示符再按一次退出\n"
+        "直接输入中文即可与板上 Agent 对话（支持逐字流式输出）。"
     )
 
 
@@ -276,9 +378,17 @@ def main() -> int:
                 continue
 
             send_req(channel, {"cmd": "chat", "text": user_text})
-            cprint("Agent> (思考/调用工具中...)", Style.DIM, Style.YELLOW)
             try:
-                resp = recv_json_line(channel, timeout=600)
+                resp, saw_delta = handle_chat_stream(channel, timeout=600)
+            except GenerationInterrupted:
+                cprint("（已打断，正在重置会话…）", Style.YELLOW)
+                try:
+                    channel = reopen_agent_session(client, channel)
+                    cprint("（可继续提问）", Style.GREEN)
+                except Exception as e:
+                    cprint(f"重置会话失败: {e}", Style.RED, Style.BOLD)
+                    return 1
+                continue
             except Exception as e:
                 cprint(f"Agent> 错误: {e}", Style.RED, Style.BOLD)
                 continue
@@ -289,10 +399,13 @@ def main() -> int:
                     cprint(resp["trace"], Style.DIM, Style.RED)
                 continue
 
+            reply = resp.get("reply") or ""
             tools = resp.get("tools") or ""
             if tools:
-                cprint(f"工具: {tools}", Style.MAGENTA)
-            cprint(f"Agent> {resp.get('reply', '')}", Style.GREEN, Style.BOLD)
+                cprint(f"工具: {tools}", Style.DIM, Style.MAGENTA)
+            # 正文若已在 delta 中打过，不再重复
+            if reply and not saw_delta:
+                cprint(f"Agent> {reply}", Style.GREEN, Style.BOLD)
 
     finally:
         client.close()

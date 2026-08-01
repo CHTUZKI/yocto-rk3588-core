@@ -47,4 +47,5 @@ deploy/rknn-llm/
 deploy/workspace/
 deploy/rkllm_server/lib/
 rk3588-agent-chat/.venv/
+rk3588-qwen-chat/.venv/
 

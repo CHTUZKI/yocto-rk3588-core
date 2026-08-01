@@ -2,6 +2,8 @@
 Description=RKLLM OpenAI-compatible Flask server (Qwen3-4B)
 After=network-online.target hd-rk3588-rootfs-expand.service
 Wants=network-online.target
+# Model is not in update.img (>4GiB limit); SCP to this path then: systemctl start rkllm-server
+ConditionPathExists=/opt/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm
 
 [Service]
 Type=simple

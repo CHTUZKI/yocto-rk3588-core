@@ -26,6 +26,8 @@ CROSS=(
 )
 
 # Minimal set to import Assistant and talk to a local OpenAI-compatible server.
+# Pin pydantic pair: independent `pip download` per pkg can mix incompatible
+# pydantic / pydantic-core (board then fails Agent import → PC client times out).
 PKGS=(
   qwen-agent
   openai
@@ -38,12 +40,20 @@ PKGS=(
   sniffio
   distro
   jiter
-  pydantic
-  pydantic-core
+  'pydantic==2.13.4'
+  'pydantic-core==2.46.4'
   annotated-types
   typing-extensions
+  typing_inspection
   json5
   dashscope
+  cryptography
+  cffi
+  pycparser
+  websocket-client
+  Pillow
+  python-dotenv
+  dotenv
   jsonlines
   jsonschema
   jsonschema-specifications
@@ -120,6 +130,17 @@ if [[ ! -d "${SITE}/qwen_agent" ]]; then
   echo "Failed downloads: ${FAILED[*]:-none}" >&2
   tail -80 /tmp/qwen-agent-pip-install.log >&2 || true
   exit 1
+fi
+
+# qwen_agent imports soundfile at utils load; we don't need audio I/O on board.
+if [[ ! -e "${SITE}/soundfile.py" && ! -d "${SITE}/soundfile" ]]; then
+  cat > "${SITE}/soundfile.py" <<'EOF'
+"""Minimal stub: qwen_agent imports soundfile; RK3588 Agent path does not need it."""
+
+def write(*_args, **_kwargs):
+    raise RuntimeError("soundfile is stubbed on this board image (audio unused)")
+EOF
+  echo "Installed soundfile stub"
 fi
 
 # Drop caches / tests to shrink the image a bit

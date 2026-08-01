@@ -12,46 +12,53 @@
 
   [x] 镜像：静态 IP、rootfsA 固定 ~29GiB、关 CQE（删 supports-cqe）
   [x] Python3.12 + Flask3 进 packagegroup-rk3588-tools
-  [x] Qwen3-4B + RKLLM runtime + Flask server + 板上 Agent 打入 Yocto
-      （packagegroup-rk3588-llm → rk3588-image-minimal）
-  [x] 开机 systemd 自启 rkllm-server（:8080）
-  [ ] 烧录含 4B 的新 update.img 后板上冒烟
+  [x] RKLLM runtime + Flask server + 板上 Agent 打入 Yocto
+      （packagegroup-rk3588-llm → rk3588-image-minimal；不含模型）
+  [x] 开机 Conditionally 启 rkllm-server（模型文件存在才启动）
+  [x] 模型移出 update.img（afptool/RKDevTool 单分区 >4GiB 会 uint32 截断）
+  [ ] 重刷无模型镜像 → SCP 模型 → 板上冒烟
 
 ------------------------------------------------------------
- 整镜像用法（推荐）
+ 推荐流程
 ------------------------------------------------------------
 
   构建前准备（大文件不在 git）：
-    1) deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm  (~4.6G)
-    2) deploy/rkllm/ 下 runtime 二进制
-    3) 生成 Agent 依赖包：
+    1) deploy/rkllm/ 下 runtime 二进制
+    2) 生成 Agent 依赖包：
          ./scripts/fetch-qwen-agent-aarch64.sh
        → deploy/vendor/qwen-agent-aarch64-site.tar.gz
+    3) 模型仅主机保留（不进镜像）：
+         deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm  (~4.6G)
 
   构建：
     source poky/oe-init-build-env build
     bitbake rk3588-image-minimal
-    # 产物：build/latest/update.img（含模型，体积很大）
+    # 产物：build/latest/update.img（不含模型，rootfs 须 <4GiB）
 
   烧录：RKDevTool 刷 update.img，日志须出现 Start to download rootfsA
+        核对 rootfsA size ≈ rootfs.img（约 1～2G），勿再出现 ~3G 假成功
 
-  烧录后自检：
+  烧录后（等网络 / 首启 resize2fs）：
     ping 192.168.1.14
-    ssh root@192.168.1.14
-    systemctl status rkllm-server
+    ssh root@192.168.1.14 'mkdir -p /opt/models'
+    scp deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm \
+        root@192.168.1.14:/opt/models/
+    # 建议校验大小后再启服务：
+    #   ssh root@192.168.1.14 'ls -lh /opt/models/'
+    ssh root@192.168.1.14 'systemctl start rkllm-server'
     # 模型加载可能需数分钟；TimeoutStartSec=600
-    curl -sS http://127.0.0.1:8080/v1/models
-    ls -lh /opt/models /opt/rkllm /opt/rkllm_server /opt/qwen_agent
+    curl -sS http://192.168.1.14:8080/v1/models
+    ls -lh 经 ssh：/opt/models /opt/rkllm /opt/rkllm_server /opt/qwen_agent
 
   PC 客户端：
     cd rk3588-agent-chat && ./run.sh
 
 ------------------------------------------------------------
- 板上路径（镜像内置）
+ 板上路径
 ------------------------------------------------------------
 
   /opt/rkllm/          librkllmrt.so + llm_demo + libstdc++/libgcc/libgomp
-  /opt/models/         Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm
+  /opt/models/         （空目录进镜像；SCP 放入 .rkllm）
   /opt/rkllm_server/   flask_server.py（systemd: rkllm-server.service）
   /opt/qwen_agent/     qwen_agent_onboard.py + agent_session.py + site-packages/
 
@@ -64,11 +71,11 @@
     python3 /opt/qwen_agent/qwen_agent_onboard.py "请用工具执行 df -h 并说明磁盘情况"
 
 ------------------------------------------------------------
- 废弃：热 SCP 部署
+ 可选：单独编模型包（一般不需要）
 ------------------------------------------------------------
 
-  以前把 deploy/ 拷到板上的流程已由 Yocto recipe 替代，分发镜像即可，
-  无需再 SCP 模型/Agent。仅调试改脚本时可临时 scp 覆盖 /opt 下小文件。
+  bitbake qwen3-4b-rkllm
+  # 勿再 IMAGE_INSTALL 进 update.img；仅供调试/其它分发方式
 
 ------------------------------------------------------------
  踩坑摘要
@@ -78,7 +85,9 @@
   2. mmc CQE → 大文件写 eMMC 易卡死（设备树删 supports-cqe）
   3. 模型与 runtime 版本对齐：RKLLM 1.2.3 + NPU 0.9.8
   4. 大文件 SCP 中断可导致 EXT4 journal abort → 无法挂载 root → 需重刷
-  5. 4B ~4.6G + Agent deps，主机构建需预留充足磁盘；烧录较慢属正常
+     （SCP 时尽量稳定供电与网络；传完核对文件大小约 4.6G）
+  5. update.img 单分区镜像 >4GiB：afptool/RKDevTool uint32 截断，
+     烧录显示成功但 rootfs 损坏（No working init / EXT4 checksum）
 
 主机备份：
   build/latest/update.img

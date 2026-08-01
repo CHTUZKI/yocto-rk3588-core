@@ -195,15 +195,17 @@ def callback_impl(result, userdata, state):
     global global_text, global_state, split_byte_data
     if state == LLMCallState.RKLLM_RUN_FINISH:
         global_state = state
-        print("\n")
-        sys.stdout.flush()
+        print("\n", flush=True)
     elif state == LLMCallState.RKLLM_RUN_ERROR:
         global_state = state
-        print("run error")
-        sys.stdout.flush()
+        print("run error", flush=True)
     elif state == LLMCallState.RKLLM_RUN_NORMAL:
         global_state = state
-        global_text += result.contents.text.decode('utf-8')
+        # Append whole token/chunk strings (not char-extend) for stream consumers.
+        text = result.contents.text.decode('utf-8')
+        if text:
+            global_text.append(text)
+            print(text, end='', flush=True)
     return 0
     
 
@@ -401,6 +403,19 @@ if __name__ == "__main__":
             }]
         })
 
+    @app.route('/v1/abort', methods=['POST', 'GET'])
+    @app.route('/abort', methods=['POST', 'GET'])
+    def abort_infer():
+        """Stop in-flight RKLLM generation (client Ctrl+C / disconnect)."""
+        global global_state
+        try:
+            print("abort requested", flush=True)
+            rkllm_model.abort()
+            global_state = -1
+            return jsonify({"ok": True, "aborted": True})
+        except Exception as e:
+            return jsonify({"ok": False, "error": str(e)}), 500
+
     def _maybe_parse_tool_calls(text):
         """Convert Qwen/RKLLM <tool_call> XML into OpenAI tool_calls."""
         if not text or '<tool_call>' not in text:
@@ -473,7 +488,8 @@ if __name__ == "__main__":
 
         return sys_prompt, role, input_prompt, enable_thinking, tools
 
-    def _run_rkllm(role, enable_thinking, input_prompt, tools, sys_prompt):
+    def _prepare_rkllm_run(role, enable_thinking, input_prompt, tools, sys_prompt):
+        """Reset buffers and start inference thread; caller drains global_text."""
         global global_text, global_state, system_prompt
         global_text = []
         global_state = -1
@@ -490,15 +506,34 @@ if __name__ == "__main__":
             args=(role, enable_thinking, input_prompt),
         )
         model_thread.start()
+        return model_thread
+
+    def _run_rkllm(role, enable_thinking, input_prompt, tools, sys_prompt):
+        model_thread = _prepare_rkllm_run(role, enable_thinking, input_prompt, tools, sys_prompt)
         rkllm_output = ""
-        model_thread_finished = False
-        while not model_thread_finished:
+        while True:
             while len(global_text) > 0:
                 rkllm_output += global_text.pop(0)
-                time.sleep(0.005)
+            if not model_thread.is_alive():
+                while len(global_text) > 0:
+                    rkllm_output += global_text.pop(0)
+                break
             model_thread.join(timeout=0.005)
-            model_thread_finished = not model_thread.is_alive()
         return rkllm_output
+
+    def _sse_chunk(model_name, created, delta, finish_reason=None):
+        payload = {
+            "id": "rkllm_chat",
+            "object": "chat.completion.chunk",
+            "created": created,
+            "model": model_name,
+            "choices": [{
+                "index": 0,
+                "delta": delta,
+                "finish_reason": finish_reason,
+            }],
+        }
+        return "data: {}\n\n".format(json.dumps(payload, ensure_ascii=False))
 
     # Create a function to receive data sent by the user using a request
     # /v1/chat/completions: OpenAI-compatible for Qwen-Agent / openai clients
@@ -510,11 +545,24 @@ if __name__ == "__main__":
         if is_blocking or global_state == 0:
             return jsonify({'status': 'error', 'message': 'RKLLM_Server is busy! Maybe you can try again later.'}), 503
 
-        lock.acquire()
+        if not lock.acquire(blocking=False):
+            return jsonify({'status': 'error', 'message': 'RKLLM_Server is busy! Maybe you can try again later.'}), 503
+
+        is_blocking = True
+        released = False
+
+        def _release():
+            nonlocal released
+            global is_blocking
+            if not released:
+                released = True
+                is_blocking = False
+                lock.release()
+
         try:
-            is_blocking = True
             data = request.json
             if not data or 'messages' not in data:
+                _release()
                 return jsonify({'status': 'error', 'message': 'Invalid JSON data!'}), 400
 
             sys_prompt, role, input_prompt, enable_thinking, tools = _extract_chat_request(data)
@@ -522,94 +570,113 @@ if __name__ == "__main__":
             print("Parsed role/prompt:", role, (input_prompt[:120] + '...') if isinstance(input_prompt, str) and len(input_prompt) > 120 else input_prompt)
 
             if input_prompt is None or input_prompt == '':
+                _release()
                 return jsonify({'status': 'error', 'message': 'No user/tool message to run'}), 400
 
-            rkllm_output = _run_rkllm(role, enable_thinking, input_prompt, tools, sys_prompt)
             use_stream = bool(data.get('stream'))
+            model_name = data.get("model", "Qwen3-4B")
+            created = int(time.time())
+
+            # True token streaming: push SSE as RKLLM callback produces text.
+            if use_stream:
+                model_thread = _prepare_rkllm_run(
+                    role, enable_thinking, input_prompt, tools, sys_prompt
+                )
+
+                def generate():
+                    full = ""
+                    normal_done = False
+                    try:
+                        yield _sse_chunk(model_name, created, {"role": "assistant", "content": ""})
+                        while True:
+                            while len(global_text) > 0:
+                                piece = global_text.pop(0)
+                                full += piece
+                                yield _sse_chunk(model_name, created, {"content": piece})
+                            if not model_thread.is_alive():
+                                while len(global_text) > 0:
+                                    piece = global_text.pop(0)
+                                    full += piece
+                                    yield _sse_chunk(model_name, created, {"content": piece})
+                                break
+                            model_thread.join(timeout=0.01)
+
+                        tool_calls, _content = _maybe_parse_tool_calls(full)
+                        finish = "tool_calls" if tool_calls else "stop"
+                        if tool_calls:
+                            yield _sse_chunk(
+                                model_name,
+                                created,
+                                {
+                                    "tool_calls": [{
+                                        "index": i,
+                                        "id": tc["id"],
+                                        "type": "function",
+                                        "function": tc["function"],
+                                    } for i, tc in enumerate(tool_calls)],
+                                },
+                            )
+                        yield _sse_chunk(model_name, created, {}, finish_reason=finish)
+                        yield "data: [DONE]\n\n"
+                        normal_done = True
+                    except GeneratorExit:
+                        # Client closed the SSE stream (e.g. Ctrl+C).
+                        try:
+                            rkllm_model.abort()
+                        except Exception:
+                            pass
+                        raise
+                    finally:
+                        global global_state
+                        if not normal_done:
+                            try:
+                                rkllm_model.abort()
+                            except Exception:
+                                pass
+                            try:
+                                model_thread.join(timeout=3)
+                            except Exception:
+                                pass
+                            global_state = -1
+                        _release()
+
+                return Response(
+                    generate(),
+                    content_type="text/event-stream; charset=utf-8",
+                )
+
+            rkllm_output = _run_rkllm(role, enable_thinking, input_prompt, tools, sys_prompt)
             tool_calls, content = _maybe_parse_tool_calls(rkllm_output)
 
-            if not use_stream:
-                message = {"role": "assistant", "content": content}
-                finish = "stop"
-                if tool_calls:
-                    message["tool_calls"] = tool_calls
-                    if content is None:
-                        message["content"] = None
-                    finish = "tool_calls"
-                return jsonify({
-                    "id": "rkllm_chat",
-                    "object": "chat.completion",
-                    "created": int(time.time()),
-                    "model": data.get("model", "Qwen3-4B"),
-                    "choices": [{
-                        "index": 0,
-                        "message": message,
-                        "logprobs": None,
-                        "finish_reason": finish,
-                    }],
-                    "usage": {
-                        "prompt_tokens": None,
-                        "completion_tokens": None,
-                        "total_tokens": None,
-                    },
-                }), 200
-
-            def generate(text=rkllm_output, tool_calls=tool_calls, content=content):
-                if tool_calls:
-                    chunk = {
-                        "id": "rkllm_chat",
-                        "object": "chat.completion.chunk",
-                        "created": int(time.time()),
-                        "model": data.get("model", "Qwen3-4B"),
-                        "choices": [{
-                            "index": 0,
-                            "delta": {
-                                "role": "assistant",
-                                "content": content,
-                                "tool_calls": [{
-                                    "index": i,
-                                    "id": tc["id"],
-                                    "type": "function",
-                                    "function": tc["function"],
-                                } for i, tc in enumerate(tool_calls)],
-                            },
-                            "finish_reason": None,
-                        }],
-                    }
-                    yield f"data: {json.dumps(chunk, ensure_ascii=False)}\n\n"
-                    done_reason = "tool_calls"
-                else:
-                    chunk = {
-                        "id": "rkllm_chat",
-                        "object": "chat.completion.chunk",
-                        "created": int(time.time()),
-                        "model": data.get("model", "Qwen3-4B"),
-                        "choices": [{
-                            "index": 0,
-                            "delta": {"role": "assistant", "content": text},
-                            "finish_reason": None,
-                        }],
-                    }
-                    yield f"data: {json.dumps(chunk, ensure_ascii=False)}\n\n"
-                    done_reason = "stop"
-                done = {
-                    "id": "rkllm_chat",
-                    "object": "chat.completion.chunk",
-                    "created": int(time.time()),
-                    "model": data.get("model", "Qwen3-4B"),
-                    "choices": [{
-                        "index": 0,
-                        "delta": {},
-                        "finish_reason": done_reason,
-                    }],
-                }
-                yield f"data: {json.dumps(done, ensure_ascii=False)}\n\n"
-                yield "data: [DONE]\n\n"
-
-            return Response(generate(), content_type='text/event-stream')
-        finally:
-            lock.release()
-            is_blocking = False
+            message = {"role": "assistant", "content": content}
+            finish = "stop"
+            if tool_calls:
+                message["tool_calls"] = tool_calls
+                if content is None:
+                    message["content"] = None
+                finish = "tool_calls"
+            resp = jsonify({
+                "id": "rkllm_chat",
+                "object": "chat.completion",
+                "created": created,
+                "model": model_name,
+                "choices": [{
+                    "index": 0,
+                    "message": message,
+                    "logprobs": None,
+                    "finish_reason": finish,
+                }],
+                "usage": {
+                    "prompt_tokens": None,
+                    "completion_tokens": None,
+                    "total_tokens": None,
+                },
+            })
+            _release()
+            return resp, 200
+        except Exception:
+            _release()
+            raise
 
     # Start the Flask application.
     # app.run(host='0.0.0.0', port=8080)

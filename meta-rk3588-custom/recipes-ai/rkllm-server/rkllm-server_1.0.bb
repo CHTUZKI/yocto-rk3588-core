@@ -16,11 +16,11 @@ inherit systemd
 SYSTEMD_SERVICE:${PN} = "rkllm-server.service"
 SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
+# Model is SCP'd after flash (qwen3-4b-rkllm exceeds update.img 4GiB limit).
 RDEPENDS:${PN} = " \
     python3 \
     python3-flask \
     rkllm-runtime \
-    qwen3-4b-rkllm \
 "
 
 do_configure[noexec] = "1"
@@ -31,6 +31,9 @@ do_install() {
 	install -m 0644 ${WORKDIR}/flask_server.py ${D}/opt/rkllm_server/flask_server.py
 	install -m 0755 ${WORKDIR}/start_server.sh ${D}/opt/rkllm_server/start_server.sh
 
+	# Target path for post-flash SCP of the ~4.6G .rkllm
+	install -d ${D}/opt/models
+
 	install -d ${D}${systemd_system_unitdir}
 	install -m 0644 ${WORKDIR}/rkllm-server.service \
 		${D}${systemd_system_unitdir}/rkllm-server.service
@@ -38,5 +41,6 @@ do_install() {
 
 FILES:${PN} = " \
     /opt/rkllm_server \
+    /opt/models \
     ${systemd_system_unitdir}/rkllm-server.service \
 "

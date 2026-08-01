@@ -4,7 +4,13 @@
 板上常驻会话：通过 stdin/stdout 收发 UTF-8 JSON 行，与本地 CLI 对话。
 协议：
   本地 -> 板: {"cmd":"chat","text":"..."} / {"cmd":"ping"} / {"cmd":"quit"} / {"cmd":"clear"}
-  板 -> 本地: {"ok":true,"reply":"...","tools":"..."} / {"ok":false,"error":"..."}
+  板 -> 本地:
+    {"ok":true,"event":"ready"|"pong"|"bye"|"cleared",...}
+    {"ok":true,"event":"delta","text":"..."}          # 逐字增量
+    {"ok":true,"event":"status","text":"..."}         # 状态（如调用工具）
+    {"ok":true,"event":"tool","text":"..."}           # 工具摘要
+    {"ok":true,"reply":"...","tools":"..."}           # 本轮结束
+    {"ok":false,"error":"..."}
 """
 
 from __future__ import annotations
@@ -56,6 +62,15 @@ def _looks_like_raw_tool_json(text: str) -> bool:
     return bool(_TOOL_JSON_RE.match(t))
 
 
+def _latest_assistant_content(messages: list) -> str:
+    for m in reversed(messages or []):
+        if isinstance(m, dict) and m.get("role") == "assistant":
+            c = m.get("content")
+            if isinstance(c, str):
+                return c
+    return ""
+
+
 def _extract_reply(last: list) -> tuple[str, str]:
     texts = []
     tool_notes = []
@@ -87,7 +102,7 @@ def _extract_reply(last: list) -> tuple[str, str]:
 def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
     """
     history 只保存纯 user/assistant 文本轮次，保证下一轮始终以 user 开头。
-    不把 function_call 原始轨迹塞回 history，避免 Qwen-Agent 报错。
+    运行中通过 emit(delta/status/tool) 推送流式事件。
     """
     turn_messages = list(history)
     turn_messages.append({"role": "user", "content": query})
@@ -96,8 +111,48 @@ def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
         turn_messages.pop(0)
 
     last = []
+    prev_content = ""
+    in_tool_stream = False
+    seen_tool_note = set()
+
     for chunk in bot.run(messages=turn_messages):
         last = chunk
+        content = _latest_assistant_content(last)
+
+        if content and _looks_like_raw_tool_json(content):
+            if not in_tool_stream:
+                in_tool_stream = True
+                emit({"ok": True, "event": "status", "text": "正在调用工具..."})
+            prev_content = content
+        elif content and content.startswith(prev_content):
+            delta = content[len(prev_content) :]
+            if delta and not _looks_like_raw_tool_json(content):
+                # 工具调用结束后的正文，或纯回答
+                if in_tool_stream:
+                    in_tool_stream = False
+                    prev_content = ""
+                    delta = content  # 新一段正文从头推
+                if delta:
+                    emit({"ok": True, "event": "delta", "text": delta})
+            prev_content = content
+        elif content and content != prev_content:
+            # 内容被替换（少见）：推整段差分尽力而为
+            if not _looks_like_raw_tool_json(content):
+                emit({"ok": True, "event": "delta", "text": content})
+            prev_content = content
+
+        # 工具结果一出现就推送摘要（去重）
+        for m in last:
+            if not isinstance(m, dict) or m.get("role") != "function":
+                continue
+            name = m.get("name") or "tool"
+            raw = str(m.get("content", ""))
+            key = f"{name}:{raw[:80]}"
+            if key in seen_tool_note:
+                continue
+            seen_tool_note.add(key)
+            shown = raw if len(raw) <= 300 else raw[:300] + "...[truncated]"
+            emit({"ok": True, "event": "tool", "text": f"{name} => {shown}"})
 
     reply, tools = _extract_reply(last)
 

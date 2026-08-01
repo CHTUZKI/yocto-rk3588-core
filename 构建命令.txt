@@ -1,43 +1,53 @@
 # ============================================
-# 标准构建（最小镜像，含 update.img + Qwen3-4B/Agent）
+# 标准构建（最小镜像 + update.img，不含 4.6G 模型）
 # rootfsA 固定约 29GiB（勿用 :grow），静态 IP 192.168.1.14，首启 resize2fs
 # 已含：python3 / flask + packagegroup-rk3588-llm
-#   （rkllm-runtime、qwen3-4b 模型、rkllm-server 自启、qwen-agent-board）
+#   （rkllm-runtime、rkllm-server、qwen-agent-board）
+# 模型须烧录后 SCP（afptool/RKDevTool 单分区镜像 >4GiB 会截断）
 # ============================================
 
 # --- 构建前（大文件本地准备，不进 git）---
-# 1) 模型：deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm
-# 2) runtime：deploy/rkllm/{librkllmrt.so,llm_demo,...}
-# 3) Agent aarch64 site-packages：
+# 1) runtime：deploy/rkllm/{librkllmrt.so,llm_demo,...}
+# 2) Agent aarch64 site-packages：
 #      ./scripts/fetch-qwen-agent-aarch64.sh
 #    → deploy/vendor/qwen-agent-aarch64-site.tar.gz
+# 3) 模型仅留在主机，不进镜像：
+#      deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm
 
 cd /home/xuning/yocto-rk3588-core
 source poky/oe-init-build-env build
 bitbake rk3588-image-minimal
 
-# 仅编 LLM 相关包：
+# 仅编 LLM 相关包（仍不含模型包）：
 # bitbake packagegroup-rk3588-llm
 
 # 产物：
 #   build/tmp/deploy/images/hd-rk3588-core/update.img
 #   build/latest/update.img
-# （含 ~4.6G 模型，体积很大，烧录较慢）
+# （rootfs.img 必须 <4GiB；打包时会校验）
 #
 # 串口：115200 8N1（厂家 update.img 实测；勿用 1500000）
 # 网络：192.168.1.14/24 网关 192.168.1.1
 #
-# 烧录后自检：
-#   烧录日志必须出现 Start to download rootfsA
-#   systemctl status rkllm-server
+# 烧录后：等首启 resize2fs 完成，再 SCP 模型并启动服务：
+#   ssh root@192.168.1.14 'mkdir -p /opt/models'
+#   scp deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm \
+#       root@192.168.1.14:/opt/models/
+#   ssh root@192.168.1.14 'systemctl start rkllm-server'
+#   # 模型加载可能需数分钟；TimeoutStartSec=600
 #   curl -sS http://192.168.1.14:8080/v1/models
 #   cd rk3588-agent-chat && ./run.sh
+#
+# 烧录自检：
+#   烧录日志必须出现 Start to download rootfsA
+#   rootfsA size 应接近 rootfs.img（约 1～2G 量级），绝不能是「大文件 − 4G」
 #
 # 镜像自检：
 #   xxd -l 4 .../loader.bin     → "LDR "
 #   package-file 无 idblock 行
 #   grep baudrate .../u-boot-initial-env → 115200
 #   grep CMDLINE .../parameter → 0x03A00000@0x00006800(rootfsA)
+#   stat -c%s .../rootfs.img   → 必须 < 4294967296
 
 # ============================================
 # 仅重打包 update.img（改了 meta-rockchip-updateimg 后）
@@ -70,4 +80,13 @@ bitbake rk3588-image-minimal
 cd /home/xuning/yocto-rk3588-core
 source poky/oe-init-build-env build
 bitbake rkllm-server qwen-agent-board -c cleansstate
+bitbake rk3588-image-minimal
+
+
+
+cd /home/xuning/yocto-rk3588-core
+./scripts/fetch-qwen-agent-aarch64.sh   # 若 vendor 已是最新可跳过
+source poky/oe-init-build-env build
+bitbake qwen-agent-board rkllm-server -c cleansstate
+bitbake rk3588-image-minimal -c clean
 bitbake rk3588-image-minimal
