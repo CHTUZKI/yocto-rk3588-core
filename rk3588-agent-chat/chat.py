@@ -53,7 +53,24 @@ import config
 
 ROOT = Path(__file__).resolve().parent
 REMOTE_SESSION_LOCAL = ROOT / "remote" / "agent_session.py"
+REMOTE_SERVER_LOCAL = (
+    ROOT.parent
+    / "meta-rk3588-custom"
+    / "recipes-ai"
+    / "rkllm-server"
+    / "files"
+    / "flask_server.py"
+)
+REMOTE_ONBOARD_LOCAL = (
+    ROOT.parent
+    / "meta-rk3588-custom"
+    / "recipes-ai"
+    / "qwen-agent-board"
+    / "files"
+    / "qwen_agent_onboard.py"
+)
 _active_remote_session = config.REMOTE_SESSION
+_active_remote_server = f"{config.REMOTE_SERVER_DIR}/flask_server.py"
 
 _USE_COLOR = sys.stdout.isatty() and os.environ.get("NO_COLOR") is None
 
@@ -116,6 +133,13 @@ def run(client: paramiko.SSHClient, cmd: str, timeout: int = 60) -> tuple[int, s
     return code, out, err
 
 
+def run_background(client: paramiko.SSHClient, cmd: str) -> None:
+    stdin, stdout, stderr = client.exec_command(cmd, timeout=10)
+    stdin.close()
+    stdout.channel.close()
+    stderr.channel.close()
+
+
 def _remote_writable(client: paramiko.SSHClient, path: str) -> bool:
     code, _, _ = run(
         client,
@@ -127,7 +151,7 @@ def _remote_writable(client: paramiko.SSHClient, path: str) -> bool:
 
 def ensure_remote_ready(client: paramiko.SSHClient) -> None:
     """上传会话脚本，并在根分区只读时回退到 /tmp。"""
-    global _active_remote_session
+    global _active_remote_session, _active_remote_server
     dest = config.REMOTE_SESSION
     dest_dir = str(Path(dest).parent)
     if not _remote_writable(client, dest_dir):
@@ -147,9 +171,20 @@ def ensure_remote_ready(client: paramiko.SSHClient) -> None:
             run(client, f"mkdir -p {dest_dir}")
         sftp.put(str(REMOTE_SESSION_LOCAL), dest)
         run(client, f"chmod +x {dest}")
+        if dest == "/tmp/agent_session.py":
+            sftp.put(str(REMOTE_ONBOARD_LOCAL), "/tmp/qwen_agent_onboard.py")
     finally:
         sftp.close()
     _active_remote_session = dest
+    if _remote_writable(client, config.REMOTE_SERVER_DIR):
+        _active_remote_server = f"{config.REMOTE_SERVER_DIR}/flask_server.py"
+    else:
+        _active_remote_server = "/tmp/flask_server.py"
+        sftp = client.open_sftp()
+        try:
+            sftp.put(str(REMOTE_SERVER_LOCAL), _active_remote_server)
+        finally:
+            sftp.close()
 
     _, out, _ = run(client, "ps | grep flask_server | grep -v grep || true", timeout=10)
     if "flask_server" not in out:
@@ -176,13 +211,14 @@ def ensure_remote_ready(client: paramiko.SSHClient) -> None:
             Style.YELLOW,
         )
         start = (
-            f"cd {config.REMOTE_SERVER_DIR} && "
+            f"cd /tmp && "
             f"export LD_LIBRARY_PATH={config.REMOTE_SERVER_DIR}/lib:/opt/rkllm && "
-            f"nohup python3 flask_server.py "
+            f"nohup python3 {_active_remote_server} "
             f"--rkllm_model_path {remote_model} "
-            f"--target_platform rk3588 > /tmp/rkllm_server.log 2>&1 &"
+            f"--target_platform rk3588 "
+            f"</dev/null >/tmp/rkllm_server.log 2>&1 </dev/null & echo started"
         )
-        run(client, start, timeout=10)
+        run_background(client, start)
         for _ in range(60):
             _, o, _ = run(
                 client,

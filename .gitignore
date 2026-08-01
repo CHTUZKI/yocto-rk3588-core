@@ -50,4 +50,5 @@ deploy/rkllm_server/lib/
 rk3588-agent-chat/.venv/
 rk3588-qwen-chat/.venv/
 rk3588-qwen3-bench/.venv/
+rk3588-agentscope/.venv/
 

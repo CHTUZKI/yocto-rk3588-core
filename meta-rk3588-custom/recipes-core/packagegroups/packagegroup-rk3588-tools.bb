@@ -17,4 +17,5 @@ RDEPENDS:${PN} = " \
     python3-flask \
     exfatprogs \
     dosfstools \
+    usb-automount \
 "

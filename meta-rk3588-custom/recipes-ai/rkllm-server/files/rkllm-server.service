@@ -1,9 +1,10 @@
 [Unit]
 Description=RKLLM OpenAI-compatible Flask server (Qwen3-4B)
-After=network-online.target hd-rk3588-rootfs-expand.service
+After=network-online.target usb-automount.service
 Wants=network-online.target
-# Model is not in update.img (>4GiB limit); SCP to this path then: systemctl start rkllm-server
-ConditionPathExists=/opt/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm
+Wants=usb-automount.service
+# No ConditionPathExists: model may be on eMMC or USB drive.
+# start_server.sh auto-detects; if not found, it exits and systemd retries.
 
 [Service]
 Type=simple
@@ -13,9 +14,9 @@ Environment=PYTHONUNBUFFERED=1
 # Keep interactive Qwen3 responses bounded; RKLLM fixes this at init.
 Environment=RKLLM_MAX_CONTEXT=4096
 Environment=RKLLM_MAX_NEW_TOKENS=768
-ExecStart=/usr/bin/python3 /opt/rkllm_server/flask_server.py \
-	--rkllm_model_path /opt/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm \
-	--target_platform rk3588
+# start_server.sh auto-detects model path (eMMC or USB)
+ExecStart=/opt/rkllm_server/start_server.sh
+# Retry every 5s if model not found yet (USB may still be mounting)
 Restart=on-failure
 RestartSec=5
 # Model load is heavy; give it time before systemd kills it as failed.

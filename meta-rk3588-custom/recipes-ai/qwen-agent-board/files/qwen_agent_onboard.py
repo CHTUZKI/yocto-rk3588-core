@@ -144,7 +144,12 @@ def build_bot(with_tools: bool = True) -> Assistant:
             "2) 问时间用：date；查发行版：cat /etc/os-release；查磁盘块设备/SD："
             "lsblk 或 ls /dev/mmc*；查 LED：ls /sys/class/leds。\n"
             "3) 必须根据工具真实输出作答，不要编造；不要答非所问。\n"
-            "4) 危险命令（rm/dd/mkfs/reboot 等）会被拒绝。"
+            "4) 用户说‘这个命令’、‘刚才的命令’或‘运行它’时，"
+            "从最近一轮对话中提取最近明确出现的命令/工具名并调用；"
+            "不要反问用户重复已经说过的命令。\n"
+            "5) 不确定命令时才澄清；不要凭空声称某工具已安装，"
+            "需要确认时直接调用 command -v 或运行该命令。\n"
+            "6) 危险命令（rm/dd/mkfs/reboot 等）会被拒绝。"
         ),
         function_list=tools,
     )

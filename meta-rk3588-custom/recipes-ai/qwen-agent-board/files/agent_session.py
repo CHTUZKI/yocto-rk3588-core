@@ -29,9 +29,10 @@ try:
 except Exception:
     pass
 
-# Vendored deps + onboard module
-sys.path.insert(0, "/opt/qwen_agent/site-packages")
-sys.path.insert(0, "/opt/qwen_agent")
+# Vendored deps + onboard module; /tmp supports read-only rootfs fallback.
+for path in ("/opt/qwen_agent/site-packages", "/opt/qwen_agent", "/tmp"):
+    if path not in sys.path:
+        sys.path.insert(0, path)
 
 try:
     from qwen_agent_onboard import build_bot  # type: ignore[import-not-found]
@@ -99,13 +100,42 @@ def _extract_reply(last: list) -> tuple[str, str]:
     return str(last), tools
 
 
+def _latest_tool_command(messages: list) -> str:
+    for message in reversed(messages or []):
+        if not isinstance(message, dict) or message.get("role") != "assistant":
+            continue
+        call = message.get("function_call")
+        if not call:
+            continue
+        try:
+            args = json.loads(call.get("arguments") or "{}")
+            command = args.get("command") if isinstance(args, dict) else ""
+            if isinstance(command, str) and command.strip():
+                return command.strip()
+        except (TypeError, ValueError, json.JSONDecodeError):
+            pass
+    return ""
+
+
+last_tool_command = ""
+
+
 def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
     """
     history 只保存纯 user/assistant 文本轮次，保证下一轮始终以 user 开头。
     运行中通过 emit(delta/status/tool) 推送流式事件。
     """
+    global last_tool_command
+    turn_query = query
+    reference_words = ("这个命令", "刚才的命令", "上一条命令", "运行它", "执行它")
+    if last_tool_command and any(word in query for word in reference_words):
+        turn_query = (
+            f"请执行上一轮实际使用的命令：{last_tool_command}\n"
+            f"用户补充要求：{query}"
+        )
+
     turn_messages = list(history)
-    turn_messages.append({"role": "user", "content": query})
+    turn_messages.append({"role": "user", "content": turn_query})
 
     while turn_messages and turn_messages[0].get("role") != "user":
         turn_messages.pop(0)
@@ -117,6 +147,9 @@ def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
 
     for chunk in bot.run(messages=turn_messages):
         last = chunk
+        command = _latest_tool_command(last)
+        if command:
+            last_tool_command = command
         content = _latest_assistant_content(last)
 
         if content and _looks_like_raw_tool_json(content):

@@ -1,0 +1,16 @@
+[Unit]
+Description=USB drive auto-mount on boot
+After=local-fs.target
+Wants=local-fs.target
+# Wait for USB device to settle
+After=systemd-udevd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/usb-automount.sh
+RemainAfterExit=yes
+# Don't fail boot if no USB drive is plugged in
+SuccessExitStatus=0 1
+
+[Install]
+WantedBy=multi-user.target

@@ -9,4 +9,5 @@ RDEPENDS:${PN} = " \
     rkllm-runtime \
     rkllm-server \
     qwen-agent-board \
+    agentscope-board \
 "

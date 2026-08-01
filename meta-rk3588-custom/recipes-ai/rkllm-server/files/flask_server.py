@@ -190,6 +190,8 @@ global_state = -1
 split_byte_data = bytes(b"") # Used to store the segmented byte data
 # Last RKLLM performance sample, exposed in OpenAI usage for the benchmark tool.
 global_last_perf = None
+# Track recent tool calls to detect loops (tool_name, args_hash) -> count
+_recent_tool_calls = {}
 
 recevied_messages = []
 
@@ -213,7 +215,7 @@ def _capture_perf(result):
 
 def _usage_from_perf(perf):
     if not perf:
-        return {"prompt_tokens": None, "completion_tokens": None, "total_tokens": None}
+        return {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
     prompt = int(perf["prefill_tokens"])
     completion = int(perf["generate_tokens"])
     prefill_ms = float(perf["prefill_time_ms"])
@@ -459,33 +461,92 @@ if __name__ == "__main__":
         except Exception as e:
             return jsonify({"ok": False, "error": str(e)}), 500
 
+    def _parse_one_tool_json(raw, idx):
+        """Parse one JSON object into an OpenAI tool_call, or return None."""
+        try:
+            obj = json.loads(raw)
+        except Exception:
+            return None
+        name = obj.get("name") or obj.get("function", {}).get("name")
+        if not name:
+            return None
+        args = obj.get("arguments", obj.get("parameters", {}))
+        if not isinstance(args, str):
+            args = json.dumps(args, ensure_ascii=False)
+        return {
+            "id": "call_{}".format(idx),
+            "type": "function",
+            "function": {"name": name, "arguments": args},
+        }
+
     def _maybe_parse_tool_calls(text):
-        """Convert Qwen/RKLLM <tool_call> XML into OpenAI tool_calls."""
-        if not text or '<tool_call>' not in text:
+        """Convert tool calls (XML-wrapped or raw JSON) into OpenAI tool_calls.
+
+        Qwen3-4B on RKLLM sometimes outputs XML-wrapped tool calls and
+        sometimes outputs bare JSON like {"name":"...","arguments":{...}}.
+        Both must be recognised so AgentScope receives a proper tool_calls
+        chunk instead of showing raw JSON to the user.
+        """
+        if not text:
             return None, text
+
         calls = []
-        for i, m in enumerate(re.finditer(r'<tool_call>\s*(.*?)\s*</tool_call>', text, re.DOTALL)):
-            raw = m.group(1).strip()
-            try:
-                obj = json.loads(raw)
-            except Exception:
-                continue
-            name = obj.get('name') or obj.get('function', {}).get('name')
-            args = obj.get('arguments', obj.get('parameters', {}))
-            if not isinstance(args, str):
-                args = json.dumps(args, ensure_ascii=False)
-            if not name:
-                continue
-            calls.append({
-                "id": "call_{}".format(i),
-                "type": "function",
-                "function": {"name": name, "arguments": args},
-            })
+        cleaned = text
+
+        # 1) Parse XML-wrapped tool calls
+        if '<tool_call>' in text:
+            pattern = '<tool_call>' + r"\s*(.*?)\s*" + '</tool_call>'
+            for m in re.finditer(pattern, text, re.DOTALL):
+                raw = m.group(1).strip()
+                tc = _parse_one_tool_json(raw, len(calls))
+                if tc:
+                    calls.append(tc)
+            strip_pat = '<tool_call>' + r".*?" + '</tool_call>'
+            cleaned = re.sub(strip_pat, "", text, flags=re.DOTALL).strip()
+
+        # 2) Detect bare JSON tool calls (no XML wrapper).
+        #    The model may output just {"name":"...","arguments":{...}}
+        #    as plain text, or wrapped in markdown code blocks.
+        if not calls:
+            # First, extract JSON from markdown code blocks (```json ... ```)
+            md_stripped = re.sub(r"```(?:json)?\s*", "", text)
+            md_stripped = md_stripped.replace("```", "")
+            stripped = md_stripped.strip()
+            # Try the entire output as a single tool-call JSON
+            tc = _parse_one_tool_json(stripped, 0)
+            if tc:
+                calls.append(tc)
+                cleaned = None
+            else:
+                # Try line by line on the markdown-stripped text
+                for line in stripped.splitlines():
+                    line = line.strip()
+                    if not line.startswith("{"):
+                        continue
+                    tc = _parse_one_tool_json(line, len(calls))
+                    if tc:
+                        calls.append(tc)
+                if calls:
+                    # Remove matched JSON lines and markdown from visible content
+                    lines_kept = []
+                    for line in cleaned.splitlines():
+                        s = line.strip()
+                        # Skip markdown code block markers
+                        if s.startswith("```"):
+                            continue
+                        if s.startswith("{") and s.endswith("}"):
+                            try:
+                                obj = json.loads(s)
+                                if obj.get("name") and obj.get("arguments"):
+                                    continue
+                            except Exception:
+                                pass
+                        lines_kept.append(line)
+                    cleaned = "\n".join(lines_kept).strip() or None
+
         if not calls:
             return None, text
-        # Strip tool_call blocks from visible content
-        cleaned = re.sub(r'<tool_call>.*?</tool_call>', '', text, flags=re.DOTALL).strip()
-        return calls, cleaned or None
+        return calls, cleaned
 
     def _extract_chat_request(data):
         """Parse OpenAI-style messages into one RKLLM prompt run."""
@@ -495,8 +556,12 @@ if __name__ == "__main__":
         sys_prompt = ""
         role = "user"
         input_prompt = None
+        dialog = []
+        global _recent_tool_calls
 
-        # Prefer last user/tool turn; keep latest system prompt.
+        # Build a compact dialog history from all messages.  Each entry is
+        # (speaker, text).  Assistant tool-call messages (content=null) are
+        # summarised so the model remembers what it did.
         for message in messages:
             r = message.get('role')
             content = message.get('content', '')
@@ -515,19 +580,118 @@ if __name__ == "__main__":
             elif r == 'user':
                 role = 'user'
                 input_prompt = content
+                dialog.append(("用户", content))
             elif r in ('tool', 'function'):
                 role = 'tool'
-                # RKLLM expects tool responses as a JSON array string, e.g. '["result"]'
-                try:
-                    parsed = json.loads(content) if isinstance(content, str) else content
-                    if not isinstance(parsed, list):
-                        parsed = [parsed]
-                    input_prompt = json.dumps(parsed, ensure_ascii=False)
-                except Exception:
-                    input_prompt = json.dumps([content], ensure_ascii=False)
+                # RKLLM expects tool responses as a JSON array of objects,
+                # e.g. [{"result": "some text"}].  Wrap plain strings.
+                raw_content = content
+                if isinstance(raw_content, list):
+                    # AgentScope may send content as a list of blocks
+                    raw_content = " ".join(
+                        b.get("text", "") if isinstance(b, dict) else str(b)
+                        for b in raw_content
+                    )
+                if not isinstance(raw_content, str):
+                    raw_content = str(raw_content)
+                # AgentScope sometimes sends the Python repr of a ToolResult
+                # object as the content string, e.g.:
+                # "content=[TextBlock(type='text', text='actual result', ...)] ..."
+                # Extract the actual text from TextBlock(text='...') patterns.
+                if "TextBlock(" in raw_content:
+                    texts = re.findall(r"text='((?:[^'\\]|\\.)*)'", raw_content)
+                    if texts:
+                        raw_content = " ".join(texts)
+                    else:
+                        texts = re.findall(r'text="((?:[^"\\]|\\.)*)"', raw_content)
+                        if texts:
+                            raw_content = " ".join(texts)
+                if not isinstance(raw_content, str):
+                    raw_content = str(raw_content)
+                input_prompt = json.dumps(
+                    [{"result": raw_content}], ensure_ascii=False
+                )
+                # Record a short summary in the dialog so the model knows
+                # the tool returned a result. Use cleaned raw_content.
+                summary = (raw_content or "")[:200]
+                dialog.append(("工具结果", summary))
             elif r == 'assistant':
-                # history is handled by client / keep_history=0 single-turn server
-                continue
+                if isinstance(content, str) and content.strip():
+                    # Truncate long assistant replies in the dialog history
+                    # to avoid exceeding the 4096 token context window.
+                    dialog.append(("助手", content[:300]))
+                # If the assistant message has tool_calls (content=null),
+                # record a summary so the model remembers what tool it called.
+                tool_calls = message.get('tool_calls')
+                if tool_calls:
+                    names = []
+                    for tc in tool_calls:
+                        fn = tc.get('function', {}) if isinstance(tc, dict) else {}
+                        names.append(fn.get('name', '?'))
+                    dialog.append(("助手", f"[调用了工具: {', '.join(names)}]"))
+
+        # --- Decide how to feed the prompt to RKLLM ---
+        # RKLLM has no memory between HTTP requests (keep_history=0), so we
+        # must embed conversation history into input_prompt every time.
+        if role == 'user':
+            # New user message: reset anti-loop tracking
+            _recent_tool_calls = {}
+        if role == 'user' and len(dialog) > 1 and input_prompt:
+            # Last message is from the user: wrap full history.
+            # Keep up to 20 recent dialog entries (covers ~5 turns with
+            # tool calls) so early context like user's name is retained.
+            recent = dialog[-20:]
+            transcript = "\n".join(f"{speaker}：{text}" for speaker, text in recent[:-1])
+            if tools:
+                input_prompt = (
+                    "以下是最近的对话历史，请保持上下文连续。\n"
+                    f"{transcript}\n\n"
+                    f"用户：{recent[-1][1]}"
+                )
+            else:
+                input_prompt = (
+                    "以下是最近的对话历史，请保持上下文连续。\n"
+                    f"{transcript}\n\n"
+                    f"用户：{recent[-1][1]}\n"
+                    "请直接回答最后一个用户问题。"
+                )
+        elif role == 'tool' and len(dialog) > 1:
+            # Last message is a tool result. RKLLM requires input_prompt to
+            # be a pure JSON array like [{"result":"..."}].  But RKLLM has no
+            # cross-request memory, so we must put the conversation context
+            # into the system prompt instead.
+            recent = dialog[-20:-1]  # everything except the final tool result
+            transcript = "\n".join(f"{speaker}：{text}" for speaker, text in recent)
+
+            # Global anti-loop detection: track tool calls across requests.
+            # If the same tool+args has been called 2+ times already, force
+            # the model to produce text by removing tools.
+            # Build a key from the last assistant tool call in the dialog
+            last_tc_key = None
+            for speaker, text in reversed(recent):
+                if speaker == "助手" and "[调用了工具:" in text:
+                    last_tc_key = text
+                    break
+            if last_tc_key:
+                _recent_tool_calls[last_tc_key] = _recent_tool_calls.get(last_tc_key, 0) + 1
+                if _recent_tool_calls[last_tc_key] >= 2:
+                    # Same tool called 2+ times — break the loop
+                    tools = None
+                    sys_prompt = (
+                        f"{sys_prompt}\n\n"
+                        "以下是最近的对话历史和工具执行结果。\n"
+                        f"{transcript}\n\n"
+                        "你已经成功执行了工具，现在请直接用文字总结结果并回答用户。"
+                        "不要再调用任何工具，不要再输出 JSON，直接用中文回答。"
+                    )
+                    return sys_prompt, role, input_prompt, enable_thinking, tools
+
+            sys_prompt = (
+                f"{sys_prompt}\n\n"
+                "以下是最近的对话历史，请根据上下文和工具执行结果回答用户。\n"
+                f"{transcript}"
+            )
+            # input_prompt stays as the pure JSON tool result
 
         return sys_prompt, role, input_prompt, enable_thinking, tools
 
@@ -564,6 +728,9 @@ if __name__ == "__main__":
                 break
             model_thread.join(timeout=0.005)
         return rkllm_output
+
+    _TOOL_OPEN = "<tool_call>"
+    _TOOL_CLOSE = "</tool_call>"
 
     def _sse_chunk(model_name, created, delta, finish_reason=None, usage=None):
         payload = {
@@ -641,22 +808,109 @@ if __name__ == "__main__":
                 def generate():
                     full = ""
                     normal_done = False
+                    in_tool_block = False
+                    # When tools are enabled, buffer output until we can tell
+                    # if it's a bare JSON tool call or normal text. This adds
+                    # a small delay but prevents raw JSON from reaching the user.
+                    pending = ""  # buffered text not yet streamed
                     try:
                         yield _sse_chunk(model_name, created, {"role": "assistant", "content": ""})
                         while True:
                             while len(global_text) > 0:
                                 piece = global_text.popleft()
                                 full += piece
+                                if tools is not None:
+                                    # XML tool call: suppress from content
+                                    if _TOOL_OPEN in piece:
+                                        in_tool_block = True
+                                    if in_tool_block:
+                                        if _TOOL_CLOSE in piece:
+                                            in_tool_block = False
+                                        continue
+                                    # Bare JSON / markdown JSON tool call detection:
+                                    # If full output so far looks like it's
+                                    # starting a JSON object or a markdown
+                                    # code block, buffer until we can determine
+                                    # if it's a tool call.
+                                    stripped_full = full.strip()
+                                    if (stripped_full.startswith("{") and not stripped_full.startswith("{\n")) \
+                                       or stripped_full.startswith("```"):
+                                        pending += piece
+                                        # Try to parse the accumulated buffer
+                                        # Strip markdown code block markers
+                                        parse_text = re.sub(r"```(?:json)?\s*", "", pending).replace("```", "").strip()
+                                        try:
+                                            obj = json.loads(parse_text)
+                                            if obj.get("name") and obj.get("arguments"):
+                                                # Confirmed tool call, discard pending
+                                                pending = ""
+                                                continue
+                                            else:
+                                                # Valid JSON but not a tool call, flush
+                                                yield _sse_chunk(model_name, created, {"content": pending})
+                                                pending = ""
+                                        except Exception:
+                                            # Incomplete JSON, keep buffering
+                                            if len(pending) > 500:
+                                                yield _sse_chunk(model_name, created, {"content": pending})
+                                                pending = ""
+                                            continue
+                                    else:
+                                        # Normal text - flush any pending first
+                                        if pending:
+                                            yield _sse_chunk(model_name, created, {"content": pending})
+                                            pending = ""
                                 yield _sse_chunk(model_name, created, {"content": piece})
                             if not model_thread.is_alive():
                                 while len(global_text) > 0:
                                     piece = global_text.popleft()
                                     full += piece
+                                    if tools is not None:
+                                        if _TOOL_OPEN in piece:
+                                            in_tool_block = True
+                                        if in_tool_block:
+                                            if _TOOL_CLOSE in piece:
+                                                in_tool_block = False
+                                            continue
+                                        stripped_full = full.strip()
+                                        if (stripped_full.startswith("{") and not stripped_full.startswith("{\n")) \
+                                           or stripped_full.startswith("```"):
+                                            pending += piece
+                                            parse_text = re.sub(r"```(?:json)?\s*", "", pending).replace("```", "").strip()
+                                            try:
+                                                obj = json.loads(parse_text)
+                                                if obj.get("name") and obj.get("arguments"):
+                                                    pending = ""
+                                                    continue
+                                                else:
+                                                    yield _sse_chunk(model_name, created, {"content": pending})
+                                                    pending = ""
+                                            except Exception:
+                                                if len(pending) > 500:
+                                                    yield _sse_chunk(model_name, created, {"content": pending})
+                                                    pending = ""
+                                                continue
+                                        else:
+                                            if pending:
+                                                yield _sse_chunk(model_name, created, {"content": pending})
+                                                pending = ""
                                     yield _sse_chunk(model_name, created, {"content": piece})
+                                # Flush remaining pending buffer
+                                if pending:
+                                    try:
+                                        obj = json.loads(pending)
+                                        if obj.get("name") and obj.get("arguments"):
+                                            pending = ""
+                                        else:
+                                            yield _sse_chunk(model_name, created, {"content": pending})
+                                            pending = ""
+                                    except Exception:
+                                        yield _sse_chunk(model_name, created, {"content": pending})
+                                        pending = ""
                                 break
                             model_thread.join(timeout=0.01)
 
-                        tool_calls, _content = _maybe_parse_tool_calls(full)
+                        tool_calls, _content = _maybe_parse_tool_calls(full) if tools is not None else (None, full)
                         finish = "tool_calls" if tool_calls else "stop"
                         if tool_calls:
                             yield _sse_chunk(
@@ -707,7 +961,7 @@ if __name__ == "__main__":
                 )
 
             rkllm_output = _run_rkllm(role, enable_thinking, input_prompt, tools, sys_prompt)
-            tool_calls, content = _maybe_parse_tool_calls(rkllm_output)
+            tool_calls, content = _maybe_parse_tool_calls(rkllm_output) if tools is not None else (None, rkllm_output)
 
             message = {"role": "assistant", "content": content}
             finish = "stop"
