@@ -1,9 +1,9 @@
 # ============================================
-# 标准构建（最小镜像 + update.img，不含 4.6G 模型）
-# rootfsA 固定约 29GiB（勿用 :grow），静态 IP 192.168.1.14，首启 resize2fs
+# 标准构建（最小镜像 + update.img，不含 ~4G 模型）
+# rootfsA 固定约 29GiB（勿用 :grow），静态 IP 192.168.1.14
 # 已含：python3 / flask + packagegroup-rk3588-llm
 #   （rkllm-runtime、rkllm-server、qwen-agent-board）
-# 模型须烧录后 SCP（afptool/RKDevTool 单分区镜像 >4GiB 会截断）
+# 默认模型：Qwen2.5-Coder-3B（烧录后 SCP；勿打进 update.img）
 # ============================================
 
 # --- 构建前（大文件本地准备，不进 git）---
@@ -12,7 +12,7 @@
 #      ./scripts/fetch-qwen-agent-aarch64.sh
 #    → deploy/vendor/qwen-agent-aarch64-site.tar.gz
 # 3) 模型仅留在主机，不进镜像：
-#      deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm
+#      deploy/models/Qwen2.5-Coder-3B-Instruct-w8a8-rk3588.rkllm
 
 cd /home/xuning/yocto-rk3588-core
 source poky/oe-init-build-env build
@@ -29,14 +29,14 @@ bitbake rk3588-image-minimal
 # 串口：115200 8N1（厂家 update.img 实测；勿用 1500000）
 # 网络：192.168.1.14/24 网关 192.168.1.1
 #
-# 烧录后：等首启 resize2fs 完成，再 SCP 模型并启动服务：
+# 烧录后：SCP 模型并启动服务：
 #   ssh root@192.168.1.14 'mkdir -p /opt/models'
-#   scp deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm \
+#   scp deploy/models/Qwen2.5-Coder-3B-Instruct-w8a8-rk3588.rkllm \
 #       root@192.168.1.14:/opt/models/
 #   ssh root@192.168.1.14 'systemctl start rkllm-server'
 #   # 模型加载可能需数分钟；TimeoutStartSec=600
 #   curl -sS http://192.168.1.14:8080/v1/models
-#   cd rk3588-agent-chat && ./run.sh
+#   cd rk3588-qwen-chat && ./run.sh
 #
 # 烧录自检：
 #   烧录日志必须出现 Start to download rootfsA

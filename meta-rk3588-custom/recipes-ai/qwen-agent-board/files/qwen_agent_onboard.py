@@ -2,6 +2,7 @@
 """On-board Qwen-Agent: talks to local RKLLM and runs local shell tools."""
 
 import json
+import os
 import re
 import shlex
 import subprocess
@@ -11,6 +12,7 @@ import sys
 sys.path.insert(0, "/opt/qwen_agent/site-packages")
 
 from qwen_agent.agents import Assistant
+from qwen_agent.llm.schema import ASSISTANT, FunctionCall, Message
 from qwen_agent.tools.base import BaseTool, register_tool
 
 BOARD_API = "http://127.0.0.1:8080/v1"
@@ -79,20 +81,15 @@ class RunBoardCmd(BaseTool):
         cmd = (args.get("command") or "").strip()
         if not cmd:
             return "error: empty command"
-
         try:
             tokens = shlex.split(cmd)
         except ValueError as e:
-            return f"error: bad command syntax: {e}"
+            return f"error: failed to parse command: {e}"
         if not tokens:
             return "error: empty command"
-
-        blocked = _is_dangerous(cmd, tokens)
-        if blocked:
-            return blocked
-
-        # No shell=True: avoids ; && | injection from model hallucinations.
-        # Pipes/redirects are therefore not supported; use a single argv command.
+        bad = _is_dangerous(cmd, tokens)
+        if bad:
+            return bad
         try:
             p = subprocess.run(
                 tokens,
@@ -118,36 +115,83 @@ class RunBoardCmd(BaseTool):
 
 
 def build_bot(with_tools: bool = True) -> Assistant:
+    os.environ.setdefault("QWEN_AGENT_MAX_LLM_CALL_PER_RUN", "2")
     llm_cfg = {
-        "model": "Qwen3-4B",
+        "model": "Qwen2.5-Coder-3B",
         "model_server": BOARD_API,
         "api_key": "EMPTY",
         "model_type": "oai",
         "generate_cfg": {
             "top_p": 0.8,
-            "max_tokens": 512,
+            "max_tokens": 1024,
             "use_raw_api": True,
             "extra_body": {"enable_thinking": False},
         },
     }
-    # 只用 run_board_cmd：问时间也走 date，避免乱调专用时间工具答非所问
     tools = ["run_board_cmd"] if with_tools else []
-    return Assistant(
+    bot = Assistant(
         llm=llm_cfg,
         name="RK3588 On-Board Agent",
-        description="Qwen-Agent running on the board, LLM via local RKLLM",
+        description="Qwen2.5-Coder-3B Agent on RK3588 NPU via RKLLM",
         system_message=(
-            "你是运行在 RK3588 开发板上的本地助手。回答要简洁、紧扣用户问题。\n"
+            "你是运行在 RK3588 开发板上的本地编程助手（Qwen2.5-Coder-3B）。"
+            "回答要简洁、紧扣用户问题；写代码时给出可直接运行的片段。\n"
             "工具规则：\n"
-            "1) 需要查看系统/执行命令时，调用 run_board_cmd，arguments 为 "
-            "{\"command\":\"...\"}。\n"
-            "2) 问时间用：date；查发行版：cat /etc/os-release；查磁盘块设备/SD："
-            "lsblk 或 ls /dev/mmc*；查 LED：ls /sys/class/leds。\n"
-            "3) 必须根据工具真实输出作答，不要编造；不要答非所问。\n"
+            "1) 仅当确实需要查看/操作系统时，才调用 run_board_cmd；"
+            "闲聊、自我介绍、纯写代码不要调用工具。\n"
+            "2) 调用时 arguments 必须是 {\"command\":\"...\"}。"
+            "查内存：free -h；查时间：date；查磁盘：df -h；"
+            "查发行版：cat /etc/os-release。\n"
+            "3) 拿到工具返回结果后，用一两句中文直接回答用户，"
+            "不要再次调用同一个工具，不要再输出 JSON。\n"
             "4) 危险命令（rm/dd/mkfs/reboot 等）会被拒绝。"
         ),
         function_list=tools,
     )
+
+    # use_raw_api always calls _chat_stream (SSE). With RKLLM+tools the OpenAI
+    # stream iterator often hangs after the answer is already complete, so the
+    # Agent never emits the final reply and the PC client never returns to 你>.
+    # Force a non-stream HTTP round-trip, then yield once (including tool_calls).
+    llm = bot.llm
+
+    def _chat_stream_via_no_stream(messages, delta_stream, generate_cfg):
+        cfg = dict(generate_cfg or {})
+        cfg.pop("stream", None)
+        oai_messages = llm.convert_messages_to_dicts(messages)
+        response = llm._chat_complete_create(
+            model=llm.model,
+            messages=oai_messages,
+            stream=False,
+            **cfg,
+        )
+        msg = response.choices[0].message
+        out = []
+        content = getattr(msg, "content", None)
+        if content:
+            out.append(Message(role=ASSISTANT, content=content))
+        tool_calls = getattr(msg, "tool_calls", None) or []
+        for tc in tool_calls:
+            fn = getattr(tc, "function", None)
+            if fn is None:
+                continue
+            out.append(
+                Message(
+                    role=ASSISTANT,
+                    content="",
+                    function_call=FunctionCall(
+                        name=fn.name or "",
+                        arguments=fn.arguments or "{}",
+                    ),
+                    extra={"function_id": getattr(tc, "id", None) or "1"},
+                )
+            )
+        if not out:
+            out = [Message(role=ASSISTANT, content=content or "")]
+        yield out
+
+    llm._chat_stream = _chat_stream_via_no_stream
+    return bot
 
 
 def ask(bot: Assistant, query: str, verbose: bool = True) -> str:

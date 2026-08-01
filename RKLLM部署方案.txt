@@ -1,10 +1,12 @@
 ============================================================
- RK3588 部署 Qwen3-4B RKLLM — 实施计划与进度
+ RK3588 部署 Qwen2.5-Coder-3B RKLLM — 实施计划与进度
 ============================================================
 
 更新：2026-08-01
 板卡：Vanxak HD-RK3588-CORE | ssh root@192.168.1.14 / root
-选型：Qwen3-4B | RKLLM release-v1.2.3
+选型：Qwen2.5-Coder-3B-Instruct (w8a8_g128) | RKLLM runtime 1.2.3
+模型来源：HF jamescallander/..._w8a8_g128_rk3588.rkllm（toolkit 1.2.1）
+本地文件：deploy/models/Qwen2.5-Coder-3B-Instruct-w8a8-rk3588.rkllm (~3.8G)
 
 ------------------------------------------------------------
  进度
@@ -16,19 +18,20 @@
       （packagegroup-rk3588-llm → rk3588-image-minimal；不含模型）
   [x] 开机 Conditionally 启 rkllm-server（模型文件存在才启动）
   [x] 模型移出 update.img（afptool/RKDevTool 单分区 >4GiB 会 uint32 截断）
-  [ ] 重刷无模型镜像 → SCP 模型 → 板上冒烟
+  [x] 切换为 Qwen2.5-Coder-3B（SCP 热换，不重刷）
 
 ------------------------------------------------------------
  推荐流程
 ------------------------------------------------------------
 
   构建前准备（大文件不在 git）：
-    1) deploy/rkllm/ 下 runtime 二进制
-    2) 生成 Agent 依赖包：
+    1) runtime：deploy/rkllm/{librkllmrt.so,llm_demo,...}
+    2) Agent aarch64 site-packages：
          ./scripts/fetch-qwen-agent-aarch64.sh
        → deploy/vendor/qwen-agent-aarch64-site.tar.gz
     3) 模型仅主机保留（不进镜像）：
-         deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm  (~4.6G)
+         deploy/models/Qwen2.5-Coder-3B-Instruct-w8a8-rk3588.rkllm  (~3.8G)
+         # 可选备份：Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm
 
   构建：
     source poky/oe-init-build-env build
@@ -38,27 +41,35 @@
   烧录：RKDevTool 刷 update.img，日志须出现 Start to download rootfsA
         核对 rootfsA size ≈ rootfs.img（约 1～2G），勿再出现 ~3G 假成功
 
-  烧录后（等网络 / 首启 resize2fs）：
+  烧录后 / 热换模型：
     ping 192.168.1.14
-    ssh root@192.168.1.14 'mkdir -p /opt/models'
-    scp deploy/models/Qwen3-4B-Instruct-2507-w8a8-rk3588.rkllm \
+    ssh root@192.168.1.14 'systemctl stop rkllm-server; mkdir -p /opt/models'
+    scp deploy/models/Qwen2.5-Coder-3B-Instruct-w8a8-rk3588.rkllm \
         root@192.168.1.14:/opt/models/
-    # 建议校验大小后再启服务：
-    #   ssh root@192.168.1.14 'ls -lh /opt/models/'
-    ssh root@192.168.1.14 'systemctl start rkllm-server'
+    # 同步 service / flask / agent（若镜像尚未含 Coder 路径）：
+    scp meta-rk3588-custom/recipes-ai/rkllm-server/files/rkllm-server.service \
+        root@192.168.1.14:/etc/systemd/system/rkllm-server.service
+    scp meta-rk3588-custom/recipes-ai/rkllm-server/files/flask_server.py \
+        meta-rk3588-custom/recipes-ai/rkllm-server/files/start_server.sh \
+        root@192.168.1.14:/opt/rkllm_server/
+    scp meta-rk3588-custom/recipes-ai/qwen-agent-board/files/qwen_agent_onboard.py \
+        root@192.168.1.14:/opt/qwen_agent/
+    ssh root@192.168.1.14 'chmod +x /opt/rkllm_server/start_server.sh; \
+      systemctl daemon-reload; systemctl start rkllm-server'
     # 模型加载可能需数分钟；TimeoutStartSec=600
     curl -sS http://192.168.1.14:8080/v1/models
-    ls -lh 经 ssh：/opt/models /opt/rkllm /opt/rkllm_server /opt/qwen_agent
+    # 期望 id: Qwen2.5-Coder-3B
 
   PC 客户端：
-    cd rk3588-agent-chat && ./run.sh
+    cd rk3588-qwen-chat && ./run.sh      # 直连写码
+    cd rk3588-agent-chat && ./run.sh     # Agent + 工具
 
 ------------------------------------------------------------
  板上路径
 ------------------------------------------------------------
 
   /opt/rkllm/          librkllmrt.so + llm_demo + libstdc++/libgcc/libgomp
-  /opt/models/         （空目录进镜像；SCP 放入 .rkllm）
+  /opt/models/         Qwen2.5-Coder-3B-Instruct-w8a8-rk3588.rkllm
   /opt/rkllm_server/   flask_server.py（systemd: rkllm-server.service）
   /opt/qwen_agent/     qwen_agent_onboard.py + agent_session.py + site-packages/
 
@@ -67,15 +78,15 @@
     /opt/rkllm_server/start_server.sh
 
   单次 Agent 冒烟：
-    python3 /opt/qwen_agent/qwen_agent_onboard.py "用一句话介绍你自己"
+    python3 /opt/qwen_agent/qwen_agent_onboard.py "用 Python 写一个快速排序"
     python3 /opt/qwen_agent/qwen_agent_onboard.py "请用工具执行 df -h 并说明磁盘情况"
 
 ------------------------------------------------------------
  可选：单独编模型包（一般不需要）
 ------------------------------------------------------------
 
-  bitbake qwen3-4b-rkllm
-  # 勿再 IMAGE_INSTALL 进 update.img；仅供调试/其它分发方式
+  bitbake qwen25-coder-3b-rkllm
+  # 勿 IMAGE_INSTALL 进 update.img；仅供调试/其它分发方式
 
 ------------------------------------------------------------
  踩坑摘要
@@ -84,10 +95,12 @@
   1. rootfsA:grow → RKDevTool 不写 rootfs（改固定 0x03A00000）
   2. mmc CQE → 大文件写 eMMC 易卡死（设备树删 supports-cqe）
   3. 模型与 runtime 版本对齐：RKLLM 1.2.3 + NPU 0.9.8
+     （本 Coder 包由 toolkit 1.2.1 导出，同属 1.2.x；若加载失败再 1.2.3 自转）
   4. 大文件 SCP 中断可导致 EXT4 journal abort → 无法挂载 root → 需重刷
-     （SCP 时尽量稳定供电与网络；传完核对文件大小约 4.6G）
+     （SCP 时尽量稳定供电与网络；传完核对文件大小约 3.8G）
   5. update.img 单分区镜像 >4GiB：afptool/RKDevTool uint32 截断，
      烧录显示成功但 rootfs 损坏（No working init / EXT4 checksum）
+  6. 8GB 板勿同时驻留 Coder-3B + Qwen3-4B；磁盘可并存，运行时只 load 一个
 
 主机备份：
   build/latest/update.img

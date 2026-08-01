@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-本机（PC / WSL）命令行客户端 —— 直连板上 Qwen3（RKLLM）。
+本机（PC / WSL）命令行客户端 —— 直连板上 Qwen2.5-Coder-3B（RKLLM）。
 
 与 rk3588-agent-chat 的区别：
   - 本项目：HTTP → http://板子:8080/v1/chat/completions（纯模型对话，SSE 逐字）
@@ -195,7 +195,7 @@ def chat_once_stream_with_wait(
     t = threading.Thread(target=worker, daemon=True)
     t.start()
 
-    prefix = f"{Style.GREEN}{Style.BOLD}Qwen3> {Style.RESET}" if _USE_COLOR else "Qwen3> "
+    prefix = f"{Style.GREEN}{Style.BOLD}Coder> {Style.RESET}" if _USE_COLOR else "Coder> "
     spinner = "|/-\\"
     spin_i = 0
     started = time.time()
@@ -211,7 +211,7 @@ def chat_once_stream_with_wait(
                     elapsed = time.time() - started
                     ch = spinner[spin_i % len(spinner)]
                     spin_i += 1
-                    msg = f"Qwen3> {ch} 推理中... {elapsed:.1f}s（Ctrl+C 打断）"
+                    msg = f"Coder> {ch} 推理中... {elapsed:.1f}s（Ctrl+C 打断）"
                     print(
                         f"\r{Style.DIM}{Style.YELLOW}{msg}{Style.RESET}",
                         end="",
@@ -250,7 +250,7 @@ def chat_once_stream_with_wait(
     t.join(timeout=1)
     if first:
         print("\r" + " " * 64 + "\r", end="", flush=True)
-        cprint("Qwen3> (空响应)", Style.YELLOW)
+        cprint("Coder> (空响应)", Style.YELLOW)
         return ""
     print(flush=True)
     return "".join(full_parts)
@@ -269,7 +269,7 @@ def print_help() -> None:
         f"  {Style.CYAN}/clear{Style.RESET}    清空对话历史\n"
         f"  {Style.CYAN}/quit{Style.RESET}     退出\n"
         f"  {Style.CYAN}Ctrl+C{Style.RESET}   生成中打断；在输入提示符再按一次退出\n"
-        "直接输入中文即可与板上 Qwen3 对话（SSE 逐字输出，无工具调用）。"
+        "直接输入即可与板上 Qwen2.5-Coder-3B 对话（SSE 逐字输出，无工具调用）。"
     )
 
 
@@ -281,7 +281,7 @@ def trim_history(messages: list[dict[str, str]], max_n: int) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="RK3588 Qwen3 直连中文命令行客户端")
+    parser = argparse.ArgumentParser(description="RK3588 Qwen2.5-Coder-3B 直连中文命令行客户端")
     parser.add_argument("--base-url", default=config.BASE_URL)
     parser.add_argument("--model", default=config.MODEL)
     parser.add_argument("--connect-timeout", type=float, default=config.CONNECT_TIMEOUT)
@@ -346,7 +346,7 @@ def main() -> int:
             continue
         except Exception as e:
             history.pop()  # 撤回失败的本轮 user
-            cprint(f"Qwen3> 错误: {e}", Style.RED, Style.BOLD)
+            cprint(f"Coder> 错误: {e}", Style.RED, Style.BOLD)
             continue
 
         history.append({"role": "assistant", "content": reply})

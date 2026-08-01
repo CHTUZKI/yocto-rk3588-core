@@ -9,7 +9,7 @@
     {"ok":true,"event":"delta","text":"..."}          # 逐字增量
     {"ok":true,"event":"status","text":"..."}         # 状态（如调用工具）
     {"ok":true,"event":"tool","text":"..."}           # 工具摘要
-    {"ok":true,"reply":"...","tools":"..."}           # 本轮结束
+    {"ok":true,"event":"done","reply":"...","tools":"..."}  # 本轮结束（立刻回到提示符）
     {"ok":false,"error":"..."}
 """
 
@@ -19,6 +19,7 @@ import json
 import os
 import re
 import sys
+import threading
 import traceback
 
 os.environ.setdefault("PYTHONIOENCODING", "utf-8")
@@ -48,8 +49,8 @@ def emit(obj: dict) -> None:
 
 
 _TOOL_JSON_RE = re.compile(
-    r'^\s*\{?\s*"name"\s*:\s*"[^"]+"\s*,\s*"arguments"\s*:',
-    re.DOTALL,
+    r'^\s*(?:```(?:json)?\s*)?\{?\s*"name"\s*:\s*"[^"]+"\s*,\s*"arguments"\s*:',
+    re.DOTALL | re.IGNORECASE,
 )
 
 
@@ -59,14 +60,42 @@ def _looks_like_raw_tool_json(text: str) -> bool:
         return False
     if "<tool_call>" in t:
         return True
+    if "```" in t and '"name"' in t and '"arguments"' in t:
+        return True
     return bool(_TOOL_JSON_RE.match(t))
+
+
+def _msg_role(m) -> str:
+    if isinstance(m, dict):
+        return m.get("role") or ""
+    return getattr(m, "role", "") or ""
+
+
+def _msg_content(m) -> str:
+    if isinstance(m, dict):
+        c = m.get("content")
+    else:
+        c = getattr(m, "content", None)
+    return c if isinstance(c, str) else ""
+
+
+def _msg_function_call(m):
+    if isinstance(m, dict):
+        return m.get("function_call")
+    return getattr(m, "function_call", None)
+
+
+def _msg_name(m) -> str:
+    if isinstance(m, dict):
+        return m.get("name") or "tool"
+    return getattr(m, "name", None) or "tool"
 
 
 def _latest_assistant_content(messages: list) -> str:
     for m in reversed(messages or []):
-        if isinstance(m, dict) and m.get("role") == "assistant":
-            c = m.get("content")
-            if isinstance(c, str):
+        if _msg_role(m) == "assistant":
+            c = _msg_content(m)
+            if c:
                 return c
     return ""
 
@@ -74,26 +103,35 @@ def _latest_assistant_content(messages: list) -> str:
 def _extract_reply(last: list) -> tuple[str, str]:
     texts = []
     tool_notes = []
+    last_tool_out = ""
     for m in last:
-        if not isinstance(m, dict):
-            continue
-        role = m.get("role")
+        role = _msg_role(m)
         if role == "assistant":
-            c = m.get("content")
-            if isinstance(c, str) and c.strip() and not _looks_like_raw_tool_json(c):
+            c = _msg_content(m)
+            if c.strip() and not _looks_like_raw_tool_json(c):
                 texts.append(c.strip())
-            fc = m.get("function_call")
+            fc = _msg_function_call(m)
             if fc:
-                tool_notes.append(f"[call {fc.get('name')}({fc.get('arguments')})]")
+                if isinstance(fc, dict):
+                    tool_notes.append(f"[call {fc.get('name')}({fc.get('arguments')})]")
+                else:
+                    tool_notes.append(
+                        f"[call {getattr(fc, 'name', '')}({getattr(fc, 'arguments', '')})]"
+                    )
         elif role == "function":
-            content = str(m.get("content", ""))
-            if len(content) > 500:
-                content = content[:500] + "...[truncated]"
-            tool_notes.append(f"[tool {m.get('name')} => {content}]")
+            content = _msg_content(m) or str(getattr(m, "content", ""))
+            last_tool_out = content
+            shown = content if len(content) <= 500 else content[:500] + "...[truncated]"
+            tool_notes.append(f"[tool {_msg_name(m)} => {shown}]")
 
     tools = " ".join(tool_notes)
     if texts:
         return texts[-1], tools
+    if last_tool_out.strip():
+        shown = last_tool_out.strip()
+        if len(shown) > 1200:
+            shown = shown[:1200] + "...[truncated]"
+        return shown, tools
     if tool_notes:
         return "工具已执行：" + tools, tools
     return str(last), tools
@@ -103,6 +141,7 @@ def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
     """
     history 只保存纯 user/assistant 文本轮次，保证下一轮始终以 user 开头。
     运行中通过 emit(delta/status/tool) 推送流式事件。
+    答完立即 emit event=done，并在后台关闭 generator，避免卡住 PC 端提示符。
     """
     turn_messages = list(history)
     turn_messages.append({"role": "user", "content": query})
@@ -114,47 +153,72 @@ def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
     prev_content = ""
     in_tool_stream = False
     seen_tool_note = set()
+    done_emitted = False
 
-    for chunk in bot.run(messages=turn_messages):
-        last = chunk
-        content = _latest_assistant_content(last)
+    gen = bot.run(messages=turn_messages)
+    try:
+        for chunk in gen:
+            last = chunk
+            content = _latest_assistant_content(last)
 
-        if content and _looks_like_raw_tool_json(content):
-            if not in_tool_stream:
-                in_tool_stream = True
-                emit({"ok": True, "event": "status", "text": "正在调用工具..."})
-            prev_content = content
-        elif content and content.startswith(prev_content):
-            delta = content[len(prev_content) :]
-            if delta and not _looks_like_raw_tool_json(content):
-                # 工具调用结束后的正文，或纯回答
-                if in_tool_stream:
-                    in_tool_stream = False
-                    prev_content = ""
-                    delta = content  # 新一段正文从头推
-                if delta:
-                    emit({"ok": True, "event": "delta", "text": delta})
-            prev_content = content
-        elif content and content != prev_content:
-            # 内容被替换（少见）：推整段差分尽力而为
-            if not _looks_like_raw_tool_json(content):
-                emit({"ok": True, "event": "delta", "text": content})
-            prev_content = content
+            if content and _looks_like_raw_tool_json(content):
+                if not in_tool_stream:
+                    in_tool_stream = True
+                    emit({"ok": True, "event": "status", "text": "正在调用工具..."})
+                prev_content = content
+            elif content and content.startswith(prev_content):
+                delta = content[len(prev_content) :]
+                if delta and not _looks_like_raw_tool_json(content):
+                    if in_tool_stream:
+                        in_tool_stream = False
+                        prev_content = ""
+                        delta = content
+                    if delta:
+                        emit({"ok": True, "event": "delta", "text": delta})
+                prev_content = content
+            elif content and content != prev_content:
+                if not _looks_like_raw_tool_json(content):
+                    emit({"ok": True, "event": "delta", "text": content})
+                prev_content = content
 
-        # 工具结果一出现就推送摘要（去重）
-        for m in last:
-            if not isinstance(m, dict) or m.get("role") != "function":
-                continue
-            name = m.get("name") or "tool"
-            raw = str(m.get("content", ""))
-            key = f"{name}:{raw[:80]}"
-            if key in seen_tool_note:
-                continue
-            seen_tool_note.add(key)
-            shown = raw if len(raw) <= 300 else raw[:300] + "...[truncated]"
-            emit({"ok": True, "event": "tool", "text": f"{name} => {shown}"})
+            for m in last:
+                if _msg_role(m) != "function":
+                    continue
+                name = _msg_name(m)
+                raw = _msg_content(m)
+                key = f"{name}:{raw[:80]}"
+                if key in seen_tool_note:
+                    continue
+                seen_tool_note.add(key)
+                shown = raw if len(raw) <= 300 else raw[:300] + "...[truncated]"
+                emit({"ok": True, "event": "tool", "text": f"{name} => {shown}"})
+
+            has_fn_call = any(
+                _msg_role(m) == "assistant" and _msg_function_call(m) for m in (last or [])
+            )
+            if (
+                content
+                and not _looks_like_raw_tool_json(content)
+                and not has_fn_call
+                and not in_tool_stream
+            ):
+                reply, tools = _extract_reply(last)
+                emit({"ok": True, "event": "done", "reply": reply, "tools": tools})
+                done_emitted = True
+                break
+    finally:
+        # Closing Qwen-Agent's generator can block on HTTP cleanup; never stall the prompt.
+        def _cleanup(g=gen):
+            try:
+                g.close()
+            except Exception:
+                pass
+
+        threading.Thread(target=_cleanup, daemon=True).start()
 
     reply, tools = _extract_reply(last)
+    if not done_emitted:
+        emit({"ok": True, "event": "done", "reply": reply, "tools": tools})
 
     history.append({"role": "user", "content": query})
     history.append({"role": "assistant", "content": reply})
@@ -167,6 +231,9 @@ def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
 
 
 def main() -> int:
+    # Limit tool/LLM loops: Coder-3B often re-calls the same tool without summarizing.
+    os.environ.setdefault("QWEN_AGENT_MAX_LLM_CALL_PER_RUN", "2")
+
     bot = build_bot(with_tools=True)
     history: list = []
     emit({"ok": True, "event": "ready", "reply": "板上 Agent 会话已就绪"})
@@ -201,8 +268,9 @@ def main() -> int:
                 emit({"ok": False, "error": "empty text"})
                 continue
             try:
-                reply, tools = ask_turn(bot, history, text.strip())
-                emit({"ok": True, "reply": reply, "tools": tools})
+                ask_turn(bot, history, text.strip())
+                # ask_turn 已通过 event=done 通知客户端，不再重复发 reply，
+                # 避免客户端已回到「你>」后把迟到的 reply 当成下一轮响应。
             except Exception as e:
                 emit({
                     "ok": False,

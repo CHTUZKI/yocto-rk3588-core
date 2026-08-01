@@ -187,20 +187,96 @@ system_prompt = ''
 global_text = []
 global_state = -1
 split_byte_data = bytes(b"") # Used to store the segmented byte data
+# Last RKLLM PerfStat captured from callback (filled on FINISH / last NORMAL).
+global_last_perf = None
 
 recevied_messages = []
+
+
+def _capture_perf(result):
+    """Copy RKLLM PerfStat into global_last_perf when fields look valid."""
+    global global_last_perf
+    try:
+        p = result.contents.perf
+        prefill_ms = float(p.prefill_time_ms)
+        generate_ms = float(p.generate_time_ms)
+        prefill_tokens = int(p.prefill_tokens)
+        generate_tokens = int(p.generate_tokens)
+        memory_mb = float(p.memory_usage_mb)
+    except Exception:
+        return
+    if prefill_ms <= 0 and generate_ms <= 0 and generate_tokens <= 0 and prefill_tokens <= 0:
+        return
+    global_last_perf = {
+        "prefill_time_ms": prefill_ms,
+        "prefill_tokens": prefill_tokens,
+        "generate_time_ms": generate_ms,
+        "generate_tokens": generate_tokens,
+        "memory_usage_mb": memory_mb,
+    }
+
+
+def _print_perf(perf):
+    if not perf:
+        return
+    prefill_ms = perf.get("prefill_time_ms") or 0.0
+    generate_ms = perf.get("generate_time_ms") or 0.0
+    prefill_tok = perf.get("prefill_tokens") or 0
+    generate_tok = perf.get("generate_tokens") or 0
+    mem = perf.get("memory_usage_mb") or 0.0
+    prefill_tps = (prefill_tok / (prefill_ms / 1000.0)) if prefill_ms > 0 else 0.0
+    generate_tps = (generate_tok / (generate_ms / 1000.0)) if generate_ms > 0 else 0.0
+    print(
+        "[RKLLM perf] "
+        f"prefill={prefill_tok} tok / {prefill_ms:.1f} ms ({prefill_tps:.1f} tok/s) | "
+        f"generate={generate_tok} tok / {generate_ms:.1f} ms ({generate_tps:.1f} tok/s) | "
+        f"mem={mem:.1f} MB",
+        flush=True,
+    )
+
+
+def _usage_from_perf(perf):
+    """OpenAI-compatible usage + RKLLM extended fields for clients/bench."""
+    if not perf:
+        return {
+            "prompt_tokens": None,
+            "completion_tokens": None,
+            "total_tokens": None,
+        }
+    prompt = int(perf.get("prefill_tokens") or 0)
+    completion = int(perf.get("generate_tokens") or 0)
+    prefill_ms = float(perf.get("prefill_time_ms") or 0.0)
+    generate_ms = float(perf.get("generate_time_ms") or 0.0)
+    return {
+        "prompt_tokens": prompt,
+        "completion_tokens": completion,
+        "total_tokens": prompt + completion,
+        "rkllm": {
+            "prefill_time_ms": prefill_ms,
+            "prefill_tokens": prompt,
+            "prefill_tokens_per_sec": (prompt / (prefill_ms / 1000.0)) if prefill_ms > 0 else None,
+            "generate_time_ms": generate_ms,
+            "generate_tokens": completion,
+            "generate_tokens_per_sec": (completion / (generate_ms / 1000.0)) if generate_ms > 0 else None,
+            "memory_usage_mb": float(perf.get("memory_usage_mb") or 0.0),
+        },
+    }
+
 
 # Define the callback function
 def callback_impl(result, userdata, state):
     global global_text, global_state, split_byte_data
     if state == LLMCallState.RKLLM_RUN_FINISH:
         global_state = state
+        _capture_perf(result)
         print("\n", flush=True)
+        _print_perf(global_last_perf)
     elif state == LLMCallState.RKLLM_RUN_ERROR:
         global_state = state
         print("run error", flush=True)
     elif state == LLMCallState.RKLLM_RUN_NORMAL:
         global_state = state
+        _capture_perf(result)
         # Append whole token/chunk strings (not char-extend) for stream consumers.
         text = result.contents.text.decode('utf-8')
         if text:
@@ -397,7 +473,7 @@ if __name__ == "__main__":
         return jsonify({
             "object": "list",
             "data": [{
-                "id": "Qwen3-4B",
+                "id": "Qwen2.5-Coder-3B",
                 "object": "model",
                 "owned_by": "rkllm"
             }]
@@ -417,31 +493,79 @@ if __name__ == "__main__":
             return jsonify({"ok": False, "error": str(e)}), 500
 
     def _maybe_parse_tool_calls(text):
-        """Convert Qwen/RKLLM <tool_call> XML into OpenAI tool_calls."""
-        if not text or '<tool_call>' not in text:
+        """Convert model tool-call text into OpenAI tool_calls.
+
+        Supports:
+          - Qwen/RKLLM: <tool_call>{...}</tool_call>
+          - Qwen2.5-Coder style: ```json\\n{\"name\":...,\"arguments\":...}\\n```
+          - bare JSON object with name + arguments
+        """
+        if not text or not isinstance(text, str):
             return None, text
+
         calls = []
-        for i, m in enumerate(re.finditer(r'<tool_call>\s*(.*?)\s*</tool_call>', text, re.DOTALL)):
-            raw = m.group(1).strip()
-            try:
-                obj = json.loads(raw)
-            except Exception:
-                continue
-            name = obj.get('name') or obj.get('function', {}).get('name')
+        cleaned = text
+
+        def _obj_to_call(i, obj):
+            if not isinstance(obj, dict):
+                return None
+            name = obj.get('name') or (obj.get('function') or {}).get('name')
             args = obj.get('arguments', obj.get('parameters', {}))
+            if not name:
+                return None
             if not isinstance(args, str):
                 args = json.dumps(args, ensure_ascii=False)
-            if not name:
-                continue
-            calls.append({
+            return {
                 "id": "call_{}".format(i),
                 "type": "function",
                 "function": {"name": name, "arguments": args},
-            })
+            }
+
+        # 1) XML <tool_call> blocks
+        if '<tool_call>' in text:
+            for i, m in enumerate(re.finditer(r'<tool_call>\s*(.*?)\s*</tool_call>', text, re.DOTALL)):
+                raw = m.group(1).strip()
+                try:
+                    obj = json.loads(raw)
+                except Exception:
+                    continue
+                call = _obj_to_call(i, obj)
+                if call:
+                    calls.append(call)
+            if calls:
+                cleaned = re.sub(r'<tool_call>.*?</tool_call>', '', text, flags=re.DOTALL).strip()
+
+        # 2) Markdown fenced JSON / bare JSON (Qwen2.5-Coder often does this)
+        if not calls:
+            candidates = []
+            for m in re.finditer(r'```(?:json)?\s*(\{[\s\S]*?\})\s*```', text, re.IGNORECASE):
+                candidates.append((m.start(), m.end(), m.group(1).strip()))
+            if not candidates:
+                stripped = text.strip()
+                if stripped.startswith('{') and '"name"' in stripped and (
+                    '"arguments"' in stripped or '"parameters"' in stripped
+                ):
+                    candidates.append((0, len(text), stripped))
+
+            for i, (_a, _b, raw) in enumerate(candidates):
+                try:
+                    obj = json.loads(raw)
+                except Exception:
+                    continue
+                call = _obj_to_call(i, obj)
+                if call:
+                    calls.append(call)
+
+            if calls:
+                # Remove fenced blocks; if whole reply was one JSON tool call, clear content.
+                cleaned = re.sub(r'```(?:json)?\s*\{[\s\S]*?\}\s*```', '', text, flags=re.IGNORECASE).strip()
+                if not cleaned:
+                    stripped = text.strip()
+                    if stripped.startswith('{') and '"name"' in stripped:
+                        cleaned = None
+
         if not calls:
             return None, text
-        # Strip tool_call blocks from visible content
-        cleaned = re.sub(r'<tool_call>.*?</tool_call>', '', text, flags=re.DOTALL).strip()
         return calls, cleaned or None
 
     def _extract_chat_request(data):
@@ -490,9 +614,10 @@ if __name__ == "__main__":
 
     def _prepare_rkllm_run(role, enable_thinking, input_prompt, tools, sys_prompt):
         """Reset buffers and start inference thread; caller drains global_text."""
-        global global_text, global_state, system_prompt
+        global global_text, global_state, system_prompt, global_last_perf
         global_text = []
         global_state = -1
+        global_last_perf = None
         if tools is not None:
             system_prompt = sys_prompt or system_prompt or "You are a helpful assistant."
             rkllm_model.set_function_tools(
@@ -521,7 +646,7 @@ if __name__ == "__main__":
             model_thread.join(timeout=0.005)
         return rkllm_output
 
-    def _sse_chunk(model_name, created, delta, finish_reason=None):
+    def _sse_chunk(model_name, created, delta, finish_reason=None, usage=None):
         payload = {
             "id": "rkllm_chat",
             "object": "chat.completion.chunk",
@@ -533,6 +658,8 @@ if __name__ == "__main__":
                 "finish_reason": finish_reason,
             }],
         }
+        if usage is not None:
+            payload["usage"] = usage
         return "data: {}\n\n".format(json.dumps(payload, ensure_ascii=False))
 
     # Create a function to receive data sent by the user using a request
@@ -574,14 +701,17 @@ if __name__ == "__main__":
                 return jsonify({'status': 'error', 'message': 'No user/tool message to run'}), 400
 
             use_stream = bool(data.get('stream'))
-            model_name = data.get("model", "Qwen3-4B")
+            model_name = data.get("model", "Qwen2.5-Coder-3B")
             created = int(time.time())
 
             # True token streaming: push SSE as RKLLM callback produces text.
+            # When tools are enabled, buffer first: Qwen2.5-Coder often emits
+            # tool JSON as plain text; streaming it confuses Qwen-Agent.
             if use_stream:
                 model_thread = _prepare_rkllm_run(
                     role, enable_thinking, input_prompt, tools, sys_prompt
                 )
+                buffer_for_tools = tools is not None
 
                 def generate():
                     full = ""
@@ -592,16 +722,18 @@ if __name__ == "__main__":
                             while len(global_text) > 0:
                                 piece = global_text.pop(0)
                                 full += piece
-                                yield _sse_chunk(model_name, created, {"content": piece})
+                                if not buffer_for_tools:
+                                    yield _sse_chunk(model_name, created, {"content": piece})
                             if not model_thread.is_alive():
                                 while len(global_text) > 0:
                                     piece = global_text.pop(0)
                                     full += piece
-                                    yield _sse_chunk(model_name, created, {"content": piece})
+                                    if not buffer_for_tools:
+                                        yield _sse_chunk(model_name, created, {"content": piece})
                                 break
                             model_thread.join(timeout=0.01)
 
-                        tool_calls, _content = _maybe_parse_tool_calls(full)
+                        tool_calls, content = _maybe_parse_tool_calls(full)
                         finish = "tool_calls" if tool_calls else "stop"
                         if tool_calls:
                             yield _sse_chunk(
@@ -616,7 +748,16 @@ if __name__ == "__main__":
                                     } for i, tc in enumerate(tool_calls)],
                                 },
                             )
-                        yield _sse_chunk(model_name, created, {}, finish_reason=finish)
+                        elif buffer_for_tools and content:
+                            # Flush buffered plain answer in one delta
+                            yield _sse_chunk(model_name, created, {"content": content})
+                        yield _sse_chunk(
+                            model_name,
+                            created,
+                            {},
+                            finish_reason=finish,
+                            usage=_usage_from_perf(global_last_perf),
+                        )
                         yield "data: [DONE]\n\n"
                         normal_done = True
                     except GeneratorExit:
@@ -666,11 +807,7 @@ if __name__ == "__main__":
                     "logprobs": None,
                     "finish_reason": finish,
                 }],
-                "usage": {
-                    "prompt_tokens": None,
-                    "completion_tokens": None,
-                    "total_tokens": None,
-                },
+                "usage": _usage_from_perf(global_last_perf),
             })
             _release()
             return resp, 200

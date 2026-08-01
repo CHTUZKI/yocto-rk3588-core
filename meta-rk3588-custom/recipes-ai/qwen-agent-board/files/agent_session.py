@@ -48,8 +48,8 @@ def emit(obj: dict) -> None:
 
 
 _TOOL_JSON_RE = re.compile(
-    r'^\s*\{?\s*"name"\s*:\s*"[^"]+"\s*,\s*"arguments"\s*:',
-    re.DOTALL,
+    r'^\s*(?:```(?:json)?\s*)?\{?\s*"name"\s*:\s*"[^"]+"\s*,\s*"arguments"\s*:',
+    re.DOTALL | re.IGNORECASE,
 )
 
 
@@ -58,6 +58,8 @@ def _looks_like_raw_tool_json(text: str) -> bool:
     if not t:
         return False
     if "<tool_call>" in t:
+        return True
+    if "```" in t and '"name"' in t and '"arguments"' in t:
         return True
     return bool(_TOOL_JSON_RE.match(t))
 
@@ -74,6 +76,7 @@ def _latest_assistant_content(messages: list) -> str:
 def _extract_reply(last: list) -> tuple[str, str]:
     texts = []
     tool_notes = []
+    last_tool_out = ""
     for m in last:
         if not isinstance(m, dict):
             continue
@@ -87,6 +90,7 @@ def _extract_reply(last: list) -> tuple[str, str]:
                 tool_notes.append(f"[call {fc.get('name')}({fc.get('arguments')})]")
         elif role == "function":
             content = str(m.get("content", ""))
+            last_tool_out = content
             if len(content) > 500:
                 content = content[:500] + "...[truncated]"
             tool_notes.append(f"[tool {m.get('name')} => {content}]")
@@ -94,6 +98,12 @@ def _extract_reply(last: list) -> tuple[str, str]:
     tools = " ".join(tool_notes)
     if texts:
         return texts[-1], tools
+    # Model often forgets to summarize after tools; show last tool output.
+    if last_tool_out.strip():
+        shown = last_tool_out.strip()
+        if len(shown) > 1200:
+            shown = shown[:1200] + "...[truncated]"
+        return shown, tools
     if tool_notes:
         return "工具已执行：" + tools, tools
     return str(last), tools
@@ -114,6 +124,7 @@ def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
     prev_content = ""
     in_tool_stream = False
     seen_tool_note = set()
+    saw_tool_result = False
 
     for chunk in bot.run(messages=turn_messages):
         last = chunk
@@ -148,8 +159,23 @@ def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
             if key in seen_tool_note:
                 continue
             seen_tool_note.add(key)
+            saw_tool_result = True
             shown = raw if len(raw) <= 300 else raw[:300] + "...[truncated]"
             emit({"ok": True, "event": "tool", "text": f"{name} => {shown}"})
+
+        # Qwen-Agent/RKLLM often stalls after the answer is already complete.
+        # Stop once we have plain assistant text and no pending tool call.
+        has_fn_call = any(
+            isinstance(m, dict) and m.get("role") == "assistant" and m.get("function_call")
+            for m in (last or [])
+        )
+        if (
+            content
+            and not _looks_like_raw_tool_json(content)
+            and not has_fn_call
+            and not in_tool_stream
+        ):
+            break
 
     reply, tools = _extract_reply(last)
 
@@ -164,6 +190,9 @@ def ask_turn(bot, history: list, query: str) -> tuple[str, str]:
 
 
 def main() -> int:
+    # Limit tool/LLM loops: Coder-3B often re-calls the same tool without summarizing.
+    os.environ.setdefault("QWEN_AGENT_MAX_LLM_CALL_PER_RUN", "2")
+
     bot = build_bot(with_tools=True)
     history: list = []
     emit({"ok": True, "event": "ready", "reply": "板上 Agent 会话已就绪"})

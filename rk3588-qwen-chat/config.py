@@ -2,7 +2,7 @@
 # 不经过 Qwen-Agent / SSH 工具链
 
 BASE_URL = "http://192.168.1.14:8080/v1"
-MODEL = "Qwen3-4B"
+MODEL = "Qwen2.5-Coder-3B"
 
 # 请求超时（秒）。板上推理可能较慢。
 CONNECT_TIMEOUT = 5

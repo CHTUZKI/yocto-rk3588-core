@@ -52,6 +52,8 @@ import config
 
 ROOT = Path(__file__).resolve().parent
 REMOTE_SESSION_LOCAL = ROOT / "remote" / "agent_session.py"
+# 实际上传/执行的会话脚本路径（只读根分区时可能落到 /tmp）
+_active_remote_session = config.REMOTE_SESSION
 
 _USE_COLOR = sys.stdout.isatty() and os.environ.get("NO_COLOR") is None
 
@@ -114,18 +116,53 @@ def run(client: paramiko.SSHClient, cmd: str, timeout: int = 60) -> tuple[int, s
     return code, out, err
 
 
+def _remote_writable(client: paramiko.SSHClient, path: str) -> bool:
+    code, _, _ = run(
+        client,
+        f'touch "{path}/.rw_probe" 2>/dev/null && rm -f "{path}/.rw_probe" && echo OK',
+        timeout=10,
+    )
+    return code == 0
+
+
 def ensure_remote_ready(client: paramiko.SSHClient) -> None:
-    """上传会话脚本，并确保板上 RKLLM HTTP 服务在跑。"""
+    """上传会话脚本，并确保板上 RKLLM HTTP 服务在跑。
+
+    若 /opt 因 EXT4 journal abort 变成只读，则回退到 /tmp（tmpfs）上传并运行。
+    """
+    global _active_remote_session
+    dest = config.REMOTE_SESSION
+    dest_dir = str(Path(config.REMOTE_SESSION).parent)
+
+    if not _remote_writable(client, dest_dir):
+        cprint(
+            "警告：板上根分区已只读（常见于 EXT4 journal abort）。"
+            "会话脚本改传到 /tmp；建议尽快 reboot，必要时 e2fsck。",
+            Style.YELLOW,
+            Style.BOLD,
+        )
+        dest = "/tmp/agent_session.py"
+        dest_dir = "/tmp"
+
     sftp = client.open_sftp()
     try:
         try:
-            sftp.stat("/opt/qwen_agent")
+            sftp.stat(dest_dir)
         except FileNotFoundError:
-            run(client, "mkdir -p /opt/qwen_agent")
-        sftp.put(str(REMOTE_SESSION_LOCAL), config.REMOTE_SESSION)
-        run(client, f"chmod +x {config.REMOTE_SESSION}")
+            run(client, f"mkdir -p {dest_dir}")
+        try:
+            sftp.put(str(REMOTE_SESSION_LOCAL), dest)
+        except OSError as e:
+            raise RuntimeError(
+                f"无法上传 {REMOTE_SESSION_LOCAL.name} → {dest}: {e}\n"
+                "请检查板上是否只读：ssh 后执行 `touch /opt/qwen_agent/.w && rm /opt/qwen_agent/.w`；"
+                "失败则 `reboot`，仍失败需检查 eMMC/电源。"
+            ) from e
+        run(client, f"chmod +x {dest}")
     finally:
         sftp.close()
+
+    _active_remote_session = dest
 
     _, out, _ = run(client, "ps | grep flask_server | grep -v grep || true", timeout=10)
     if "flask_server" not in out:
@@ -157,9 +194,10 @@ def ensure_remote_ready(client: paramiko.SSHClient) -> None:
 
 def open_agent_session(client: paramiko.SSHClient):
     """打开远端 Python 会话通道（UTF-8 JSON 行协议）。"""
+    session = _active_remote_session or config.REMOTE_SESSION
     remote_cmd = (
         "export LANG=C.UTF-8 LC_ALL=C.UTF-8 PYTHONIOENCODING=utf-8 PYTHONUTF8=1; "
-        f"exec python3 -u {config.REMOTE_SESSION}"
+        f"exec python3 -u {session}"
     )
     transport = client.get_transport()
     assert transport is not None
@@ -245,6 +283,10 @@ def handle_chat_stream(channel, timeout: float = 600.0) -> tuple[dict, bool]:
     started = time.time()
     first_delta = True
     saw_delta = False
+    accumulated = ""
+    last_event_at = time.time()
+    # If we already streamed the answer but final JSON never arrives, don't wedge the prompt.
+    idle_after_delta_s = 2.0
     deadline = time.time() + timeout
 
     try:
@@ -254,6 +296,23 @@ def handle_chat_stream(channel, timeout: float = 600.0) -> tuple[dict, bool]:
             try:
                 resp = recv_json_line(channel, timeout=poll)
             except TimeoutError:
+                now = time.time()
+                if saw_delta and (now - last_event_at) >= idle_after_delta_s:
+                    if not first_delta:
+                        print(flush=True)
+                    # Drain a late final reply so it won't poison the next turn.
+                    try:
+                        late = recv_json_line(channel, timeout=0.3)
+                        if "reply" in late or late.get("ok") is False:
+                            return late, True
+                    except TimeoutError:
+                        pass
+                    return {
+                        "ok": True,
+                        "reply": accumulated,
+                        "tools": "",
+                        "event": "idle_complete",
+                    }, True
                 if first_delta:
                     elapsed = time.time() - started
                     ch = spinner[spin_i % len(spinner)]
@@ -266,6 +325,7 @@ def handle_chat_stream(channel, timeout: float = 600.0) -> tuple[dict, bool]:
                     )
                 continue
 
+            last_event_at = time.time()
             event = resp.get("event")
             if event == "delta":
                 text = resp.get("text") or ""
@@ -274,8 +334,20 @@ def handle_chat_stream(channel, timeout: float = 600.0) -> tuple[dict, bool]:
                     print(prefix, end="", flush=True)
                     first_delta = False
                 print(text, end="", flush=True)
+                accumulated += text
                 saw_delta = True
                 continue
+            if event == "done":
+                # Answer finished — return to 你> immediately (same UX as qwen-chat).
+                if not first_delta:
+                    print(flush=True)
+                else:
+                    print("\r" + " " * 64 + "\r", end="", flush=True)
+                    reply = resp.get("reply") or accumulated
+                    if reply and not saw_delta:
+                        cprint(f"Agent> {reply}", Style.GREEN, Style.BOLD)
+                        saw_delta = True
+                return resp, saw_delta
             if event == "status":
                 if not first_delta:
                     print(flush=True)
@@ -297,6 +369,10 @@ def handle_chat_stream(channel, timeout: float = 600.0) -> tuple[dict, bool]:
                 print("\r" + " " * 64 + "\r", end="", flush=True)
             return resp, saw_delta
 
+        if saw_delta and accumulated:
+            if not first_delta:
+                print(flush=True)
+            return {"ok": True, "reply": accumulated, "tools": "", "event": "timeout_complete"}, True
         raise TimeoutError("等待板上 Agent 响应超时")
     except KeyboardInterrupt:
         print("\r" + " " * 64 + "\r", end="", flush=True)
