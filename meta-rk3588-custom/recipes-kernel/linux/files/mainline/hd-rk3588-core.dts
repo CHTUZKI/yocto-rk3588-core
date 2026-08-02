@@ -189,8 +189,8 @@
 	no-sdio;
 	no-sd;
 	non-removable;
-	mmc-hs400-1_8v;
-	mmc-hs400-enhanced-strobe;
+	/* One tier below HS400: more stable for large transfers on this eMMC. */
+	mmc-hs200-1_8v;
 	status = "okay";
 };
 

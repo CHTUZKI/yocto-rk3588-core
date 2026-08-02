@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-本机（PC / WSL）命令行客户端 —— 直连板上 Qwen3（RKLLM）。
+板端命令行客户端 —— 直连本地 Qwen3（RKLLM）。
 
-与 rk3588-agent-chat 的区别：
-  - 本项目：HTTP → http://板子:8080/v1/chat/completions（纯模型对话，SSE 逐字）
-  - Agent 项目：SSH → 板上 Qwen-Agent（可调工具）
+与 rk3588-agentscope 的区别：
+  - 本项目：HTTP → http://127.0.0.1:8080/v1/chat/completions（纯模型对话，SSE 逐字）
+  - AgentScope：本地 AgentScope Agent（可调工具，诊断/修复/文件操作）
 
 用法:
-  cd rk3588-qwen-chat
-  ./run.sh
-  # 或: python chat.py --base-url http://192.168.1.14:8080/v1
+  /opt/qwen-chat/run.sh
+  # 或: PYTHONPATH=/opt/agentscope/site-packages python3 chat.py
 """
 
 from __future__ import annotations

@@ -40,8 +40,12 @@ from agentscope.event import (
     TextBlockDeltaEvent,
     ThinkingBlockDeltaEvent,
     ThinkingBlockStartEvent,
+    ToolCallDeltaEvent,
+    ToolCallEndEvent,
     ToolCallStartEvent,
+    ToolResultEndEvent,
     ToolResultStartEvent,
+    ToolResultTextDeltaEvent,
 )
 from agentscope.formatter import OpenAIChatFormatter
 from agentscope.message import Msg, TextBlock
@@ -52,7 +56,18 @@ from agentscope.state import AgentState
 from agentscope.tool import FunctionTool, Toolkit
 
 import config
-from board_tools import read_text_file, run_board_command, run_python_file, write_text_file
+from board_tools import (
+    diagnose_network,
+    list_directory,
+    read_board_file,
+    read_text_file,
+    restart_service,
+    run_board_command,
+    run_python_file,
+    set_system_time,
+    sync_ntp,
+    write_text_file,
+)
 
 # ---------------------------------------------------------------------------
 # Terminal styling (ported from rk3588-agent-chat)
@@ -94,19 +109,37 @@ def clear_line() -> None:
 # ---------------------------------------------------------------------------
 # System prompt
 # ---------------------------------------------------------------------------
-SYSTEM_PROMPT = """你是运行在 RK3588 开发板上的本地编程助手。
+SYSTEM_PROMPT = """你是运行在 RK3588 开发板上的本地编程助手，具备真正的诊断和修复能力。
 
 你必须真正完成用户要求，而不是只给操作建议：
 1. 用户要求写代码并运行时，先用 write_text_file 保存代码，再用 run_python_file 执行，并根据真实输出回答。
 2. 用户要求保存、修改或查看程序时，使用 workspace 中的文件工具，不要使用 vi，不要让用户手动复制代码。
 3. 用户说"这个文件""这个程序""刚才的命令"时，结合当前对话和已执行工具继续操作，不要无故反问。
-4. 只有需要查看板卡系统状态时才使用 run_board_command。
-5. 先完成工具动作，再简洁说明结果；不要伪造运行结果。
-6. 所有文件路径必须位于 Agent workspace；危险命令和 shell 重定向会被工具拒绝。
+4. 先完成工具动作，再简洁说明结果；不要伪造运行结果。
+5. write_text_file / run_python_file 只能操作 Agent workspace 内的文件。
+
+工具选择规则（重要，避免选错工具）：
+- 列目录、看文件夹里有什么 → 用 list_directory（支持任意路径，如 /home、/opt、/etc）
+- 读 workspace 内的代码/文本文件 → 用 read_text_file
+- 读 workspace 外的板卡文件（如 /etc/hostname、/proc/cpuinfo、/opt/models/ 下的文件）→ 用 read_board_file
+- 写文件、改文件 → 用 write_text_file（仅限 workspace）
+- 运行 Python 脚本 → 用 run_python_file（仅限 workspace）
+- 运行系统命令 → 用 run_board_command（支持管道 |、重定向 > <、链式 && || ; 、命令替换 $() ）
+- 设置系统时间 → 用 set_system_time（板子无 RTC，断电后时间会错，导致 HTTPS 失败）
+- NTP 同步时间 → 用 sync_ntp（网络可用时优先用这个）
+- 重启服务 → 用 restart_service（白名单：rkllm-server、networking、systemd-timesyncd、systemd-resolved、sshd）
+- 网络诊断 → 用 diagnose_network（一键输出完整网络报告：网卡、路由、DNS、ping、HTTPS、时间）
+
+排查和修复规则（重要）：
+- 用户报告问题时，先用诊断工具看真实状态，不要猜。比如网络问题先用 diagnose_network，时间问题先 date。
+- 看到错误要追根因。比如 curl 报 SSL 证书错误（exit 60）→ 检查 date → 时间不对 → set_system_time 或 sync_ntp → 重试。
+- run_board_command 支持完整 shell 语法，可以组合命令排查，比如 "ip addr && ip route && ping -c 2 8.8.8.8"。
+- rm/rmdir/unlink 被禁用（eMMC 上无撤销）。需要删除文件时，告知用户手动删除。
+- 不要编造工具结果。如果工具返回了输出，必须基于真实输出回答。
 
 重要规则：
 - 不要重复调用同一个工具。如果工具已经返回结果，请根据结果直接用文字回答用户，不要再次调用相同工具。
-- 只有用户明确要求创建文件、运行代码、查看系统状态时才使用工具。简单问答（如数学计算、知识解释、闲聊）不需要任何工具，直接用文字回答。
+- 只有用户明确要求创建文件、运行代码、查看系统状态、查看目录或文件、排查问题时才使用工具。简单问答（如数学计算、知识解释、闲聊）不需要任何工具，直接用文字回答。
 - 回答时不要输出 JSON 代码块，直接用中文文字回答。
 """
 
@@ -120,8 +153,14 @@ def build_agent() -> Agent:
         tools=[
             FunctionTool(write_text_file, is_read_only=False),
             FunctionTool(read_text_file, is_read_only=True),
+            FunctionTool(read_board_file, is_read_only=True),
+            FunctionTool(list_directory, is_read_only=True),
             FunctionTool(run_python_file, is_read_only=False),
             FunctionTool(run_board_command, is_read_only=False),
+            FunctionTool(set_system_time, is_read_only=False),
+            FunctionTool(sync_ntp, is_read_only=False),
+            FunctionTool(restart_service, is_read_only=False),
+            FunctionTool(diagnose_network, is_read_only=True),
         ]
     )
     model = OpenAIChatModel(
@@ -229,11 +268,20 @@ async def _spin(started: float) -> None:
 
 
 async def handle_reply_stream(agent: Agent, user_msg: Msg, timeout: float = 600.0) -> None:
-    """Consume agent.reply_stream events with spinner, deltas, tool calls."""
+    """Consume agent.reply_stream events with spinner, deltas, tool calls.
+
+    Displays tool call arguments and real tool results (not just names),
+    so the user can verify what actually happened — like OpenCode's
+    transparent command/output display.
+    """
     prefix = f"{Style.GREEN}{Style.BOLD}Agent> {Style.RESET}" if _USE_COLOR else "Agent> "
     started = time.time()
     first_output = True  # no real output printed yet
-    in_thinking = False
+
+    # Track tool call arguments and results by tool_call_id
+    tool_call_args: dict[str, str] = {}   # tool_call_id -> accumulated JSON args
+    tool_call_names: dict[str, str] = {}  # tool_call_id -> tool name
+    tool_results: dict[str, str] = {}     # tool_call_id -> accumulated result text
 
     stream = agent.reply_stream(user_msg)
     spinner_task: asyncio.Task | None = asyncio.create_task(_spin(started))
@@ -267,27 +315,65 @@ async def handle_reply_stream(agent: Agent, user_msg: Msg, timeout: float = 600.
                 if not first_output:
                     print(flush=True)
                 cprint("思考中...", Style.DIM, Style.YELLOW)
-                in_thinking = True
                 first_output = False
                 continue
             if isinstance(event, ThinkingBlockDeltaEvent):
                 print(f"{Style.DIM}{event.delta}{Style.RESET}", end="", flush=True)
                 continue
 
-            # --- Tool call start ---
+            # --- Tool call start: record name, start accumulating args ---
             if isinstance(event, ToolCallStartEvent):
                 if not first_output:
                     print(flush=True)
-                cprint(f"工具调用: {event.tool_call_name}", Style.MAGENTA)
+                tool_call_names[event.tool_call_id] = event.tool_call_name
+                tool_call_args[event.tool_call_id] = ""
                 first_output = False
                 continue
 
-            # --- Tool result start ---
+            # --- Tool call delta: accumulate JSON argument fragments ---
+            if isinstance(event, ToolCallDeltaEvent):
+                tool_call_args[event.tool_call_id] += event.delta
+                continue
+
+            # --- Tool call end: display the tool call with its arguments ---
+            if isinstance(event, ToolCallEndEvent):
+                tid = event.tool_call_id
+                name = tool_call_names.get(tid, "?")
+                args_json = tool_call_args.get(tid, "")
+                # Try to pretty-print the arguments
+                args_display = _format_tool_args(name, args_json)
+                cprint(f"工具调用: {name}", Style.MAGENTA, Style.BOLD)
+                if args_display:
+                    cprint(f"  {args_display}", Style.DIM, Style.MAGENTA)
+                continue
+
+            # --- Tool result start: start accumulating result text ---
             if isinstance(event, ToolResultStartEvent):
-                if not first_output:
-                    print(flush=True)
-                cprint(f"工具结果: {event.tool_call_name}", Style.DIM, Style.MAGENTA)
-                first_output = False
+                tool_results[event.tool_call_id] = ""
+                continue
+
+            # --- Tool result text delta: accumulate result fragments ---
+            if isinstance(event, ToolResultTextDeltaEvent):
+                tool_results[event.tool_call_id] += event.delta
+                continue
+
+            # --- Tool result end: display the real result ---
+            if isinstance(event, ToolResultEndEvent):
+                tid = event.tool_call_id
+                name = tool_call_names.get(tid, "?")
+                result_text = tool_results.get(tid, "").strip()
+                cprint(f"工具结果: {name}", Style.DIM, Style.MAGENTA)
+                if result_text:
+                    # Show the real output, indented and truncated
+                    lines = result_text.split("\n")
+                    if len(lines) > 30:
+                        lines = lines[:30] + [f"...[{len(lines)-30} more lines]"]
+                    for line in lines:
+                        if len(line) > 200:
+                            line = line[:200] + "..."
+                        cprint(f"  {line}", Style.DIM)
+                else:
+                    cprint("  (无输出)", Style.DIM)
                 continue
 
             # --- Reply end ---
@@ -334,6 +420,49 @@ async def handle_reply_stream(agent: Agent, user_msg: Msg, timeout: float = 600.
                 await stream.aclose()
             except Exception:
                 pass
+
+
+def _format_tool_args(tool_name: str, args_json: str) -> str:
+    """Format tool call arguments for display, like OpenCode shows commands."""
+    if not args_json:
+        return ""
+    try:
+        import json
+        args = json.loads(args_json)
+    except Exception:
+        return args_json[:200]
+
+    # Tool-specific pretty printing
+    if tool_name == "run_board_command" and "command" in args:
+        return f"$ {args['command']}"
+    if tool_name == "list_directory" and "path" in args:
+        return f"ls {args['path']}"
+    if tool_name == "read_board_file" and "path" in args:
+        return f"cat {args['path']}"
+    if tool_name == "read_text_file" and "path" in args:
+        return f"cat {args['path']}"
+    if tool_name == "write_text_file" and "path" in args:
+        content_preview = (args.get("content", "") or "")[:60]
+        if len(args.get("content", "") or "") > 60:
+            content_preview += "..."
+        return f"write {args['path']}  ({len(args.get('content','') or '')} bytes)"
+    if tool_name == "run_python_file" and "path" in args:
+        return f"python3 {args['path']}"
+    if tool_name == "set_system_time" and "time_str" in args:
+        return f"date -s '{args['time_str']}'"
+    if tool_name == "sync_ntp":
+        return f"ntpdate {args.get('server', 'pool.ntp.org')}"
+    if tool_name == "restart_service" and "name" in args:
+        return f"systemctl restart {args['name']}"
+    if tool_name == "diagnose_network":
+        return "network diagnostic report"
+
+    # Generic: show all args
+    try:
+        import json
+        return json.dumps(args, ensure_ascii=False)[:200]
+    except Exception:
+        return args_json[:200]
 
 
 # ---------------------------------------------------------------------------

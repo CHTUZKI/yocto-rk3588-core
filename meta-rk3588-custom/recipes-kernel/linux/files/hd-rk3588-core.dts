@@ -222,13 +222,16 @@
 };
 
 /*
- * eMMC (mmc@fe2e0000): drop CQE.
- * Boot log showed repeated "mmc0: running CQE recovery" /
- * "cqhci: Failed to halt" on BJTD4R; heavy writes then hang eth.
- * Driver only enables CQE when DT has supports-cqe (rk3588s.dtsi).
+ * eMMC (mmc@fe2e0000):
+ * - Drop CQE: BJTD4R had "CQE recovery" / "cqhci: Failed to halt", then hangs.
+ * - Drop HS400 → HS200 (one tier): large file copies on HS400ES @ 200MHz
+ *   were unstable; HS200 is still up to 200MHz SDR but more robust.
  */
 &sdhci {
 	/delete-property/ supports-cqe;
+	/delete-property/ mmc-hs400-1_8v;
+	/delete-property/ mmc-hs400-enhanced-strobe;
+	mmc-hs200-1_8v;
 };
 
 /* USB2 host — undo EVB4 disables (match Buildroot / EVB). */

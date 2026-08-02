@@ -11,6 +11,7 @@ IMAGE_INSTALL = " \
     openssh \
     openssh-sftp-server \
     hd-rk3588-netconfig \
+    hd-rk3588-ntp-config \
     hd-rk3588-rootfs-expand \
     iproute2 \
     curl \

@@ -30,7 +30,7 @@ PKGS=(
   opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp
   opentelemetry-semantic-conventions python-socketio shortuuid
   python-frontmatter aiofiles jinja2 tree-sitter tree-sitter-bash tzdata
-  pydantic pydantic-core typing-extensions annotated-types
+  'pydantic==2.13.4' 'pydantic-core==2.46.4' typing-extensions typing-inspection annotated-types
 )
 
 for pkg in "${PKGS[@]}"; do
@@ -38,7 +38,10 @@ for pkg in "${PKGS[@]}"; do
   "${PIP[@]}" download -d "${WHEELS}" -i "${PIP_INDEX}" "${CROSS[@]}" "${pkg}"
 done
 
-"${PIP[@]}" install --no-compile --no-deps --target "${SITE}" \
+# NOTE: no --no-deps here. pip download already fetched all transitive deps
+# into WHEELS; letting pip resolve them from --find-links ensures nothing is
+# missed (e.g. typing-inspection, which pydantic 2.13.4 requires).
+"${PIP[@]}" install --no-compile --target "${SITE}" \
   "${CROSS[@]}" --no-index --find-links "${WHEELS}" "${PKGS[@]}"
 
 find "${SITE}" -type d -name '__pycache__' -prune -exec rm -rf {} +

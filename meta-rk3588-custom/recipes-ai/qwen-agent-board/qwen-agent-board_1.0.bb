@@ -10,6 +10,7 @@ FILESEXTRAPATHS:prepend := "${TOPDIR}/../deploy/vendor:"
 SRC_URI = " \
     file://qwen_agent_onboard.py \
     file://agent_session.py \
+    file://run.sh \
     file://qwen-agent-aarch64-site.tar.gz;name=site \
 "
 
@@ -37,6 +38,7 @@ do_install() {
 	install -d ${D}/opt/qwen_agent
 	install -m 0644 ${WORKDIR}/qwen_agent_onboard.py ${D}/opt/qwen_agent/qwen_agent_onboard.py
 	install -m 0644 ${WORKDIR}/agent_session.py ${D}/opt/qwen_agent/agent_session.py
+	install -m 0755 ${WORKDIR}/run.sh ${D}/opt/qwen_agent/run.sh
 
 	# Tarball contains top-level dir qwen-agent-site/; avoid host uid via --no-preserve=ownership
 	if [ -d ${WORKDIR}/qwen-agent-site ]; then

@@ -1,5 +1,6 @@
 SUMMARY = "Useful bring-up tools for HD-RK3588-CORE"
-DESCRIPTION = "modetest, network utilities, and a few CLI helpers"
+DESCRIPTION = "Full-featured Linux command set: system inspection, network \
+diagnostics, file/archive tools, editors, terminal multiplexers, and Python runtime."
 
 inherit packagegroup
 
@@ -18,4 +19,40 @@ RDEPENDS:${PN} = " \
     exfatprogs \
     dosfstools \
     usb-automount \
+    \
+    util-linux \
+    util-linux-lsblk \
+    util-linux-findmnt \
+    util-linux-fstrim \
+    procps \
+    lsof \
+    findutils \
+    \
+    jq \
+    file \
+    strace \
+    tree \
+    \
+    rsync \
+    socat \
+    nmap \
+    \
+    vim \
+    nano \
+    tmux \
+    screen \
+    \
+    xz \
+    zip \
+    \
+    cronie \
+    ca-certificates \
+    \
+    usbutils \
+    pciutils \
+    \
+    parted \
+    smartmontools \
+    hdparm \
+    i2c-tools \
 "

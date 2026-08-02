@@ -10,4 +10,6 @@ RDEPENDS:${PN} = " \
     rkllm-server \
     qwen-agent-board \
     agentscope-board \
+    qwen-chat-board \
+    qwen3-bench-board \
 "
