@@ -37,6 +37,17 @@ yocto-rk3588-core/
 
 ## 快速开始
 
+### 构建准备
+
+在开始构建之前，需要先安装必要的依赖包：
+
+```bash
+sudo apt-get update
+sudo apt-get install build-essential chrpath cpio debianutils diffstat file gawk gcc git iputils-ping libacl1 lz4 locales python3 python3-jinja2 python3-pexpect python3-pip python3-subunit socat texinfo unzip wget xz-utils zstd
+```
+
+### 初始化并构建
+
 ```bash
 cd yocto-rk3588-core
 git submodule update --init --recursive
