@@ -1,31 +1,41 @@
-SUMMARY = "PREEMPT_RT image for HD-RK3588-CORE"
-DESCRIPTION = "Real-time Linux image (PREEMPT_RT, GPU/NPU disabled) with update.img"
+SUMMARY = "PREEMPT_RT + LinuxCNC + SOEM EtherCAT + XFCE desktop"
+DESCRIPTION = "CNC image: PREEMPT_RT kernel, X11/XFCE GUI, LinuxCNC, SOEM EtherCAT HAL."
 
 inherit core-image
 inherit rk3588-image
 inherit rockchip-updateimg
+inherit features_check
 
-COMPATIBLE_MACHINE = "hd-rk3588-core-rt"
+REQUIRED_DISTRO_FEATURES = "x11"
+
+COMPATIBLE_MACHINE = "hd-rk3588-core-cnc"
 
 IMAGE_INSTALL = " \
     packagegroup-core-boot \
+    packagegroup-core-x11 \
+    packagegroup-core-x11-utils \
+    packagegroup-xfce-base \
     kernel-modules \
     openssh \
     openssh-sftp-server \
-    hd-rk3588-netconfig \
     iproute2 \
-    packagegroup-rk3588-rt-tools \
+    iputils \
+    ethtool \
+    packagegroup-rk3588-cnc \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
 
 IMAGE_FEATURES += " \
     debug-tweaks \
     ssh-server-openssh \
+    x11-base \
+    splash \
 "
 
 IMAGE_FSTYPES += "ext4"
 
-# Same update.img layout as minimal image.
+SYSTEMD_DEFAULT_TARGET = "graphical.target"
+
 VENDOR_IMG_DIR = "${TOPDIR}/../参考文件/ImageUbuntu_RK3588-B2B"
 
 RK_UPDATEIMG_SOC = "auto"

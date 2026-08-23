@@ -1,0 +1,165 @@
+component soem_linuxcnc "SOEM EtherCAT HAL bridge for LinuxCNC";
+option userspace;
+option singleton;
+// compile/link paths injected by recipe do_compile
+option extra_compile_args "";
+option extra_link_args "-lsoem_linuxcnc -lsoem -lpthread -lrt";
+
+// Interface name via SOEM_IFNAME env (e.g. ec0), default end0
+
+pin in float set-joint-pos1;
+pin in float set-joint-pos2;
+pin in float set-joint-pos3;
+pin in float set-joint-pos4;
+pin in float set-joint-pos5;
+pin in float set-joint-pos6;
+pin in float set-joint-pos7;
+
+pin in float set-joint-vel1;
+pin in float set-joint-vel2;
+pin in float set-joint-vel3;
+pin in float set-joint-vel4;
+pin in float set-joint-vel5;
+pin in float set-joint-vel6;
+pin in float set-joint-vel7;
+
+pin in float set-joint-torque1;
+pin in float set-joint-torque2;
+pin in float set-joint-torque3;
+pin in float set-joint-torque4;
+pin in float set-joint-torque5;
+pin in float set-joint-torque6;
+pin in float set-joint-torque7;
+
+pin in bit led1;
+pin in bit led2;
+
+pin out float actual-joint-pos1;
+pin out float actual-joint-pos2;
+pin out float actual-joint-pos3;
+pin out float actual-joint-pos4;
+pin out float actual-joint-pos5;
+pin out float actual-joint-pos6;
+pin out float actual-joint-pos7;
+
+pin out float actual-joint-vel1;
+pin out float actual-joint-vel2;
+pin out float actual-joint-vel3;
+pin out float actual-joint-vel4;
+pin out float actual-joint-vel5;
+pin out float actual-joint-vel6;
+pin out float actual-joint-vel7;
+
+pin out float actual-joint-torque1;
+pin out float actual-joint-torque2;
+pin out float actual-joint-torque3;
+pin out float actual-joint-torque4;
+pin out float actual-joint-torque5;
+pin out float actual-joint-torque6;
+pin out float actual-joint-torque7;
+
+pin out bit btn1;
+pin out bit sw1;
+pin out bit sw2;
+
+pin out float time-exe;
+
+license "GPL";
+;;
+
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+#include "soem_linuxcnc.h"
+
+static int ethercat_started;
+
+static const char *resolve_ifname(void)
+{
+	const char *env = getenv("SOEM_IFNAME");
+	if (env && env[0])
+		return env;
+	return "end0";
+}
+
+void user_mainloop(void)
+{
+	struct Ethercat_set_value set_value;
+	struct Ethercat_actual_value actual_value;
+	struct timespec start, end;
+	double elapsed_ms;
+	const char *dev = resolve_ifname();
+
+	if (init_ethercat(dev) != 0) {
+		rtapi_print_msg(RTAPI_MSG_ERR,
+			"soem_linuxcnc: ec_init failed on %s (need CAP_NET_RAW/root)\n",
+			dev);
+		return;
+	}
+	ethercat_started = 1;
+
+	while (1) {
+		clock_gettime(CLOCK_MONOTONIC, &start);
+
+		memset(&set_value, 0, sizeof(set_value));
+		FOR_ALL_INSTS() {
+			set_value.LED = led1 ? 1 : 0;
+			set_value.set_position[0] = (int16_t)set_joint_pos1;
+			set_value.set_position[1] = (int16_t)set_joint_pos2;
+			set_value.set_position[2] = (int16_t)set_joint_pos3;
+			set_value.set_position[3] = (int16_t)set_joint_pos4;
+			set_value.set_position[4] = (int16_t)set_joint_pos5;
+			set_value.set_position[5] = (int16_t)set_joint_pos6;
+			set_value.set_position[6] = (int16_t)set_joint_pos7;
+			set_value.set_velocity[0] = (int16_t)set_joint_vel1;
+			set_value.set_velocity[1] = (int16_t)set_joint_vel2;
+			set_value.set_velocity[2] = (int16_t)set_joint_vel3;
+			set_value.set_velocity[3] = (int16_t)set_joint_vel4;
+			set_value.set_velocity[4] = (int16_t)set_joint_vel5;
+			set_value.set_velocity[5] = (int16_t)set_joint_vel6;
+			set_value.set_velocity[6] = (int16_t)set_joint_vel7;
+			set_value.set_torque[0] = (int16_t)set_joint_torque1;
+			set_value.set_torque[1] = (int16_t)set_joint_torque2;
+			set_value.set_torque[2] = (int16_t)set_joint_torque3;
+			set_value.set_torque[3] = (int16_t)set_joint_torque4;
+			set_value.set_torque[4] = (int16_t)set_joint_torque5;
+			set_value.set_torque[5] = (int16_t)set_joint_torque6;
+			set_value.set_torque[6] = (int16_t)set_joint_torque7;
+		}
+
+		actual_value = ethecat_process_data(set_value);
+
+		FOR_ALL_INSTS() {
+			actual_joint_pos1 = actual_value.actual_position[0];
+			actual_joint_pos2 = actual_value.actual_position[1];
+			actual_joint_pos3 = actual_value.actual_position[2];
+			actual_joint_pos4 = actual_value.actual_position[3];
+			actual_joint_pos5 = actual_value.actual_position[4];
+			actual_joint_pos6 = actual_value.actual_position[5];
+			actual_joint_pos7 = actual_value.actual_position[6];
+			actual_joint_vel1 = actual_value.actual_velocity[0];
+			actual_joint_vel2 = actual_value.actual_velocity[1];
+			actual_joint_vel3 = actual_value.actual_velocity[2];
+			actual_joint_vel4 = actual_value.actual_velocity[3];
+			actual_joint_vel5 = actual_value.actual_velocity[4];
+			actual_joint_vel6 = actual_value.actual_velocity[5];
+			actual_joint_vel7 = actual_value.actual_velocity[6];
+			actual_joint_torque1 = actual_value.actual_torque[0];
+			actual_joint_torque2 = actual_value.actual_torque[1];
+			actual_joint_torque3 = actual_value.actual_torque[2];
+			actual_joint_torque4 = actual_value.actual_torque[3];
+			actual_joint_torque5 = actual_value.actual_torque[4];
+			actual_joint_torque6 = actual_value.actual_torque[5];
+			actual_joint_torque7 = actual_value.actual_torque[6];
+			btn1 = actual_value.button & 0x1;
+			sw1 = (actual_value.button >> 1) & 0x1;
+			sw2 = (actual_value.button >> 2) & 0x1;
+
+			clock_gettime(CLOCK_MONOTONIC, &end);
+			elapsed_ms = (end.tv_sec - start.tv_sec) * 1000.0 +
+				(end.tv_nsec - start.tv_nsec) / 1000000.0;
+			time_exe = elapsed_ms;
+		}
+	}
+}

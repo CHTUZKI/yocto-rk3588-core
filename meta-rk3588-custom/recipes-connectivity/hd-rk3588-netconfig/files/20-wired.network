@@ -1,6 +1,0 @@
-[Match]
-Name=eth* en*
-
-[Network]
-DHCP=yes
-LLMNR=no

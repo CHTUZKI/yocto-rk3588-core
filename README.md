@@ -2,11 +2,51 @@
 
 ![板卡实物 2](images/2.png)
 
-# RK3588 CORE Yocto 项目
+# RK3588 CORE — LinuxCNC 分支
 
-基于 Yocto Project **scarthgap（5.0 LTS）** 的 **Vanxak HD-RK3588-CORE** 核心板嵌入式 Linux 构建环境。
+基于 Yocto Project **scarthgap（5.0 LTS）** 的 **Vanxak HD-RK3588-CORE** LinuxCNC 镜像构建环境。
 
-结构参考同系列 [yocto-rk3506b-core](https://github.com/CHTUZKI/yocto-rk3506b-core)，面向 RK3588J 模组（8GB LPDDR4x + eMMC）。提供**最小镜像**与 **PREEMPT_RT 实时镜像**（GPU/NPU 关闭），并通过自研层生成 RKDevTool 可用的 `update.img`。
+本分支**只做一件事**：构建 `rk3588-image-cnc`（PREEMPT_RT + XFCE + LinuxCNC + SOEM EtherCAT）。
+
+## 分支与架构
+
+| Git 分支 | 用途 | MACHINE | 镜像 |
+|----------|------|---------|------|
+| `preempt-rt` | 通用实时系统（可用于其他项目） | `hd-rk3588-core-rt` | `rk3588-image-rt` |
+| **`LinuxCNC`**（本分支） | CNC 专用 | `hd-rk3588-core-cnc` | `rk3588-image-cnc` |
+
+```
+hd-rk3588-core.conf          # 板级硬件（内核 provider、DTB、U-Boot）
+        │
+        └── hd-rk3588-core-cnc.conf   # PREEMPT_RT + Mali + X11 + EtherCAT
+                    │
+                    └── rk3588-image-cnc
+                            ├── linux-rockchip（RT 内核，关 NPU，留 GPU）
+                            ├── linuxcnc + soem-linuxcnc-hal
+                            └── XFCE / Axis
+```
+
+### 分支怎么用
+
+本仓库按 **「一个分支一种镜像」** 管理，**不同时开发多个分支**：
+
+1. **`preempt-rt`**：通用 RT 基线；以后做别的实时项目时，`git checkout preempt-rt`，再 `git checkout -b 新项目` 从 RT 拉分支。
+2. **`LinuxCNC`（本分支）**：从 RT 分出后独立演进，只构建 CNC，不再改 RT 镜像 recipe。
+
+### 为什么从 RT 分分支时曾出现“冲突”？
+
+**不是 Git 冲突**，而是 **分分支后仍沿用同一个 `build/` 目录**，里面留着 RT 时代的 sstate / deploy 状态：
+
+- sstate 认为 `rockchip-rkbin do_deploy` 已做过，跳过写入 → CNC 的 deploy 目录缺 `ddr-rk3588.bin`
+- 旧的 deploy manifest 与新的 `MACHINE` 对不上
+
+**本分支已做的隔离：**
+
+1. 只保留 `rk3588-image-cnc` 与 `hd-rk3588-core-cnc`
+2. deploy 目录固定为 `hd-rk3588-core-cnc/`
+3. PREEMPT_RT 内嵌于 CNC machine，不依赖 RT 的 machine 文件
+
+在本分支上持续开发 **不需要** 额外操作。若曾从 RT 切过来且 build 异常，执行一次 `scripts/clean-cnc-deploy.sh` 即可。
 
 ## 硬件参数（摘要）
 
@@ -14,75 +54,44 @@
 |------|------|
 | 处理器 | Rockchip RK3588J（4×A76 + 4×A55） |
 | 内存 | 8GB LPDDR4x |
-| 存储 | 32GB/64GB eMMC |
+| 存储 | eMMC |
 | 烧录 | USB OTG（`update.img` / RKDevTool） |
-| 串口 | **115200 8N1**（厂家固件实测；非 EVB 默认 1500000） |
+| 串口 | **115200 8N1**（`ttyFIQ0`） |
 
-## 项目结构
-
-```
-yocto-rk3588-core/
-├── poky/                      # Yocto scarthgap（官方）
-├── meta-openembedded/         # OE 附加层（官方）
-├── meta-arm/                  # meta-rockchip 依赖（官方）
-├── meta-rockchip/             # 社区 Rockchip BSP（官方，勿改）
-├── meta-rockchip-updateimg/   # 自研：打包 update.img
-├── meta-rk3588-custom/        # HD-RK3588-CORE 机器与镜像
-└── build/                     # BitBake 构建目录
-```
-
-## Yocto 版本
-
-选用 **scarthgap（Yocto 5.0 LTS）**，相对 RK3506B 工程的 kirkstone（4.0）更新，且为当前长期支持发行版。
-
-## 快速开始
-
-### 构建准备
-
-在开始构建之前，需要先安装必要的依赖包：
-
-```bash
-sudo apt-get update
-sudo apt-get install build-essential chrpath cpio debianutils diffstat file gawk gcc git iputils-ping libacl1 lz4 locales python3 python3-jinja2 python3-pexpect python3-pip python3-subunit socat texinfo unzip wget xz-utils zstd
-```
-
-### 初始化并构建
+## 快速构建
 
 ```bash
 cd yocto-rk3588-core
 git submodule update --init --recursive
 source poky/oe-init-build-env build
-bitbake rk3588-image-minimal
+# local.conf 已设 MACHINE = "hd-rk3588-core-cnc"
+bitbake rk3588-image-cnc
 ```
 
-实时内核镜像（将 `build/conf/local.conf` 中 `MACHINE` 设为 `hd-rk3588-core-rt`，关闭 Mali/NPU）：
-
-```bash
-# local.conf: MACHINE = "hd-rk3588-core-rt"
-bitbake rk3588-image-rt
-```
-
-产物目录：
+产物：
 
 ```
-build/tmp/deploy/images/hd-rk3588-core/
-├── update.img                 # RKDevTool 烧录（符号链接）
-├── *.update.img
-├── *.wic / *.wic.bmap
-├── idbloader.img / u-boot.itb / fitImage
+build/tmp/deploy/images/hd-rk3588-core-cnc/
+├── update.img
+├── fitImage / hd-rk3588-core.dtb
+├── u-boot.itb / idbloader.img
 └── *.ext4
 ```
-
-## 启动与 update.img（对齐厂家包）
-
-厂家 `参考文件/update.img` 实测串口为 **115200**（DDR → SPL → U-Boot → `ttyFIQ0`）。
-
-- parameter 从 **`uboot@0x4000`** 起
-- **无 idblock 行**，由 MiniLoader 自写入 New IDB
-- MiniLoader 用板级验证版本（ImageUbuntu DDR v1.17）
-- Yocto 侧：`u-boot.itb` + rootfs 内 fitImage；串口统一 **115200;ttyS2**
 
 ## 登录
 
 - 用户：`root`
 - 密码：无（`debug-tweaks`）
+
+## 项目结构
+
+```
+yocto-rk3588-core/
+├── poky/                      # Yocto scarthgap
+├── meta-openembedded/         # XFCE 等
+├── meta-rockchip/             # Rockchip BSP
+├── meta-rockchip-updateimg/   # update.img 打包
+├── meta-rk3588-custom/        # CNC machine + recipes-cnc/
+├── scripts/clean-cnc-deploy.sh
+└── build/
+```

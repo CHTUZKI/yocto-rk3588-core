@@ -1,5 +1,5 @@
-SUMMARY = "Real-time test and bring-up tools for HD-RK3588-CORE RT image"
-DESCRIPTION = "cyclictest, stress-ng, and network utilities (no GPU modetest)"
+SUMMARY = "CNC bring-up and RT validation tools"
+DESCRIPTION = "cyclictest, stress-ng, and network utilities for LinuxCNC CNC image"
 
 inherit packagegroup
 
