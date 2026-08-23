@@ -1,8 +1,7 @@
 # Skeleton HAL — customize PDO mapping in soem_linuxcnc.c for your drives.
-# Source SOEM env:  set -a; . /etc/rk3588-cnc/soem.env; set +a
+# 网口名由环境变量 SOEM_IFNAME 提供（见 /etc/rk3588-cnc/soem.env），勿用 HAL setp。
 
 loadusr -Wn soem_linuxcnc soem_linuxcnc
-setp soem_linuxcnc.ifname ${SOEM_IFNAME}
 
 # Example: connect to servo thread (uncomment after machine INI exists)
 # addf soem_linuxcnc.read-all servo-thread

@@ -6,6 +6,9 @@ SRC_URI = " \
     file://99-linuxcnc-rt.conf \
     file://soem.env \
     file://soem-skeleton.hal \
+    file://xfwm4.xml \
+    file://linuxcnc-env.sh \
+    file://20-rockchip-modesetting.conf \
 "
 
 inherit allarch
@@ -18,10 +21,24 @@ do_install() {
 	install -d ${D}${sysconfdir}/rk3588-cnc
 	install -m 0644 ${WORKDIR}/soem.env ${D}${sysconfdir}/rk3588-cnc/soem.env
 	install -m 0644 ${WORKDIR}/soem-skeleton.hal ${D}${sysconfdir}/rk3588-cnc/soem-skeleton.hal
+
+	install -d ${D}${sysconfdir}/profile.d
+	install -m 0644 ${WORKDIR}/linuxcnc-env.sh ${D}${sysconfdir}/profile.d/linuxcnc-env.sh
+
+	install -d ${D}${sysconfdir}/xdg/xfce4/xfconf/xfce-perchannel-xml
+	install -m 0644 ${WORKDIR}/xfwm4.xml \
+		${D}${sysconfdir}/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
+
+	install -d ${D}${datadir}/X11/xorg.conf.d
+	install -m 0644 ${WORKDIR}/20-rockchip-modesetting.conf \
+		${D}${datadir}/X11/xorg.conf.d/20-rockchip-modesetting.conf
 }
 
 FILES:${PN} = " \
 	${sysconfdir}/security/limits.d/99-linuxcnc-rt.conf \
 	${sysconfdir}/rk3588-cnc/soem.env \
 	${sysconfdir}/rk3588-cnc/soem-skeleton.hal \
+	${sysconfdir}/profile.d/linuxcnc-env.sh \
+	${sysconfdir}/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml \
+	${datadir}/X11/xorg.conf.d/20-rockchip-modesetting.conf \
 "

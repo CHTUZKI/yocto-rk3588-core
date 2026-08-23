@@ -34,7 +34,7 @@ DEPENDS = " \
 RDEPENDS:${PN} = " \
     tcl tk bwidget \
     bash \
-    python3 python3-numpy python3-tkinter \
+    python3 python3-numpy python3-tkinter python3-pyopengl python3-pygobject \
     gtk+3 \
     mesa-demos \
     procps psmisc util-linux \
@@ -45,6 +45,8 @@ RDEPENDS:${PN} = " \
 
 # configure 会探测目标机运行时工具路径；Yocto 构建时 PATH 不含 ps/kill 等，需显式缓存。
 CACHED_CONFIGUREVARS += " \
+    ac_cv_path_GREP=${bindir}/grep \
+    ac_cv_path_AWK=${bindir}/awk \
     ac_cv_path_PS=${bindir}/ps \
     ac_cv_path_KILL=${bindir}/kill \
     ac_cv_path_WHOAMI=${bindir}/whoami \
@@ -99,10 +101,23 @@ do_install() {
 }
 
 do_install:append() {
-	# install 脚本可能保留构建机 python3-native 路径，目标机无法解析
+	# install 脚本可能保留构建机 python3-native / hosttools 路径
 	for f in $(grep -rl 'python3-native/python3' ${D} 2>/dev/null || true); do
 		sed -i '1s|.*|#!/usr/bin/env python3|' "$f"
 	done
+	for f in $(grep -rl 'hosttools' ${D}${bindir} ${D}${libdir}/linuxcnc 2>/dev/null || true); do
+		sed -i -E 's|[^"= ]*hosttools/grep|/usr/bin/grep|g' "$f"
+		sed -i -E 's|[^"= ]*hosttools/awk|/usr/bin/awk|g' "$f"
+	done
+	# Poky: python 模块在 dist-packages；pidof 在 /usr/bin
+	if [ -f ${D}${bindir}/linuxcnc ]; then
+		sed -i \
+			-e 's|PYTHONPATH=$LINUXCNC_HOME/lib/python|PYTHONPATH=$LINUXCNC_HOME/lib/python3/dist-packages:$LINUXCNC_HOME/lib/python|g' \
+			-e 's|PIDOF="/usr/sbin/pidof|PIDOF="/usr/bin/pidof|g' \
+			-e 's|TCLLIBPATH=$LINUXCNC_HOME/lib/tcltk|TCLLIBPATH="/usr/lib/tcl8.6/bwidget $LINUXCNC_HOME/lib/tcltk"|g' \
+			-e 's|TCLLIBPATH="$LINUXCNC_HOME/lib/tcltk $TCLLIBPATH"|TCLLIBPATH="/usr/lib/tcl8.6/bwidget $LINUXCNC_HOME/lib/tcltk $TCLLIBPATH"|g' \
+			${D}${bindir}/linuxcnc
+	fi
 }
 
 FILES:${PN} += " \

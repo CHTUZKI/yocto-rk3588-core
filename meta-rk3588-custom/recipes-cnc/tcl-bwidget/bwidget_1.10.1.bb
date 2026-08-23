@@ -11,10 +11,10 @@ inherit allarch
 S = "${WORKDIR}/bwidget-${PV}"
 
 do_install() {
-	install -d ${D}${datadir}/tcl8.6/bwidget
-	install -m 0644 ${S}/*.tcl ${D}${datadir}/tcl8.6/bwidget/
+	install -d ${D}${libdir}/tcl8.6/bwidget
+	install -m 0644 ${S}/*.tcl ${D}${libdir}/tcl8.6/bwidget/
 }
 
-FILES:${PN} = "${datadir}/tcl8.6/bwidget"
+FILES:${PN} = "${libdir}/tcl8.6/bwidget"
 
 RDEPENDS:${PN} = "tcl tk"
