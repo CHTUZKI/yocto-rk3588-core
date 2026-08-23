@@ -6,7 +6,7 @@
 
 基于 Yocto Project **scarthgap（5.0 LTS）** 的 **Vanxak HD-RK3588-CORE** 核心板嵌入式 Linux 构建环境。
 
-结构参考同系列 [yocto-rk3506b-core](https://github.com/CHTUZKI/yocto-rk3506b-core)，面向 RK3588J 模组（8GB LPDDR4x + eMMC），当前仅构建**最小镜像**，并通过自研层生成 RKDevTool 可用的 `update.img`。
+结构参考同系列 [yocto-rk3506b-core](https://github.com/CHTUZKI/yocto-rk3506b-core)，面向 RK3588J 模组（8GB LPDDR4x + eMMC）。提供**最小镜像**与 **PREEMPT_RT 实时镜像**（GPU/NPU 关闭），并通过自研层生成 RKDevTool 可用的 `update.img`。
 
 ## 硬件参数（摘要）
 
@@ -53,6 +53,13 @@ cd yocto-rk3588-core
 git submodule update --init --recursive
 source poky/oe-init-build-env build
 bitbake rk3588-image-minimal
+```
+
+实时内核镜像（将 `build/conf/local.conf` 中 `MACHINE` 设为 `hd-rk3588-core-rt`，关闭 Mali/NPU）：
+
+```bash
+# local.conf: MACHINE = "hd-rk3588-core-rt"
+bitbake rk3588-image-rt
 ```
 
 产物目录：
