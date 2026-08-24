@@ -118,20 +118,73 @@ do_install:append() {
 			-e 's|TCLLIBPATH="$LINUXCNC_HOME/lib/tcltk $TCLLIBPATH"|TCLLIBPATH="/usr/lib/tcl8.6/bwidget $LINUXCNC_HOME/lib/tcltk $TCLLIBPATH"|g' \
 			${D}${bindir}/linuxcnc
 	fi
+
+	# 安装 sample-configs 到 linuxcnc.tcl 硬编码的搜索路径，使无参数启动
+	# linuxcnc 时 pickconfig.tcl 能列出可用配置（不依赖 $HOME）。
+	# install-software 已装到 ${datadir}/doc/linuxcnc/examples/sample-configs，
+	# 但 Yocto 默认把 ${datadir}/doc split 到 -doc 包；移到 ${datadir}/linuxcnc
+	# 下（已被 FILES:${PN} 的 ${datadir}/linuxcnc 包含），并改 linuxcnc.tcl 路径。
+	if [ -d "${D}${datadir}/doc/linuxcnc/examples/sample-configs" ]; then
+		install -d ${D}${datadir}/linuxcnc/examples
+		cp -a --no-preserve=ownership ${D}${datadir}/doc/linuxcnc/examples/sample-configs \
+			${D}${datadir}/linuxcnc/examples/sample-configs
+		chown -R root:root ${D}${datadir}/linuxcnc/examples/sample-configs
+		rm -rf ${D}${datadir}/linuxcnc/examples/sample-configs/.git
+		rm -rf ${D}${datadir}/doc/linuxcnc/examples/sample-configs
+		rmdir --ignore-fail-on-non-empty ${D}${datadir}/doc/linuxcnc/examples \
+			${D}${datadir}/doc/linuxcnc 2>/dev/null || true
+		# 改 linuxcnc.tcl 里硬编码的 CONFIG_PATH 搜索路径
+		sed -i 's|/usr/share/doc/linuxcnc/examples/sample-configs|/usr/share/linuxcnc/examples/sample-configs|g' \
+			${D}${libdir}/tcltk/linuxcnc/linuxcnc.tcl
+	fi
+
+	# 删除自带的 linuxcnc.desktop，改由 rk3588-cnc-config 提供修改版
+	# （root 登录需 RTAPI_UID≠0 等 env，官方版 Exec 无 env 不适用）
+	rm -f ${D}${datadir}/applications/linuxcnc.desktop
+
+	# 安装 debian/extras 菜单资源（与官方 Debian 包对齐）：
+	#   - CNC.menu / .directory（菜单结构）
+	#   - hicolor SVG 图标（linuxcncicon.svg + 语言变体 + alt）
+	#   - udev rules（hm2-pci / realtime / shuttle / xhc）
+	# 文档 .desktop 暂不安装（构建时禁用了文档生成）。
+	EXTRAS=${WORKDIR}/git/debian/extras
+	if [ -d "$EXTRAS" ]; then
+		# CNC.menu
+		install -d ${D}${sysconfdir}/xdg/menus/applications-merged
+		install -m 0644 $EXTRAS/etc/xdg/menus/applications-merged/CNC.menu \
+			${D}${sysconfdir}/xdg/menus/applications-merged/CNC.menu
+		# .directory
+		install -d ${D}${datadir}/desktop-directories
+		install -m 0644 $EXTRAS/usr/share/desktop-directories/linuxcnc-*.directory \
+			${D}${datadir}/desktop-directories/
+		# hicolor SVG 图标
+		install -d ${D}${datadir}/icons/hicolor/scalable/apps
+		cp -a --no-preserve=ownership $EXTRAS/usr/share/icons/hicolor/scalable/apps/. \
+			${D}${datadir}/icons/hicolor/scalable/apps/
+		# udev rules
+		install -d ${D}${nonarch_base_libdir}/udev/rules.d
+		install -m 0644 $EXTRAS/lib/udev/rules.d/99-*.rules \
+			${D}${nonarch_base_libdir}/udev/rules.d/
+	fi
 }
 
 FILES:${PN} += " \
     ${datadir}/linuxcnc \
     ${sysconfdir}/linuxcnc \
+    ${sysconfdir}/xdg/menus/applications-merged/CNC.menu \
     ${libdir}/linuxcnc \
     ${libdir}/python3/dist-packages \
     ${libdir}/tcltk/linuxcnc \
+    ${datadir}/applications \
+    ${datadir}/desktop-directories \
+    ${datadir}/icons/hicolor \
     ${datadir}/axis \
     ${datadir}/glade \
     ${datadir}/gmoccapy \
     ${datadir}/gscreen \
     ${datadir}/gtksourceview-4/language-specs \
     ${datadir}/qtvcp \
+    ${nonarch_base_libdir}/udev/rules.d \
 "
 
 # 仅把 halcompile 导出到 sysroot，供 soem-linuxcnc-hal 交叉构建使用

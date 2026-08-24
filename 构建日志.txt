@@ -1,7 +1,32 @@
-Loading cache...done.
-Loaded 0 entries from dependency cache.
-Parsing recipes...done.
-Parsing of 3062 .bb files complete (0 cached, 3062 parsed). 5004 targets, 223 skipped, 0 masked, 0 errors.
+xuning@DESKTOP-ML3JIRG:~/yocto-rk3588-core/build$ cd /home/xuning/yocto-rk3588-core
+source poky/oe-init-build-env build
+bitbake rk3588-image-cnc -c cleansstate
+bitbake rk3588-image-cnc
+This is the default build configuration for the Poky reference distribution.
+
+### Shell environment set up for builds. ###
+
+You can now run 'bitbake <target>'
+
+Common targets are:
+    core-image-minimal
+    core-image-full-cmdline
+    core-image-sato
+    core-image-weston
+    meta-toolchain
+    meta-ide-support
+
+You can also run generated qemu images with a command like 'runqemu qemux86-64'.
+
+Other commonly useful commands are:
+ - 'devtool' and 'recipetool' handle common recipe tasks
+ - 'bitbake-layers' handles common layer tasks
+ - 'oe-pkgdata-util' handles common target package tasks
+Loading cache: 100% |########################################################################| Time: 0:00:01
+Loaded 5118 entries from dependency cache.
+Parsing recipes: 100% |######################################################################| Time: 0:00:00
+Parsing of 3132 .bb files complete (3131 cached, 1 parsed). 5118 targets, 234 skipped, 0 masked, 0 errors.
+Removing 1 recipes from the cortexa76-cortexa55-crypto sysroot: 100% |#######################| Time: 0:00:00
 NOTE: Resolving any missing task queue dependencies
 
 Build Configuration:
@@ -14,71 +39,246 @@ DISTRO               = "poky"
 DISTRO_VERSION       = "5.0.19"
 TUNE_FEATURES        = "aarch64 cortexa76-cortexa55 crypto"
 TARGET_FPU           = ""
-meta-rk3588-custom   = "LinuxCNC:be45e98503b54e366db34786c8fe50504f32add3"
+meta-rk3588-custom   = "LinuxCNC:0d28e5539a773dd4ac59f5c90da0bd1bad6b511f"
 meta-rockchip-updateimg = "HEAD:dad8520b90bc59ee6593eb7671f3cffd5ae50752"
 meta-rockchip        = "HEAD:9690180b7e9953361958c962b80d891eda8c1028"
-meta-arm             
+meta-arm
 meta-arm-toolchain   = "HEAD:045eb74bd9abe7d9ccf365a2417e440ce83bcbb0"
-meta                 
-meta-poky            
+meta
+meta-poky
 meta-yocto-bsp       = "HEAD:9916b7471edd0e9a95d94364398c241d1c3bac33"
-meta-oe              
-meta-python          
-meta-networking      
-meta-xfce            
-meta-gnome           
+meta-oe
+meta-python
+meta-networking
+meta-xfce
+meta-gnome
 meta-multimedia      = "HEAD:7eb94107580092f79ff1b639a87762fe6f96aa12"
+meta-qt6             = "6.8:2a9a0070f652134e15df332918a012862bf34047"
 
-Initialising tasks...WARNING: /home/xuning/yocto-rk3588-core/build/../meta-rockchip/recipes-bsp/rkbin/rockchip-rkbin_git.bb:do_deploy is tainted from a forced run
-Sstate summary: Wanted 8 Local 0 Mirrors 0 Missed 8 Current 4771 (0% match, 99% complete)
-Removing 6 stale sstate objects for arch hd_rk3588_core_cnc...done.
+Sstate summary: Wanted 0 Local 0 Mirrors 0 Missed 0 Current 0 (0% match, 0% complete)#       | ETA:  0:00:00
+Initialising tasks: 100% |###################################################################| Time: 0:00:02
+NOTE: No setscene tasks
 NOTE: Executing Tasks
-NOTE: Running task 6482 of 9669 (/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/packagegroups/packagegroup-core-x11-xserver.bb:do_package)
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_package: Started
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_package: Succeeded
-NOTE: Running task 7063 of 9669 (/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/packagegroups/packagegroup-core-x11-xserver.bb:do_packagedata)
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_packagedata: Started
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_packagedata: Succeeded
-NOTE: Running task 7646 of 9669 (/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/packagegroups/packagegroup-core-x11-xserver.bb:do_create_spdx)
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_create_spdx: Started
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_create_spdx: Succeeded
-NOTE: Running task 9401 of 9669 (/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/packagegroups/packagegroup-core-x11-xserver.bb:do_package_write_ipk)
-NOTE: Running task 9402 of 9669 (/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/packagegroups/packagegroup-core-x11-xserver.bb:do_package_qa)
-NOTE: Running task 9403 of 9669 (/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/packagegroups/packagegroup-core-x11-xserver.bb:do_create_runtime_spdx)
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_package_write_ipk: Started
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_create_runtime_spdx: Started
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_package_qa: Started
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_create_runtime_spdx: Succeeded
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_package_qa: Succeeded
-NOTE: recipe packagegroup-core-x11-xserver-1.0-r0: task do_package_write_ipk: Succeeded
-NOTE: Running task 9660 of 9669 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-cnc.bb:do_rootfs)
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_rootfs: Started
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_rootfs: Succeeded
-NOTE: Running task 9661 of 9669 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-cnc.bb:do_flush_pseudodb)
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_flush_pseudodb: Started
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_flush_pseudodb: Succeeded
-NOTE: Running task 9662 of 9669 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-cnc.bb:do_image_qa)
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_image_qa: Started
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_image_qa: Succeeded
-NOTE: Running task 9663 of 9669 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-cnc.bb:do_image)
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_image: Started
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_image: Succeeded
-NOTE: Running task 9664 of 9669 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-cnc.bb:do_rootfs_wicenv)
-NOTE: Running task 9665 of 9669 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-cnc.bb:do_image_ext4)
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_rootfs_wicenv: Started
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_rootfs_wicenv: Succeeded
-NOTE: Running task 9666 of 9669 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-cnc.bb:do_image_wic)
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_image_ext4: Started
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_image_wic: Started
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_image_ext4: Succeeded
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_image_wic: Succeeded
-NOTE: Running task 9667 of 9669 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-cnc.bb:do_image_complete)
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_image_complete: Started
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_image_complete: Succeeded
-NOTE: Running task 9668 of 9669 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-cnc.bb:do_populate_lic_deploy)
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_populate_lic_deploy: Started
-NOTE: recipe rk3588-image-cnc-1.0-r0: task do_populate_lic_deploy: Succeeded
-NOTE: Running noexec task 9669 of 9669 (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-core/images/rk3588-image-cnc.bb:do_build)
-NOTE: Tasks Summary: Attempted 9669 tasks of which 9653 didn't need to be rerun and all succeeded.
+NOTE: Tasks Summary: Attempted 2 tasks of which 0 didn't need to be rerun and all succeeded.
+Loading cache: 100% |########################################################################| Time: 0:00:01
+Loaded 5118 entries from dependency cache.
+NOTE: Resolving any missing task queue dependencies
 
+Build Configuration:
+BB_VERSION           = "2.8.1"
+BUILD_SYS            = "x86_64-linux"
+NATIVELSBSTRING      = "universal"
+TARGET_SYS           = "aarch64-poky-linux"
+MACHINE              = "hd-rk3588-core-cnc"
+DISTRO               = "poky"
+DISTRO_VERSION       = "5.0.19"
+TUNE_FEATURES        = "aarch64 cortexa76-cortexa55 crypto"
+TARGET_FPU           = ""
+meta-rk3588-custom   = "LinuxCNC:0d28e5539a773dd4ac59f5c90da0bd1bad6b511f"
+meta-rockchip-updateimg = "HEAD:dad8520b90bc59ee6593eb7671f3cffd5ae50752"
+meta-rockchip        = "HEAD:9690180b7e9953361958c962b80d891eda8c1028"
+meta-arm
+meta-arm-toolchain   = "HEAD:045eb74bd9abe7d9ccf365a2417e440ce83bcbb0"
+meta
+meta-poky
+meta-yocto-bsp       = "HEAD:9916b7471edd0e9a95d94364398c241d1c3bac33"
+meta-oe
+meta-python
+meta-networking
+meta-xfce
+meta-gnome
+meta-multimedia      = "HEAD:7eb94107580092f79ff1b639a87762fe6f96aa12"
+meta-qt6             = "6.8:2a9a0070f652134e15df332918a012862bf34047"
+
+WARNING: /home/xuning/yocto-rk3588-core/build/../meta-rockchip/recipes-bsp/rkbin/rockchip-rkbin_git.bb:do_deploy is tainted from a forced run
+Sstate summary: Wanted 69 Local 0 Mirrors 0 Missed 69 Current 4910 (0% match, 98% complete)  | ETA:  0:00:00
+Initialising tasks: 100% |###################################################################| Time: 0:00:08
+NOTE: Executing Tasks
+NOTE: No reply from server in 30s (for command ping at 23:21:58.010980)
+NOTE: No reply from server in 30s (for command ping at 23:24:27.812524)
+ERROR: synergy-git-r0 do_configure: ExecutionError('/home/xuning/yocto-rk3588-core/build/tmp/work/cortexa76-cortexa55-crypto-poky-linux/synergy/git/temp/run.do_configure.858878', 1, None, None)
+ERROR: Logfile of failure stored in: /home/xuning/yocto-rk3588-core/build/tmp/work/cortexa76-cortexa55-crypto-poky-linux/synergy/git/temp/log.do_configure.858878
+Log data follows:
+| DEBUG: Executing python function extend_recipe_sysroot
+| NOTE: Direct dependencies are ['/home/xuning/yocto-rk3588-core/build/../meta-openembedded/meta-oe/recipes-support/cli11/cli11_2.3.2.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../meta-qt6/recipes-qt/qt6/qtbase_git.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../meta-qt6/recipes-qt/qt6/qttools_git.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-support/tomlplusplus/tomlplusplus_3.4.0.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-connectivity/openssl/openssl_3.5.7.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-core/glib-2.0/glib-2.0_2.78.6.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-core/glibc/glibc_2.39.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-devtools/cmake/cmake-native_3.28.3.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-devtools/gcc/gcc-cross_13.4.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-devtools/gcc/gcc-runtime_13.4.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-devtools/quilt/quilt-native_0.67.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-gnome/gdk-pixbuf/gdk-pixbuf_2.42.12.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-gnome/libnotify/libnotify_0.8.3.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/xorg-lib/libice_1.1.1.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/xorg-lib/libsm_1.2.4.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/xorg-lib/libxext_1.3.6.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/xorg-lib/libxi_1.8.1.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/xorg-lib/libxinerama_1.1.5.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/xorg-lib/libxkbfile_1.1.3.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/xorg-lib/libxrandr_1.5.4.bb:do_populate_sysroot', '/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-graphics/xorg-lib/libxtst_1.2.4.bb:do_populate_sysroot', 'virtual:native:/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-devtools/ninja/ninja_1.11.1.bb:do_populate_sysroot', 'virtual:native:/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-devtools/patch/patch_2.7.6.bb:do_populate_sysroot', 'virtual:native:/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-devtools/pkgconfig/pkgconfig_git.bb:do_populate_sysroot', 'virtual:native:/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-devtools/pseudo/pseudo_git.bb:do_populate_sysroot', 'virtual:native:/home/xuning/yocto-rk3588-core/build/../poky/meta/recipes-devtools/python/python3_3.12.13.bb:do_populate_sysroot']
+| NOTE: Installed into sysroot: []
+| NOTE: Skipping as already exists in sysroot: ['cli11', 'qtbase', 'qtdeclarative', 'qtlanguageserver', 'qtshadertools', 'qtsvg', 'qttools', 'tk', 'tomlplusplus', 'openssl', 'base-files', 'base-passwd', 'dbus', 'expat', 'gettext-minimal-native', 'glib-2.0', 'glibc', 'initscripts', 'libxcrypt', 'libxml2', 'ncurses', 'systemd', 'update-rc.d', 'util-linux-libuuid', 'util-linux', 'zlib', 'binutils-cross-aarch64', 'cmake-native', 'gcc-cross-aarch64', 'gcc-runtime', 'libgcc', 'libedit', 'libtool-native', 'm4-native', 'opkg-utils', 'python3', 'quilt-native', 'tcl', 'bzip2', 'libnsl2', 'libtirpc', 'shadow-sysroot', 'shadow', 'texinfo-dummy-native', 'xz', 'zstd', 'gdk-pixbuf', 'gobject-introspection', 'libnotify', 'cairo', 'libdrm', 'fontconfig', 'freetype', 'harfbuzz', 'libjpeg-turbo', 'mesa', 'vulkan-headers', 'vulkan-loader', 'libinput', 'mtdev', 'wayland-protocols', 'wayland', 'xrandr', 'libice', 'libpthread-stubs', 'libsm', 'libx11', 'libxau', 'libxcb', 'libxdamage', 'libxdmcp', 'libxext', 'libxfixes', 'libxft', 'libxi', 'libxinerama', 'libxkbcommon', 'libxkbfile', 'libxrandr', 'libxrender', 'libxshmfence', 'libxt', 'libxtst', 'libxxf86vm', 'pixman', 'xcb-util-cursor', 'xcb-util-image', 'xcb-util-keysyms', 'xcb-util-renderutil', 'xcb-util-wm', 'xcb-util', 'xkeyboard-config', 'xtrans', 'xcb-proto', 'xorgproto', 'util-macros', 'kmod', 'linux-libc-headers', 'libpng', 'at-spi2-core', 'acl', 'attr', 'bash-completion', 'gdbm', 'icu', 'libcap-ng', 'libcap', 'libcheck', 'libevdev', 'libffi', 'libpcre2', 'libseccomp', 'shared-mime-info', 'sqlite3', 'openssl-native', 'expat-native', 'ncurses-native', 'util-linux-libuuid-native', 'zlib-native', 'flex-native', 'gnu-config-native', 'libedit-native', 'make-native', 'ninja-native', 'patch-native', 'perl-native', 'pkgconfig-native', 'pseudo-native', 'python3-native', 'bzip2-native', 'libnsl2-native', 'libtirpc-native', 'shadow-native', 'xz-native', 'zstd-native', 'attr-native', 'gdbm-native', 'gmp-native', 'libbsd-native', 'libffi-native', 'libmd-native', 'libmpc-native', 'mpfr-native', 're2c-native', 'sqlite3-native']
+| DEBUG: Python function extend_recipe_sysroot finished
+| DEBUG: Executing shell function do_configure
+| -- The C compiler identification is GNU 13.4.0
+| -- The CXX compiler identification is GNU 13.4.0
+| -- Detecting C compiler ABI info
+| -- Detecting C compiler ABI info - done
+| -- Check for working C compiler: /home/xuning/yocto-rk3588-core/build/tmp/work/cortexa76-cortexa55-crypto-poky-linux/synergy/git/recipe-sysroot-native/usr/bin/aarch64-poky-linux/aarch64-poky-linux-gcc - skipped
+| -- Detecting C compile features
+| -- Detecting C compile features - done
+| -- Detecting CXX compiler ABI info
+| -- Detecting CXX compiler ABI info - done
+| -- Check for working CXX compiler: /home/xuning/yocto-rk3588-core/build/tmp/work/cortexa76-cortexa55-crypto-poky-linux/synergy/git/recipe-sysroot-native/usr/bin/aarch64-poky-linux/aarch64-poky-linux-g++ - skipped
+| -- Detecting CXX compile features
+| -- Detecting CXX compile features - done
+| -- Using default product name
+| -- Product name: Synergy (developer build)
+| -- Enabling version check
+| -- Found Git: /home/xuning/yocto-rk3588-core/build/tmp/hosttools/git (found version "2.43.0")
+| -- Git SHA: fa72a91a3
+| -- Version number (semver): 1.20.5-dev+fa72a91a3
+| -- Version number (4-part): 1.20.5.2
+| -- Version number (DEB/RPM): 1.20.5~dev+fa72a91a3
+| -- Disabling debug build
+| -- Enabling warnings as errors (GNU/Clang)
+| -- Build date: 2026-08-24
+| -- Looking for C++ include istream
+| -- Looking for C++ include istream - found
+| -- Looking for C++ include ostream
+| -- Looking for C++ include ostream - found
+| -- Looking for C++ include sstream
+| -- Looking for C++ include sstream - found
+| -- Looking for include file inttypes.h
+| -- Looking for include file inttypes.h - found
+| -- Looking for include file locale.h
+| -- Looking for include file locale.h - found
+| -- Looking for include file memory.h
+| -- Looking for include file memory.h - found
+| -- Looking for include file stdlib.h
+| -- Looking for include file stdlib.h - found
+| -- Looking for include file strings.h
+| -- Looking for include file strings.h - found
+| -- Looking for include file string.h
+| -- Looking for include file string.h - found
+| -- Looking for include file sys/select.h
+| -- Looking for include file sys/select.h - found
+| -- Looking for include file sys/socket.h
+| -- Looking for include file sys/socket.h - found
+| -- Looking for include file sys/stat.h
+| -- Looking for include file sys/stat.h - found
+| -- Looking for include file sys/time.h
+| -- Looking for include file sys/time.h - found
+| -- Looking for include file sys/utsname.h
+| -- Looking for include file sys/utsname.h - found
+| -- Looking for include file unistd.h
+| -- Looking for include file unistd.h - found
+| -- Looking for include file wchar.h
+| -- Looking for include file wchar.h - found
+| -- Looking for getpwuid_r
+| -- Looking for getpwuid_r - found
+| -- Looking for gmtime_r
+| -- Looking for gmtime_r - found
+| -- Looking for nanosleep
+| -- Looking for nanosleep - found
+| -- Looking for sigwait
+| -- Looking for sigwait - found
+| -- Looking for strftime
+| -- Looking for strftime - found
+| -- Looking for vsnprintf
+| -- Looking for vsnprintf - found
+| -- Looking for inet_aton
+| -- Looking for inet_aton - found
+| -- Looking for sys/types.h
+| -- Looking for sys/types.h - found
+| -- Looking for stdint.h
+| -- Looking for stdint.h - found
+| -- Looking for stddef.h
+| -- Looking for stddef.h - found
+| -- Check size of char
+| -- Check size of char - done
+| -- Check size of int
+| -- Check size of int - done
+| -- Check size of long
+| -- Check size of long - done
+| -- Check size of short
+| -- Check size of short - done
+| -- Looking for pthread_create in pthread
+| -- Looking for pthread_create in pthread - found
+| -- Check size of XRRNotifyEvent
+| -- Check size of XRRNotifyEvent - done
+| -- Looking for 3 include files X11/Xlib.h, ..., X11/extensions/dpms.h
+| -- Looking for 3 include files X11/Xlib.h, ..., X11/extensions/dpms.h - found
+| -- Looking for include file X11/extensions/Xinerama.h
+| -- Looking for include file X11/extensions/Xinerama.h - found
+| -- Looking for 3 include files X11/Xlib.h, ..., X11/extensions/XKBstr.h
+| -- Looking for 3 include files X11/Xlib.h, ..., X11/extensions/XKBstr.h - found
+| -- Looking for include file X11/extensions/XKB.h
+| -- Looking for include file X11/extensions/XKB.h - found
+| -- Looking for include file X11/extensions/XTest.h
+| -- Looking for include file X11/extensions/XTest.h - found
+| -- Looking for include files X11/Xlib.h, X11/XKBlib.h
+| -- Looking for include files X11/Xlib.h, X11/XKBlib.h - found
+| -- Looking for include file X11/extensions/XInput2.h
+| -- Looking for include file X11/extensions/XInput2.h - found
+| -- Looking for IceConnectionNumber in SM;ICE
+| -- Looking for IceConnectionNumber in SM;ICE - found
+| -- Looking for DPMSQueryExtension in Xext;X11
+| -- Looking for DPMSQueryExtension in Xext;X11 - found
+| -- Looking for XTestQueryExtension in Xtst;Xext;X11
+| -- Looking for XTestQueryExtension in Xtst;Xext;X11 - found
+| -- Looking for XineramaQueryExtension in Xinerama
+| -- Looking for XineramaQueryExtension in Xinerama - found
+| -- Looking for XISelectEvents in Xi
+| -- Looking for XISelectEvents in Xi - found
+| -- Looking for XRRQueryExtension in Xrandr
+| -- Looking for XRRQueryExtension in Xrandr - found
+| -- Found PkgConfig: /home/xuning/yocto-rk3588-core/build/tmp/work/cortexa76-cortexa55-crypto-poky-linux/synergy/git/recipe-sysroot-native/usr/bin/pkg-config (found version "0.29.2")
+| CMake Warning at cmake/Libraries.cmake:262 (message):
+|   Local libei not found
+| Call Stack (most recent call first):
+|   cmake/Libraries.cmake:220 (configure_libei)
+|   cmake/Libraries.cmake:141 (configure_wayland_libs)
+|   cmake/Libraries.cmake:23 (configure_unix_libs)
+|   CMakeLists.txt:45 (configure_libs)
+|
+|
+| CMake Warning at cmake/Libraries.cmake:308 (message):
+|   Local libportal not found
+| Call Stack (most recent call first):
+|   cmake/Libraries.cmake:221 (configure_libportal)
+|   cmake/Libraries.cmake:141 (configure_wayland_libs)
+|   cmake/Libraries.cmake:23 (configure_unix_libs)
+|   CMakeLists.txt:45 (configure_libs)
+|
+|
+| -- Checking for module 'xkbcommon'
+| --   Found xkbcommon, version 1.6.0
+| -- Checking for modules 'glib-2.0;gio-2.0'
+| --   Found glib-2.0, version 2.78.6
+| --   Found gio-2.0, version 2.78.6
+| -- xkbcommon version: 1.6.0
+| -- Checking for module 'glib-2.0'
+| --   Found glib-2.0, version 2.78.6
+| -- Checking for one of the modules 'gdk-pixbuf-2.0'
+| -- Checking for module 'gdk-pixbuf-2.0'
+| --   Found gdk-pixbuf-2.0, version 2.42.12
+| -- Checking for module 'libnotify'
+| --   Found libnotify, version 0.8.3
+| CMake Error at /home/xuning/yocto-rk3588-core/build/tmp/work/cortexa76-cortexa55-crypto-poky-linux/synergy/git/recipe-sysroot/usr/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:288 (message):
+|   To use a cross-compiled Qt, please set the QT_HOST_PATH cache variable to
+|   the location of your host Qt installation.
+| Call Stack (most recent call first):
+|   /home/xuning/yocto-rk3588-core/build/tmp/work/cortexa76-cortexa55-crypto-poky-linux/synergy/git/recipe-sysroot/usr/lib/cmake/Qt6/Qt6Dependencies.cmake:14 (_qt_internal_setup_qt_host_path)
+|   /home/xuning/yocto-rk3588-core/build/tmp/work/cortexa76-cortexa55-crypto-poky-linux/synergy/git/recipe-sysroot/usr/lib/cmake/Qt6/Qt6Config.cmake:179 (include)
+|   cmake/Libraries.cmake:28 (find_package)
+|   CMakeLists.txt:45 (configure_libs)
+|
+|
+| CMake Error at cmake/Libraries.cmake:28 (find_package):
+|   Found package configuration file:
+|
+|     /home/xuning/yocto-rk3588-core/build/tmp/work/cortexa76-cortexa55-crypto-poky-linux/synergy/git/recipe-sysroot/usr/lib/cmake/Qt6/Qt6Config.cmake
+|
+|   but it set Qt6_FOUND to FALSE so package "Qt6" is considered to be NOT
+|   FOUND.
+| Call Stack (most recent call first):
+|   CMakeLists.txt:45 (configure_libs)
+|
+|
+| -- Configuring incomplete, errors occurred!
+| WARNING: exit code 1 from a shell command.
+ERROR: Task (/home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-support/synergy/synergy_git.bb:do_configure) failed with exit code '1'
+NOTE: Tasks Summary: Attempted 10068 tasks of which 9940 didn't need to be rerun and 1 failed.
+
+Summary: 1 task failed:
+  /home/xuning/yocto-rk3588-core/build/../meta-rk3588-custom/recipes-support/synergy/synergy_git.bb:do_configure
+    log: /home/xuning/yocto-rk3588-core/build/tmp/work/cortexa76-cortexa55-crypto-poky-linux/synergy/git/temp/log.do_configure.858878
 Summary: There was 1 WARNING message.
+Summary: There was 1 ERROR message, returning a non-zero exit code.
+xuning@DESKTOP-ML3JIRG:~/yocto-rk3588-core/build$

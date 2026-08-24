@@ -9,6 +9,7 @@ SRC_URI = " \
     file://xfwm4.xml \
     file://linuxcnc-env.sh \
     file://20-rockchip-modesetting.conf \
+    file://linuxcnc.desktop \
 "
 
 inherit allarch
@@ -32,6 +33,11 @@ do_install() {
 	install -d ${D}${datadir}/X11/xorg.conf.d
 	install -m 0644 ${WORKDIR}/20-rockchip-modesetting.conf \
 		${D}${datadir}/X11/xorg.conf.d/20-rockchip-modesetting.conf
+
+	# 覆盖 linuxcnc 自带的 .desktop（root 登录需 RTAPI_UID≠0 等 env）
+	install -d ${D}${datadir}/applications
+	install -m 0644 ${WORKDIR}/linuxcnc.desktop \
+		${D}${datadir}/applications/linuxcnc.desktop
 }
 
 FILES:${PN} = " \
@@ -41,4 +47,5 @@ FILES:${PN} = " \
 	${sysconfdir}/profile.d/linuxcnc-env.sh \
 	${sysconfdir}/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml \
 	${datadir}/X11/xorg.conf.d/20-rockchip-modesetting.conf \
+	${datadir}/applications/linuxcnc.desktop \
 "

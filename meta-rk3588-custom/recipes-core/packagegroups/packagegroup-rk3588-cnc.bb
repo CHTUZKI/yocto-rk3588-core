@@ -11,8 +11,8 @@ RDEPENDS:${PN} = " \
     bwidget \
     packagegroup-rk3588-cnc-tools \
     rk3588-cnc-config \
-    hd-rk3588-cnc-netconfig \
     mesa-megadriver \
     mesa-demos \
     xterm \
+    synergy \
 "

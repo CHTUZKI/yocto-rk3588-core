@@ -17,3 +17,7 @@
 [submodule "meta-rockchip-updateimg"]
 	path = meta-rockchip-updateimg
 	url = git@github.com:CHTUZKI/meta-rockchip-updateimg.git
+[submodule "meta-qt6"]
+	path = meta-qt6
+	url = https://code.qt.io/yocto/meta-qt6.git
+	branch = 6.8
