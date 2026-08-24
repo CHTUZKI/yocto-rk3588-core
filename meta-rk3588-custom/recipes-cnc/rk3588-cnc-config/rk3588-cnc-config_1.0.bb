@@ -10,9 +10,13 @@ SRC_URI = " \
     file://linuxcnc-env.sh \
     file://20-rockchip-modesetting.conf \
     file://linuxcnc.desktop \
+    file://synergy-client.service \
 "
 
-inherit allarch
+inherit allarch systemd
+
+SYSTEMD_SERVICE:${PN} = "synergy-client.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
 do_install() {
 	install -d ${D}${sysconfdir}/security/limits.d
@@ -38,6 +42,11 @@ do_install() {
 	install -d ${D}${datadir}/applications
 	install -m 0644 ${WORKDIR}/linuxcnc.desktop \
 		${D}${datadir}/applications/linuxcnc.desktop
+
+	# Synergy client 开机自启（PC 端 192.168.1.2 为 server）
+	install -d ${D}${systemd_system_unitdir}
+	install -m 0644 ${WORKDIR}/synergy-client.service \
+		${D}${systemd_system_unitdir}/synergy-client.service
 }
 
 FILES:${PN} = " \
@@ -48,4 +57,5 @@ FILES:${PN} = " \
 	${sysconfdir}/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml \
 	${datadir}/X11/xorg.conf.d/20-rockchip-modesetting.conf \
 	${datadir}/applications/linuxcnc.desktop \
+	${systemd_system_unitdir}/synergy-client.service \
 "

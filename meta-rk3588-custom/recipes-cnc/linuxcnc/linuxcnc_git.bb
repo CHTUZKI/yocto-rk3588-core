@@ -34,8 +34,8 @@ DEPENDS = " \
 RDEPENDS:${PN} = " \
     tcl tk bwidget \
     bash \
-    python3 python3-numpy python3-tkinter python3-pyopengl python3-pygobject \
-    gtk+3 \
+    python3 python3-numpy python3-tkinter python3-pyopengl python3-pygobject python3-xlib \
+    gtk+3 gtksourceview4 \
     mesa-demos \
     procps psmisc util-linux \
     coreutils \

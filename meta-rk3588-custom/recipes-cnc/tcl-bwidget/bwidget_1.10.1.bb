@@ -13,6 +13,9 @@ S = "${WORKDIR}/bwidget-${PV}"
 do_install() {
 	install -d ${D}${libdir}/tcl8.6/bwidget
 	install -m 0644 ${S}/*.tcl ${D}${libdir}/tcl8.6/bwidget/
+
+	install -d ${D}${libdir}/tcl8.6/bwidget/images
+	install -m 0644 ${S}/images/* ${D}${libdir}/tcl8.6/bwidget/images/
 }
 
 FILES:${PN} = "${libdir}/tcl8.6/bwidget"
