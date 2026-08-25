@@ -10,6 +10,7 @@ SRC_URI = " \
     file://linuxcnc-env.sh \
     file://20-rockchip-modesetting.conf \
     file://linuxcnc.desktop \
+    file://rk3588-linuxcnc.desktop \
     file://synergy-client.service \
     file://rk3588-linuxcnc \
 "
@@ -55,12 +56,22 @@ do_install() {
 
 	# Install the rk3588-linuxcnc real-hardware sample config into the
 	# LinuxCNC sample-configs directory so pickconfig.tcl lists it.
-	# Users then copy it to ~/linuxcnc/configs/ via the LinuxCNC config picker.
 	install -d ${D}${datadir}/linuxcnc/examples/sample-configs
 	cp -r ${WORKDIR}/rk3588-linuxcnc \
 		${D}${datadir}/linuxcnc/examples/sample-configs/rk3588-linuxcnc
-	# Remove any __pycache__ that may have been copied
 	rm -rf ${D}${datadir}/linuxcnc/examples/sample-configs/rk3588-linuxcnc/python/__pycache__
+
+	# Also install directly into /home/root/linuxcnc/configs/ so the config
+	# is ready to use on first boot (no need to run pickconfig.tcl).
+	install -d ${D}/home/root/linuxcnc/configs
+	cp -r ${WORKDIR}/rk3588-linuxcnc \
+		${D}/home/root/linuxcnc/configs/rk3588-linuxcnc
+	rm -rf ${D}/home/root/linuxcnc/configs/rk3588-linuxcnc/python/__pycache__
+
+	# Desktop shortcut that launches LinuxCNC with our config directly.
+	install -d ${D}/home/root/Desktop
+	install -m 0755 ${WORKDIR}/rk3588-linuxcnc.desktop \
+		${D}/home/root/Desktop/rk3588-linuxcnc.desktop
 }
 
 FILES:${PN} = " \
@@ -73,4 +84,9 @@ FILES:${PN} = " \
 	${datadir}/applications/linuxcnc.desktop \
 	${systemd_system_unitdir}/synergy-client.service \
 	${datadir}/linuxcnc/examples/sample-configs/rk3588-linuxcnc \
+	/home/root/linuxcnc/configs/rk3588-linuxcnc \
+	/home/root/Desktop/rk3588-linuxcnc.desktop \
 "
+
+# /home/root is not a standard Yocto install path; suppress the warning
+INSANE_SKIP:${PN} += "file-rdeps"
