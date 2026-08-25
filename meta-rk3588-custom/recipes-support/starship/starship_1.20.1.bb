@@ -39,30 +39,24 @@ do_install:append() {
     install -d ${D}${sysconfdir}/profile.d
     install -m 0644 ${WORKDIR}/starship.sh ${D}${sysconfdir}/profile.d/starship.sh
 
-    # bash integration for non-login shells (/etc/bash.bashrc.d)
-    # SSH non-login shells source /etc/bash.bashrc which in turn sources /etc/bash.bashrc.d/*.sh
-    install -d ${D}${sysconfdir}/bash.bashrc.d
-    install -m 0644 ${WORKDIR}/starship.sh ${D}${sysconfdir}/bash.bashrc.d/starship.sh
-
-    # Ensure /etc/bash.bashrc sources bash.bashrc.d/*.sh
-    if ! grep -q 'bash.bashrc.d' ${D}${sysconfdir}/bash.bashrc 2>/dev/null; then
-        cat >> ${D}${sysconfdir}/bash.bashrc <<'BASHRC'
-
-# Source /etc/bash.bashrc.d/*.sh for global non-login shell config (e.g. starship)
-if [ -d /etc/bash.bashrc.d ]; then
-    for f in /etc/bash.bashrc.d/*.sh; do
-        [ -r "$f" ] && . "$f"
-    done
+    # Root .bashrc — Poky bash doesn't compile /etc/bash.bashrc support,
+    # so non-login interactive shells (XFCE Terminal, SSH non-login) only
+    # read ~/.bashrc. Install one for root that sources starship.
+    install -d ${D}/home/root
+    cat > ${D}/home/root/.bashrc <<'BASHRC'
+# ~/.bashrc — sourced by interactive non-login bash shells
+export STARSHIP_CONFIG="${STARSHIP_CONFIG:-/etc/starship.toml}"
+if [ -x /usr/bin/starship ]; then
+    eval "$(starship init bash)"
 fi
 BASHRC
-    fi
+    chmod 0644 ${D}/home/root/.bashrc
 }
 
 FILES:${PN} += " \
     ${sysconfdir}/starship.toml \
     ${sysconfdir}/profile.d/starship.sh \
-    ${sysconfdir}/bash.bashrc.d/starship.sh \
-    ${sysconfdir}/bash.bashrc \
+    /home/root/.bashrc \
 "
 
 RDEPENDS:${PN} += "bash"
