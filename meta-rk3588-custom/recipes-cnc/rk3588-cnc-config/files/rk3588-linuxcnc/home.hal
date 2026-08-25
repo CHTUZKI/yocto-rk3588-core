@@ -8,9 +8,12 @@
 # Stepper Suite config must map physical inputs to these functions.
 
 # --- X Axis ---
+# Limit switches from drive digital inputs
 net X-nlsw lcec.master0.x-axis.srv-din-negative-limit => joint.0.neg-lim-sw-in
 net X-plsw lcec.master0.x-axis.srv-din-positive-limit => joint.0.pos-lim-sw-in
-net X-home lcec.master0.x-axis.srv-din-home           => joint.0.home-sw-in
+# Home switch is driven by cia402_home.home-done (drive-side homing),
+# not by a physical home switch input.  See core_lcec.hal.
+# net X-home lcec.master0.x-axis.srv-din-home           => joint.0.home-sw-in
 
 # --- Y Axis (add when drive connected) ---
 # net Y-nlsw lcec.master0.y-axis.srv-din-negative-limit => joint.1.neg-lim-sw-in
