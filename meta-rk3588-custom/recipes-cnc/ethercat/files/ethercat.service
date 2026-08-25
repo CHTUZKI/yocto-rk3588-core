@@ -5,8 +5,7 @@ After=network.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-# Load ec_master module, start the master, then bring up slaves
-ExecStart=/sbin/modprobe ec_master && /etc/init.d/ethercat start
+ExecStart=/etc/init.d/ethercat start
 ExecStop=/etc/init.d/ethercat stop
 Restart=on-failure
 RestartSec=3

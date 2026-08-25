@@ -1,0 +1,13 @@
+# estop.hal — Emergency stop loop
+#
+# TODO: wire to a real E-stop chain. For now, loopback so the machine
+# can be brought online for bring-up. Replace lcec.din or a physical
+# estop button input for production.
+
+# Estop loopback: iocontrol enable out -> iocontrol enable in
+net estop-loop iocontrol.0.user-enable-out iocontrol.0.emc-enable-in
+
+# Drive fault reset: motion enables -> drive controlword handled by lcec internally.
+# lcec basic_cia402 manages the CiA402 state machine (enable/fault reset) via
+# srv-cia-controlword. For manual fault reset, wire a HAL pin:
+# net fault-reset-x  halui.estop.activate  =>  ... (customize as needed)

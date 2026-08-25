@@ -1,0 +1,15 @@
+# postgui.hal — Post-GUI HAL wiring (runs after gmoccapy starts)
+
+loadrt abs names=abs_spindle_feedback
+addf abs_spindle_feedback servo-thread
+
+net spindle-speed-limited  =>  abs_spindle_feedback.in
+net spindle-abs  abs_spindle_feedback.out  =>  gmoccapy.spindle_feedback_bar
+net spindle-at-speed      gmoccapy.spindle_at_speed_led
+
+# Tool offset display
+net tooloffset-x  gmoccapy.tooloffset-x  <=  motion.tooloffset.x
+net tooloffset-z  gmoccapy.tooloffset-z  <=  motion.tooloffset.z
+
+# Drive status to gmoccapy (optional indicators)
+# net x-fault  lcec.master0.x-axis.srv-fault  =>  gmoccapy.<custom-pin>

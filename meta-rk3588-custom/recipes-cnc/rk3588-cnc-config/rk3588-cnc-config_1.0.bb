@@ -11,7 +11,12 @@ SRC_URI = " \
     file://20-rockchip-modesetting.conf \
     file://linuxcnc.desktop \
     file://synergy-client.service \
+    file://rk3588-linuxcnc \
 "
+
+# rk3588-linuxcnc sample config directory (installed to sample-configs so
+# pickconfig.tcl lists it; users copy it to ~/linuxcnc/configs/ via the GUI)
+S = "${WORKDIR}"
 
 inherit allarch systemd
 
@@ -47,6 +52,15 @@ do_install() {
 	install -d ${D}${systemd_system_unitdir}
 	install -m 0644 ${WORKDIR}/synergy-client.service \
 		${D}${systemd_system_unitdir}/synergy-client.service
+
+	# Install the rk3588-linuxcnc real-hardware sample config into the
+	# LinuxCNC sample-configs directory so pickconfig.tcl lists it.
+	# Users then copy it to ~/linuxcnc/configs/ via the LinuxCNC config picker.
+	install -d ${D}${datadir}/linuxcnc/examples/sample-configs
+	cp -r ${WORKDIR}/rk3588-linuxcnc \
+		${D}${datadir}/linuxcnc/examples/sample-configs/rk3588-linuxcnc
+	# Remove any __pycache__ that may have been copied
+	rm -rf ${D}${datadir}/linuxcnc/examples/sample-configs/rk3588-linuxcnc/python/__pycache__
 }
 
 FILES:${PN} = " \
@@ -58,4 +72,5 @@ FILES:${PN} = " \
 	${datadir}/X11/xorg.conf.d/20-rockchip-modesetting.conf \
 	${datadir}/applications/linuxcnc.desktop \
 	${systemd_system_unitdir}/synergy-client.service \
+	${datadir}/linuxcnc/examples/sample-configs/rk3588-linuxcnc \
 "

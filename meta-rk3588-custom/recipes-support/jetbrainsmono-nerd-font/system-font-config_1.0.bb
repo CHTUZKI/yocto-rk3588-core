@@ -26,7 +26,7 @@ do_install() {
 
 FILES:${PN} = "${bindir}/set-monospace-font ${systemd_unitdir}/system/set-monospace-font.service"
 
-RDEPENDS:${PN} = "jetbrainsmono-nerd-font xfconf gsettings-native"
+RDEPENDS:${PN} = "jetbrainsmono-nerd-font xfconf glib-2.0-utils dconf"
 
 pkg_postinst:${PN}() {
     # Also set during rootfs creation so it's ready for first boot
