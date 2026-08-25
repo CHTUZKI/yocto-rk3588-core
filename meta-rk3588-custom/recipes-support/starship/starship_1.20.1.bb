@@ -35,11 +35,34 @@ do_install:append() {
     install -d ${D}${sysconfdir}
     install -m 0644 ${WORKDIR}/starship.toml ${D}${sysconfdir}/starship.toml
 
-    # bash integration script sourced by /etc/profile.d
+    # bash integration for login shells (/etc/profile.d)
     install -d ${D}${sysconfdir}/profile.d
     install -m 0644 ${WORKDIR}/starship.sh ${D}${sysconfdir}/profile.d/starship.sh
+
+    # bash integration for non-login shells (/etc/bash.bashrc.d)
+    # SSH non-login shells source /etc/bash.bashrc which in turn sources /etc/bash.bashrc.d/*.sh
+    install -d ${D}${sysconfdir}/bash.bashrc.d
+    install -m 0644 ${WORKDIR}/starship.sh ${D}${sysconfdir}/bash.bashrc.d/starship.sh
+
+    # Ensure /etc/bash.bashrc sources bash.bashrc.d/*.sh
+    if ! grep -q 'bash.bashrc.d' ${D}${sysconfdir}/bash.bashrc 2>/dev/null; then
+        cat >> ${D}${sysconfdir}/bash.bashrc <<'BASHRC'
+
+# Source /etc/bash.bashrc.d/*.sh for global non-login shell config (e.g. starship)
+if [ -d /etc/bash.bashrc.d ]; then
+    for f in /etc/bash.bashrc.d/*.sh; do
+        [ -r "$f" ] && . "$f"
+    done
+fi
+BASHRC
+    fi
 }
 
-FILES:${PN} += "${sysconfdir}/starship.toml ${sysconfdir}/profile.d/starship.sh"
+FILES:${PN} += " \
+    ${sysconfdir}/starship.toml \
+    ${sysconfdir}/profile.d/starship.sh \
+    ${sysconfdir}/bash.bashrc.d/starship.sh \
+    ${sysconfdir}/bash.bashrc \
+"
 
 RDEPENDS:${PN} += "bash"
