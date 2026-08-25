@@ -70,11 +70,16 @@ do_compile() {
     chmod -x ${B}/lcec.so
 
     # --- 4. Build lcec_conf (userspace XML config parser) ---
+    # NOTE: use explicit object list, NOT ${B}/obj/lcec_conf*.o — that glob also
+    # matches lcec_configgen.o (lcec_conf* matches lcec_configgen), causing a
+    # duplicate main() link error.
     CONF_SRCS="lcec_conf.c $(ls lcec_conf_*.c 2>/dev/null)"
+    CONF_OBJS=""
     for f in $CONF_SRCS; do
         ${CC} ${CFLAGS} ${LCEC_CFLAGS} -c -o ${B}/obj/${f%.c}.o $f
+        CONF_OBJS="$CONF_OBJS ${B}/obj/${f%.c}.o"
     done
-    ${CC} -o ${B}/lcec_conf ${B}/obj/lcec_conf*.o ${B}/obj/lcec_devicelist.o ${B}/obj/lcec_ethercat.o \
+    ${CC} -o ${B}/lcec_conf $CONF_OBJS ${B}/obj/lcec_devicelist.o ${B}/obj/lcec_ethercat.o \
         ${B}/obj/lcec_pins.o ${B}/obj/lcec_lookup.o ${B}/obj/lcec_modparam.o ${B}/obj/lcec_malloc.o \
         ${LDFLAGS} ${LCEC_LDFLAGS} \
         -Wl,--whole-archive ${B}/liblcecdevices.a -Wl,--no-whole-archive \
