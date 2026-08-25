@@ -24,7 +24,7 @@ TODO before first run (adjust to your machine):
      - AMxxSS-N motors: 20000 counts/rev (default)
      - AMxxRS motors:   4096 counts/rev
   2. Leadscrew pitch:  ethercat-conf.xml feedRatio + INI INPUT_SCALE
-     - Default 5 mm/rev => 4000 counts/mm
+     - 1610 (10 mm/rev) + 4096 enc => 409.6 counts/mm (current X)
   3. Travel limits:  INI [AXIS_*] MIN/MAX_LIMIT + ethercat-conf.xml positionLimitMin/Max
   4. Home method/velocity:  ethercat-conf.xml homeMethod, homeVelocityFast/Slow
   5. Drive digital input mapping:  use Stepper Suite to map physical inputs

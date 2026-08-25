@@ -3,10 +3,13 @@
 # Currently configured for 1 axis (X). Add Y/Z blocks when more drives
 # are connected and uncomment the corresponding slaves in ethercat-conf.xml.
 #
-# cia402_home is the single source of truth for controlword and opmode:
-#   - Normal operation: controlword=0x000F (enable), opmode=8 (CSP)
-#   - Homing: switches to homing mode, runs drive-side homing, returns to CSP
-# cia402_enable monitors statusword and reports enabled/fault status.
+# Homing path (drive-side CiA402 hard-stop):
+#   [EMCMOT]HOMEMOD=ssdc_homecomp  → waits, finishes, sets joint.homed
+#   cia402_home.py                 → SDO / opmode / controlword executor
+#   joint_fb_mux                   → while ext-home-start: motor-pos-fb = cmd
+#     (FE is computed in process_inputs BEFORE do_homing; HAL lie is required)
+#
+# cia402_home is the single source of truth for controlword and opmode.
 
 # --- Load RT modules ---
 loadusr -W lcec_conf ethercat-conf.xml
@@ -16,10 +19,7 @@ loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EM
 loadrt scale names=scale_x,scale_x_fb,scale_to_rpm
 loadrt conv_float_s32 names=conv_x_cmd
 loadrt conv_s32_float names=conv_x_fb
-# During homing, freeze the drive target at actual position and let
-# LinuxCNC feedback follow its own homing command. The drive performs
-# the physical motion autonomously in CiA402 Homing mode.
-loadrt mux2 names=pos_cmd_mux,joint_fb_mux
+loadrt mux2 names=joint_fb_mux
 
 # --- CiA402 drive enable monitor (userspace, read-only) ---
 loadusr -Wn cia402_enable python3 ./python/cia402_enable.py names=x-enable
@@ -27,70 +27,57 @@ loadusr -Wn cia402_enable python3 ./python/cia402_enable.py names=x-enable
 # --- CiA402 drive homing + controlword manager (userspace) ---
 loadusr -Wn cia402_home python3 ./python/cia402_home.py
 
-# --- Add functions to servo thread ---
-addf motion-command-handler servo-thread
-addf motion-controller servo-thread
+# --- Servo thread: read EtherCAT → scale/mux → motion → write ---
 addf lcec.read-all servo-thread
-addf scale_x servo-thread
-addf conv_x_cmd servo-thread
 addf conv_x_fb servo-thread
 addf scale_x_fb servo-thread
-addf pos_cmd_mux servo-thread
 addf joint_fb_mux servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+addf scale_x servo-thread
+addf conv_x_cmd servo-thread
 addf lcec.write-all servo-thread
 
 # --- X Axis: mm -> counts (cmd) and counts -> mm (fb) ---
-# 4096 counts/rev ÷ 5 mm/rev = 819.2 counts/mm
-setp scale_x.gain    819.2
-setp scale_x_fb.gain 0.001220703125
+# Measured: 1 motor rev = 10 mm travel (lead), encoder 4096 → 409.6 counts/mm
+setp scale_x.gain    409.6
+setp scale_x_fb.gain 0.00244140625
 net Xpos-cmd  joint.0.motor-pos-cmd => scale_x.in
-# pos_cmd_mux: sel=0 -> normal CSP command (scale_x.out);
-#              sel=1 -> freeze at current feedback (Xpos-fb)
-# Use joint.0.homing (RT pin) for immediate switch, not cia402_home.homing-active
-# (userspace, has latency).  This prevents following error the instant
-# LinuxCNC starts homing, before cia402_home has a chance to react.
-net Xpos-normal  scale_x.out => pos_cmd_mux.in0
-net X-home-active joint.0.homing => pos_cmd_mux.sel
-net Xpos-float pos_cmd_mux.out => conv_x_cmd.in
+net Xpos-float scale_x.out => conv_x_cmd.in
 net Xpos-cnt  conv_x_cmd.out => lcec.master0.x-axis.srv-target-position
 net Xfb-cnt   lcec.master0.x-axis.srv-actual-position => conv_x_fb.in
 net Xfb-cnt   => cia402_home.actual-position
 net Xfb-float conv_x_fb.out => scale_x_fb.in
-# Real position freezes the drive target while it runs autonomous homing.
-net Xpos-real scale_x_fb.out => pos_cmd_mux.in1
-# LinuxCNC feedback: real position normally; commanded position while homing.
-net Xpos-real => joint_fb_mux.in0
+
+# Real encoder mm (always true) for homemod finish sync
+net Xpos-real scale_x_fb.out => joint_fb_mux.in0
+net Xpos-real => joint.0.ext-actual-pos
+# While drive homes, present cmd as fb so process_inputs sees no FE
 net Xpos-cmd  => joint_fb_mux.in1
-net X-home-active => joint_fb_mux.sel
+net X-ext-home-start joint.0.ext-home-start => joint_fb_mux.sel
+net X-ext-home-start => cia402_home.home-request
 net Xpos-fb joint_fb_mux.out => joint.0.motor-pos-fb
 
 # --- Controlword / opmode: cia402_home is the single writer ---
 net X-cia-cw  cia402_home.cia-controlword => lcec.master0.x-axis.srv-cia-controlword
 net X-opmode  cia402_home.srv-opmode     => lcec.master0.x-axis.srv-opmode
 
-# --- Statusword / actual position to both components ---
+# --- Statusword ---
 net X-cia-stat lcec.master0.x-axis.srv-cia-statusword => cia402_home.cia-statusword
 net X-cia-stat => cia402_enable.x-enable.cia-statusword
 
 # --- Homing configuration (SSDC06-ECX-H hard-stop method -4) ---
-# Flow: search left → soft-collide → reverse home-offset-mm → that point = zero
-# (drive 0x2036=1 + 0x607C). Continuous current on this motor ≈ 5.0 A.
-setp cia402_home.input-scale 819.2
+setp cia402_home.input-scale 409.6
 setp cia402_home.slave-position 0
 setp cia402_home.homing-method -4
 setp cia402_home.search-speed-mm-s 5.0
-# Soft collision current (0x2202): 100 = 1.00 A (~20% of 5 A continuous)
 setp cia402_home.hardstop-current 100
-# Back off from hard-stop toward +X (method -4); becomes machine zero
 setp cia402_home.home-offset-mm 5.0
 
-# --- Homing signals to LinuxCNC ---
-# joint.0.homing: TRUE when LinuxCNC starts homing this joint
-# joint.0.home-sw-in: LinuxCNC reads this as the home switch; when TRUE
-#   with HOME_SEARCH_VEL=0, LinuxCNC considers the joint homed.
-net X-home-active => cia402_home.home-request
-net X-home-done  cia402_home.home-done => joint.0.home-sw-in
-net X-home-fault cia402_home.home-fault
+# --- Drive-side home via ssdc_homecomp ---
+setp joint.0.request-custom-homing 1
+net X-ext-home-done  cia402_home.home-done  => joint.0.ext-home-finished
+net X-ext-home-fault cia402_home.home-fault => joint.0.ext-home-fault
 
 # --- Enable status (monitor only) ---
 net X-enabled   cia402_enable.x-enable.enabled
@@ -99,39 +86,3 @@ net X-fault     cia402_enable.x-enable.fault
 # --- Tool loading loopback (no ATC; immediate confirm) ---
 net tool-prep-loop   iocontrol.0.tool-prepare  iocontrol.0.tool-prepared
 net tool-change-loop iocontrol.0.tool-change   iocontrol.0.tool-changed
-
-# --- Y Axis (add when drive connected) ---
-# loadrt scale names=scale_y,scale_y_fb
-# loadrt conv_float_s32 names=conv_y_cmd
-# loadrt conv_s32_float names=conv_y_fb
-# addf scale_y servo-thread
-# addf conv_y_cmd servo-thread
-# addf conv_y_fb servo-thread
-# addf scale_y_fb servo-thread
-# setp scale_y.gain    819.2
-# setp scale_y_fb.gain 0.001220703125
-# net Ypos-cmd  joint.1.motor-pos-cmd => scale_y.in
-# net Ypos-float scale_y.out => conv_y_cmd.in
-# net Ypos-cnt  conv_y_cmd.out => lcec.master0.y-axis.srv-target-position
-# net Yfb-cnt   lcec.master0.y-axis.srv-actual-position => conv_y_fb.in
-# net Yfb-float conv_y_fb.out => scale_y_fb.in
-# net Ypos-fb   scale_y_fb.out => joint.1.motor-pos-fb
-# setp lcec.master0.y-axis.srv-opmode 8
-
-# --- Z Axis (add when drive connected) ---
-# loadrt scale names=scale_z,scale_z_fb
-# loadrt conv_float_s32 names=conv_z_cmd
-# loadrt conv_s32_float names=conv_z_fb
-# addf scale_z servo-thread
-# addf conv_z_cmd servo-thread
-# addf conv_z_fb servo-thread
-# addf scale_z_fb servo-thread
-# setp scale_z.gain    819.2
-# setp scale_z_fb.gain 0.001220703125
-# net Zpos-cmd  joint.2.motor-pos-cmd => scale_z.in
-# net Zpos-float scale_z.out => conv_z_cmd.in
-# net Zpos-cnt  conv_z_cmd.out => lcec.master0.z-axis.srv-target-position
-# net Zfb-cnt   lcec.master0.z-axis.srv-actual-position => conv_z_fb.in
-# net Zfb-float conv_z_fb.out => scale_z_fb.in
-# net Zpos-fb   scale_z_fb.out => joint.2.motor-pos-fb
-# setp lcec.master0.z-axis.srv-opmode 8

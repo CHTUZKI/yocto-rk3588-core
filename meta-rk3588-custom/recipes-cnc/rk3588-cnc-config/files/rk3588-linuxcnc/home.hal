@@ -11,8 +11,7 @@
 # Limit switches from drive digital inputs
 net X-nlsw lcec.master0.x-axis.srv-din-negative-limit => joint.0.neg-lim-sw-in
 net X-plsw lcec.master0.x-axis.srv-din-positive-limit => joint.0.pos-lim-sw-in
-# Home switch is driven by cia402_home.home-done (drive-side homing),
-# not by a physical home switch input.  See core_lcec.hal.
+# Drive-side home is handled by ssdc_homecomp (ext-home-*), not home-sw-in.
 # net X-home lcec.master0.x-axis.srv-din-home           => joint.0.home-sw-in
 
 # --- Y Axis (add when drive connected) ---
