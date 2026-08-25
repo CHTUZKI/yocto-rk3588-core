@@ -70,8 +70,8 @@ net X-cia-stat => cia402_enable.x-enable.cia-statusword
 setp cia402_home.input-scale 409.6
 setp cia402_home.slave-position 0
 setp cia402_home.homing-method -4
-setp cia402_home.search-speed-mm-s 5.0
-setp cia402_home.hardstop-current 100
+setp cia402_home.search-speed-mm-s 20.0
+setp cia402_home.hardstop-current 50
 setp cia402_home.home-offset-mm 5.0
 
 # --- Drive-side home via ssdc_homecomp ---

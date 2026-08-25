@@ -434,8 +434,8 @@ def main():
     h["input-scale"] = 409.6
     h["slave-position"] = 0
     h["homing-method"] = -4
-    h["search-speed-mm-s"] = 5.0
-    h["hardstop-current"] = 100
+    h["search-speed-mm-s"] = 20.0
+    h["hardstop-current"] = 50
     h["home-offset-mm"] = 5.0
 
     h.ready()

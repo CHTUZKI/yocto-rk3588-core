@@ -19,12 +19,12 @@ ECAT_XML="${CFG_DIR}/ethercat-conf.xml"
 REALTIME="${REALTIME:-/usr/lib/linuxcnc/realtime}"
 
 # 导程 10 mm/rev + 4096 counts/rev → 409.6 counts/mm
-# 碰撞回零速度务必低：5 mm/s = 2048 counts/s
-SEARCH_SPEED=2048
-ZERO_SPEED=1024
+# 碰撞回零速度：20 mm/s = 8192 counts/s
+SEARCH_SPEED=8192
+ZERO_SPEED=4096
 ACCEL=81920           # 200 mm/s^2 * 409.6
-# 连续电流 0x2200=500 (5.00A) → 软碰撞约 20% = 1.0A
-HARDSTOP_CURRENT=100
+# 连续电流 0x2200=500 (5.00A) → 软碰撞约 10% = 0.5A
+HARDSTOP_CURRENT=50
 # 碰硬限位后反向退 5 mm（0x2036=1 + 0x607C），该点作为零点
 HOME_OFFSET=2048      # 5 mm * 409.6
 
