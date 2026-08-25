@@ -1,5 +1,5 @@
 SUMMARY = "LinuxCNC motion controller with Axis GUI"
-DESCRIPTION = "LinuxCNC uspace build for PREEMPT_RT + SOEM EtherCAT on RK3588."
+DESCRIPTION = "LinuxCNC uspace build for PREEMPT_RT + IgH EtherCAT on RK3588."
 HOMEPAGE = "https://linuxcnc.org/"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
@@ -187,12 +187,22 @@ FILES:${PN} += " \
     ${nonarch_base_libdir}/udev/rules.d \
 "
 
-# 仅把 halcompile 导出到 sysroot，供 soem-linuxcnc-hal 交叉构建使用
+# 导出到 sysroot，供 linuxcnc-ethercat 交叉构建使用：
+#   - halcompile（HAL 组件编译器）— 标准过程不导出脚本，需手动安装并修复 shebang
+#   - Makefile.modinc（HAL 模块构建规则）— ${datadir} 不在默认 SYSROOT_DIRS 中，需手动安装
+# LinuxCNC 头文件和 liblinuxcnchal.so 由标准 do_populate_sysroot 自动处理。
 linuxcnc_sysroot_preprocess() {
+	# halcompile — 手动安装到 sysroot 并修复 shebang
 	install -d ${SYSROOT_DESTDIR}${bindir}
 	install -m 0755 ${D}${bindir}/halcompile ${SYSROOT_DESTDIR}${bindir}/halcompile
-	# 缩短 shebang，避免 QA shebang-size；构建机用 python3-native 执行
 	sed -i '1s|.*|#!/usr/bin/env python3|' ${SYSROOT_DESTDIR}${bindir}/halcompile
+
+	# Makefile.modinc 在 ${datadir} 下，标准 sysroot 不导出，需手动安装
+	install -d ${SYSROOT_DESTDIR}${datadir}/linuxcnc
+	if [ -f ${D}${datadir}/linuxcnc/Makefile.modinc ]; then
+		install -m 0644 ${D}${datadir}/linuxcnc/Makefile.modinc \
+			${SYSROOT_DESTDIR}${datadir}/linuxcnc/Makefile.modinc
+	fi
 }
 SYSROOT_PREPROCESS_FUNCS += "linuxcnc_sysroot_preprocess"
 

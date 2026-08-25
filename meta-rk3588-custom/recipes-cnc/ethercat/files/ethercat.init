@@ -1,0 +1,56 @@
+#!/bin/sh
+# IgH EtherCAT Master init script (SysV-compatible wrapper for systemd)
+### BEGIN INIT INFO
+# Provides:          ethercat
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: IgH EtherCAT Master
+### END INIT INFO
+
+ETHERCAT=/usr/sbin/ethercat
+
+case "$1" in
+    start)
+        echo -n "Starting EtherCAT master: "
+        if lsmod | grep -q ec_master; then
+            echo "already running"
+            exit 0
+        fi
+        modprobe ec_master 2>/dev/null || true
+        sleep 0.2
+        if $ETHERCAT master 2>/dev/null | grep -q "ALIVE"; then
+            echo "done"
+            exit 0
+        fi
+        echo "failed"
+        exit 1
+        ;;
+    stop)
+        echo -n "Stopping EtherCAT master: "
+        rmmod ec_master 2>/dev/null || true
+        echo "done"
+        ;;
+    restart|force-reload)
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+    status)
+        if lsmod | grep -q ec_master; then
+            echo "EtherCAT master is running"
+            $ETHERCAT master 2>/dev/null
+            exit 0
+        else
+            echo "EtherCAT master is stopped"
+            exit 3
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
+
+exit 0

@@ -1,5 +1,5 @@
-SUMMARY = "PREEMPT_RT + LinuxCNC + SOEM EtherCAT + XFCE desktop"
-DESCRIPTION = "CNC image: PREEMPT_RT kernel, X11/XFCE GUI, LinuxCNC, SOEM EtherCAT HAL."
+SUMMARY = "PREEMPT_RT + LinuxCNC + IgH EtherCAT + XFCE desktop"
+DESCRIPTION = "CNC image: PREEMPT_RT kernel, X11/XFCE GUI, LinuxCNC, IgH EtherCAT master."
 
 inherit core-image
 inherit rk3588-image

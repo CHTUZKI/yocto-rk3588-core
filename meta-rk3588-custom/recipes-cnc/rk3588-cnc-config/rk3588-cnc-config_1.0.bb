@@ -1,11 +1,11 @@
-SUMMARY = "Default LinuxCNC/SOEM configuration for RK3588 CNC image"
+SUMMARY = "Default LinuxCNC/IgH EtherCAT configuration for RK3588 CNC image"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 SRC_URI = " \
     file://99-linuxcnc-rt.conf \
-    file://soem.env \
-    file://soem-skeleton.hal \
+    file://ethercat.xml \
+    file://lcec-skeleton.hal \
     file://xfwm4.xml \
     file://linuxcnc-env.sh \
     file://20-rockchip-modesetting.conf \
@@ -24,8 +24,8 @@ do_install() {
 		${D}${sysconfdir}/security/limits.d/99-linuxcnc-rt.conf
 
 	install -d ${D}${sysconfdir}/rk3588-cnc
-	install -m 0644 ${WORKDIR}/soem.env ${D}${sysconfdir}/rk3588-cnc/soem.env
-	install -m 0644 ${WORKDIR}/soem-skeleton.hal ${D}${sysconfdir}/rk3588-cnc/soem-skeleton.hal
+	install -m 0644 ${WORKDIR}/ethercat.xml ${D}${sysconfdir}/rk3588-cnc/ethercat.xml
+	install -m 0644 ${WORKDIR}/lcec-skeleton.hal ${D}${sysconfdir}/rk3588-cnc/lcec-skeleton.hal
 
 	install -d ${D}${sysconfdir}/profile.d
 	install -m 0644 ${WORKDIR}/linuxcnc-env.sh ${D}${sysconfdir}/profile.d/linuxcnc-env.sh
@@ -51,8 +51,8 @@ do_install() {
 
 FILES:${PN} = " \
 	${sysconfdir}/security/limits.d/99-linuxcnc-rt.conf \
-	${sysconfdir}/rk3588-cnc/soem.env \
-	${sysconfdir}/rk3588-cnc/soem-skeleton.hal \
+	${sysconfdir}/rk3588-cnc/ethercat.xml \
+	${sysconfdir}/rk3588-cnc/lcec-skeleton.hal \
 	${sysconfdir}/profile.d/linuxcnc-env.sh \
 	${sysconfdir}/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml \
 	${datadir}/X11/xorg.conf.d/20-rockchip-modesetting.conf \
