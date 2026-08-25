@@ -15,4 +15,5 @@ RDEPENDS:${PN} = " \
     mesa-demos \
     xterm \
     synergy \
+    starship \
 "

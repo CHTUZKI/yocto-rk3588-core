@@ -1,0 +1,35 @@
+# Starship default configuration for rk3588-cnc
+# https://starship.rs/config/
+
+# Global settings
+add_newline = true
+format = """$directory$git_branch$git_status$character"""
+scan_timeout = 100
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"
+
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+style = "bold cyan"
+
+[git_branch]
+symbol = " "
+style = "bold purple"
+
+[git_status]
+style = "bold yellow"
+
+[cmd_duration]
+min_time = 2000
+format = " took [$duration](bold yellow) "
+
+[hostname]
+ssh_only = true
+format = "[$hostname](bold red) "
+
+[username]
+show_always = false
+format = "[$user](bold blue)@"
