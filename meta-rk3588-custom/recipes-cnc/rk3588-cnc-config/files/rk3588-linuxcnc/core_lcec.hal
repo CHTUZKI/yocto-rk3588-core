@@ -1,74 +1,104 @@
-# core_lcec.hal — Core HAL for RK3588 3-axis EtherCAT milling machine
+# core_lcec.hal — Core HAL for RK3588 EtherCAT milling machine
 #
-# Loads: trivkins, motmod, lcec (EtherCAT), scale (unit conversion),
-#         and wires joint commands <-> SSDC06-ECX-H drives.
+# Currently configured for 1 axis (X). Add Y/Z blocks when more drives
+# are connected and uncomment the corresponding slaves in ethercat-conf.xml.
 #
 # Pin map (lcec.master0.<slave>.srv-<pin>):
 #   srv-target-position   HAL_IN  s32  (counts)
 #   srv-actual-position   HAL_OUT s32  (counts)
-#   srv-actual-velocity   HAL_OUT s32  (counts/s)
 #   srv-cia-controlword   HAL_IN  u32  (CiA402 controlword)
 #   srv-cia-statusword    HAL_OUT u32  (CiA402 statusword)
-#   srv-opmode            HAL_IN  s32  (0=CSP, etc.)
-#   srv-opmode-display    HAL_OUT s32
-#   srv-supports-mode-csp HAL_OUT bit
+#   srv-opmode            HAL_IN  s32  (8=CSP)
 #   srv-din-positive-limit / srv-din-negative-limit / srv-din-home  HAL_OUT bit
 #
 # Unit conversion:
-#   joint.motor-pos-cmd is in mm; srv-target-position is in counts.
-#   INPUT_SCALE=4000 counts/mm.  Use `scale` component for mm<->counts.
+#   joint.motor-pos-cmd is in mm (float); srv-target-position is in counts (s32).
+#   INPUT_SCALE=819.2 counts/mm (4096 counts/rev ÷ 5 mm/rev, 1605 screw).
+#   scale: mm -> float counts; conv_float_s32: float counts -> s32 counts
+#   conv_s32_float: s32 counts -> float counts; scale: float counts -> mm
 
 # --- Load RT modules ---
-# lcec_conf (userspace) must start BEFORE lcec RT module so it can read the
-# XML config and set up the EtherCAT slaves via SDO.  -W = wait for it to
-# signal ready.
 loadusr -W lcec_conf ethercat-conf.xml
 loadrt lcec
-loadrt trivkins coordinates=xyz
+loadrt trivkins coordinates=x
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=10
-loadrt scale names=scale_x,scale_x_fb,scale_y,scale_y_fb,scale_z,scale_z_fb
+loadrt scale names=scale_x,scale_x_fb,scale_to_rpm
+loadrt conv_float_s32 names=conv_x_cmd
+loadrt conv_s32_float names=conv_x_fb
+
+# --- CiA402 drive enable component (userspace) ---
+# Implements the CiA402 state machine: Shutdown -> SwitchOn -> EnableOperation
+# Sends the correct controlword to advance the drive to "Operation enabled".
+loadusr -Wn cia402_enable python3 ./python/cia402_enable.py names=x-enable
 
 # --- Add functions to servo thread ---
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 addf lcec.read-all servo-thread
 addf scale_x servo-thread
+addf conv_x_cmd servo-thread
+addf conv_x_fb servo-thread
 addf scale_x_fb servo-thread
-addf scale_y servo-thread
-addf scale_y_fb servo-thread
-addf scale_z servo-thread
-addf scale_z_fb servo-thread
 addf lcec.write-all servo-thread
 
 # --- X Axis: mm -> counts (cmd) and counts -> mm (fb) ---
-setp scale_x.gain    4000
-setp scale_x_fb.gain 0.00025
+# 4096 counts/rev ÷ 5 mm/rev = 819.2 counts/mm
+setp scale_x.gain    819.2
+setp scale_x_fb.gain 0.001220703125
 net Xpos-cmd  joint.0.motor-pos-cmd => scale_x.in
-net Xpos-cnt  scale_x.out => lcec.master0.x-axis.srv-target-position
-net Xfb-cnt   lcec.master0.x-axis.srv-actual-position => scale_x_fb.in
+net Xpos-float scale_x.out => conv_x_cmd.in
+net Xpos-cnt  conv_x_cmd.out => lcec.master0.x-axis.srv-target-position
+net Xfb-cnt   lcec.master0.x-axis.srv-actual-position => conv_x_fb.in
+net Xfb-float conv_x_fb.out => scale_x_fb.in
 net Xpos-fb   scale_x_fb.out => joint.0.motor-pos-fb
 
-# --- Y Axis ---
-setp scale_y.gain    4000
-setp scale_y_fb.gain 0.00025
-net Ypos-cmd  joint.1.motor-pos-cmd => scale_y.in
-net Ypos-cnt  scale_y.out => lcec.master0.y-axis.srv-target-position
-net Yfb-cnt   lcec.master0.y-axis.srv-actual-position => scale_y_fb.in
-net Ypos-fb   scale_y_fb.out => joint.1.motor-pos-fb
-
-# --- Z Axis ---
-setp scale_z.gain    4000
-setp scale_z_fb.gain 0.00025
-net Zpos-cmd  joint.2.motor-pos-cmd => scale_z.in
-net Zpos-cnt  scale_z.out => lcec.master0.z-axis.srv-target-position
-net Zfb-cnt   lcec.master0.z-axis.srv-actual-position => scale_z_fb.in
-net Zpos-fb   scale_z_fb.out => joint.2.motor-pos-fb
-
-# --- CiA402 opmode: CSP = 8 for all axes ---
+# --- CiA402 opmode: CSP = 8 ---
 setp lcec.master0.x-axis.srv-opmode 8
-setp lcec.master0.y-axis.srv-opmode 8
-setp lcec.master0.z-axis.srv-opmode 8
+
+# --- CiA402 drive enable wiring ---
+# The enable component reads the statusword and writes the controlword
+# to advance the drive state machine to "Operation enabled".
+net X-cia-cmd  cia402_enable.x-enable.cia-controlword => lcec.master0.x-axis.srv-cia-controlword
+net X-cia-stat lcec.master0.x-axis.srv-cia-statusword => cia402_enable.x-enable.cia-statusword
+net X-enabled   cia402_enable.x-enable.enabled
+net X-fault     cia402_enable.x-enable.fault
 
 # --- Tool loading loopback (no ATC; immediate confirm) ---
 net tool-prep-loop   iocontrol.0.tool-prepare  iocontrol.0.tool-prepared
 net tool-change-loop iocontrol.0.tool-change   iocontrol.0.tool-changed
+
+# --- Y Axis (add when drive connected) ---
+# loadrt scale names=scale_y,scale_y_fb
+# loadrt conv_float_s32 names=conv_y_cmd
+# loadrt conv_s32_float names=conv_y_fb
+# addf scale_y servo-thread
+# addf conv_y_cmd servo-thread
+# addf conv_y_fb servo-thread
+# addf scale_y_fb servo-thread
+# setp scale_y.gain    819.2
+# setp scale_y_fb.gain 0.001220703125
+# net Ypos-cmd  joint.1.motor-pos-cmd => scale_y.in
+# net Ypos-float scale_y.out => conv_y_cmd.in
+# net Ypos-cnt  conv_y_cmd.out => lcec.master0.y-axis.srv-target-position
+# net Yfb-cnt   lcec.master0.y-axis.srv-actual-position => conv_y_fb.in
+# net Yfb-float conv_y_fb.out => scale_y_fb.in
+# net Ypos-fb   scale_y_fb.out => joint.1.motor-pos-fb
+# setp lcec.master0.y-axis.srv-opmode 8
+
+# --- Z Axis (add when drive connected) ---
+# loadrt scale names=scale_z,scale_z_fb
+# loadrt conv_float_s32 names=conv_z_cmd
+# loadrt conv_s32_float names=conv_z_fb
+# addf scale_z servo-thread
+# addf conv_z_cmd servo-thread
+# addf conv_z_fb servo-thread
+# addf scale_z_fb servo-thread
+# setp scale_z.gain    819.2
+# setp scale_z_fb.gain 0.001220703125
+# net Zpos-cmd  joint.2.motor-pos-cmd => scale_z.in
+# net Zpos-float scale_z.out => conv_z_cmd.in
+# net Zpos-cnt  conv_z_cmd.out => lcec.master0.z-axis.srv-target-position
+# net Zfb-cnt   lcec.master0.z-axis.srv-actual-position => conv_z_fb.in
+# net Zfb-float conv_z_fb.out => scale_z_fb.in
+# net Zpos-fb   scale_z_fb.out => joint.2.motor-pos-fb
+# setp lcec.master0.z-axis.srv-opmode 8

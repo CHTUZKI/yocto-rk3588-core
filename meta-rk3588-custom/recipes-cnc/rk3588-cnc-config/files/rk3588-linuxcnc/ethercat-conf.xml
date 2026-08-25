@@ -1,88 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  EtherCAT configuration for RK3588 LinuxCNC — 3-axis milling machine.
+  EtherCAT configuration for RK3588 LinuxCNC.
 
-  Hardware (TODO: adjust to your actual setup):
-    Slave 0..2 : SSDC06-ECX-H (Shanghai AMP/MOONS' step-servo, CiA402)
-                VendorID 0x00000168, ProductCode 0x00000001, Rev 0x0001
-    Motor      : AM23SS-N (20000 counts/rev encoder) — change encoderRatio if different
-    Leadscrew  : 5 mm/rev ball screw — change feedRatio if different
-    => 20000/5 = 4000 counts/mm (matches INPUT_SCALE in INI)
+  Currently configured for 1 axis (X). Add Y/Z slaves when more drives
+  are connected.
 
-  Mode        : CSP (Cyclic Synchronous Position) — LinuxCNC trajectory planner
-                outputs position setpoints every servo cycle (1 ms).
-  Sync        : Distributed Clock, assignActivate=0x300, SYNC0 every cycle.
+  Hardware:
+    Slave 0 : SSDC06-ECX-H (Shanghai AMP/MOONS' step-servo, CiA402)
+              VendorID 0x00000168, ProductCode 0x0000000a, Rev 0x0001
 
-  Pin naming  : lcec.master0.<slave-name>.srv-<pin>
-                e.g. lcec.master0.x-axis.srv-target-position
+  Mode : CSP (Cyclic Synchronous Position)
+  Sync : Distributed Clock, assignActivate=0x300, SYNC0 every cycle.
 
-  Adjust the <modParam> values below to match your motors / mechanics.
-  See: https://github.com/linuxcnc-ethercat/linuxcnc-ethercat
-       SSDC-ECX-HJ Hardware Manual (参考文件/SSDC06-ECX-H驱动器/)
+  Pin naming: lcec.master0.<slave-name>.srv-<pin>
+              e.g. lcec.master0.x-axis.srv-target-position
+
+  NOTE: positionLimitMin/Max, homeMethod, encoderRatio, feedRatio are
+  intentionally omitted — the SSDC06-ECX-H rejects SDO writes to
+  0x607b (position limit) during INIT/PREOP with abort code 0x06020000.
+  Configure these in the drive via Stepper Suite instead.
 -->
 <masters>
   <master idx="0" appTimePeriod="1000000" refClockSyncCycles="5" name="master0">
 
     <!-- ===================== X Axis ===================== -->
-    <slave idx="0" type="basic_cia402" vid="0x00000168" pid="0x00000001" name="x-axis">
+    <slave idx="0" type="basic_cia402" vid="0x00000168" pid="0x0000000a" name="x-axis">
       <dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="0"/>
       <watchdog divider="2498" intervals="1000"/>
-      <!-- CiA402 operating mode: CSP -->
       <modParam name="enableCSP" value="true"/>
-      <modParam name="enableCSV" value="false"/>
-      <modParam name="enablePP"  value="false"/>
-      <modParam name="enablePV"  value="false"/>
-      <!-- Digital inputs: limit switches + home switch -->
       <modParam name="enableDigitalInput" value="true"/>
       <modParam name="digitalInChannels" value="3"/>
-      <!-- Position limits (counts; ±400 mm * 4000 counts/mm = ±1,600,000) -->
-      <modParam name="positionLimitMin" value="-1600000"/>
-      <modParam name="positionLimitMax" value="1600000"/>
-      <!-- Homing: method 17 = home on positive limit switch, then back off.
-           Home velocity is configured in the drive via Stepper Suite
-           (SDO 0x6099 sub1=fast, sub2=slow). -->
-      <modParam name="homeMethod" value="17"/>
-      <!-- Encoder resolution (counts/rev) : motor revolutions : shaft revolutions -->
-      <modParam name="encoderRatio" value="20000:1"/>
-      <!-- Feed ratio (counts/mm): 20000 counts/rev ÷ 5 mm/rev = 4000 counts/mm -->
-      <modParam name="feedRatio" value="20000:5"/>
     </slave>
 
-    <!-- ===================== Y Axis ===================== -->
-    <slave idx="1" type="basic_cia402" vid="0x00000168" pid="0x00000001" name="y-axis">
+    <!-- ===================== Y Axis (add when drive connected) =====================
+    <slave idx="1" type="basic_cia402" vid="0x00000168" pid="0x0000000a" name="y-axis">
       <dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="0"/>
       <watchdog divider="2498" intervals="1000"/>
       <modParam name="enableCSP" value="true"/>
-      <modParam name="enableCSV" value="false"/>
-      <modParam name="enablePP"  value="false"/>
-      <modParam name="enablePV"  value="false"/>
       <modParam name="enableDigitalInput" value="true"/>
       <modParam name="digitalInChannels" value="3"/>
-      <modParam name="positionLimitMin" value="-1600000"/>
-      <modParam name="positionLimitMax" value="1600000"/>
-      <modParam name="homeMethod" value="17"/>
-      <modParam name="encoderRatio" value="20000:1"/>
-      <modParam name="feedRatio" value="20000:5"/>
     </slave>
+    -->
 
-    <!-- ===================== Z Axis ===================== -->
-    <slave idx="2" type="basic_cia402" vid="0x00000168" pid="0x00000001" name="z-axis">
+    <!-- ===================== Z Axis (add when drive connected) =====================
+    <slave idx="2" type="basic_cia402" vid="0x00000168" pid="0x0000000a" name="z-axis">
       <dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="0"/>
       <watchdog divider="2498" intervals="1000"/>
       <modParam name="enableCSP" value="true"/>
-      <modParam name="enableCSV" value="false"/>
-      <modParam name="enablePP"  value="false"/>
-      <modParam name="enablePV"  value="false"/>
       <modParam name="enableDigitalInput" value="true"/>
       <modParam name="digitalInChannels" value="3"/>
-      <!-- Z travel: 0..100 mm (positive up). 100 mm * 4000 = 400,000 counts -->
-      <modParam name="positionLimitMin" value="-400000"/>
-      <modParam name="positionLimitMax" value="400000"/>
-      <!-- Z home: method 34 = home on negative limit switch + index -->
-      <modParam name="homeMethod" value="34"/>
-      <modParam name="encoderRatio" value="20000:1"/>
-      <modParam name="feedRatio" value="20000:5"/>
     </slave>
+    -->
 
   </master>
 </masters>

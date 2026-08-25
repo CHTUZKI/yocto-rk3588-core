@@ -68,6 +68,13 @@ do_install() {
 		${D}/home/root/linuxcnc/configs/rk3588-linuxcnc
 	rm -rf ${D}/home/root/linuxcnc/configs/rk3588-linuxcnc/python/__pycache__
 
+	# Ensure the CiA402 enable Python script is executable.
+	chmod +x ${D}/home/root/linuxcnc/configs/rk3588-linuxcnc/python/cia402_enable.py
+	chmod +x ${D}${datadir}/linuxcnc/examples/sample-configs/rk3588-linuxcnc/python/cia402_enable.py
+
+	# Create nc_files directory for G-code programs (gmoccapy expects this).
+	install -d ${D}/home/root/linuxcnc/nc_files
+
 	# Desktop shortcut that launches LinuxCNC with our config directly.
 	install -d ${D}/home/root/Desktop
 	install -m 0755 ${WORKDIR}/rk3588-linuxcnc.desktop \
@@ -85,6 +92,7 @@ FILES:${PN} = " \
 	${systemd_system_unitdir}/synergy-client.service \
 	${datadir}/linuxcnc/examples/sample-configs/rk3588-linuxcnc \
 	/home/root/linuxcnc/configs/rk3588-linuxcnc \
+	/home/root/linuxcnc/nc_files \
 	/home/root/Desktop/rk3588-linuxcnc.desktop \
 "
 

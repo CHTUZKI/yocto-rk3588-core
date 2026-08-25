@@ -47,13 +47,16 @@ start() {
 
     build_main_devices
 
-    # Bring EtherCAT interfaces down so ec_generic can claim them
+    # Bring EtherCAT interfaces UP so the PHY is powered and link is
+    # established.  ec_generic uses a raw socket on the interface; if the
+    # interface is down, the PHY is powered off and ec_generic cannot
+    # send/receive EtherCAT frames (Link stays DOWN, no slaves found).
     i=0
     while true; do
         eval dev=\${MASTER${i}_DEVICE:-}
         [ -z "$dev" ] && break
         if [ -e /sys/class/net/$dev ]; then
-            ip link set "$dev" down 2>/dev/null || true
+            ip link set "$dev" up 2>/dev/null || true
         fi
         i=$((i+1))
     done

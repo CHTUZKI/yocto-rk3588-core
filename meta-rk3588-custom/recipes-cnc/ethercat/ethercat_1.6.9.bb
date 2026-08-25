@@ -13,6 +13,7 @@ SRC_URI = " \
     file://ethercat.conf \
     file://ethercat.init \
     file://ethercat.service \
+    file://ethercat-udev.rules \
 "
 
 # dev-1.6 tip (2025-05-05): 1.6.9+parallelop1~pre8
@@ -69,6 +70,12 @@ do_install:append() {
 
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/ethercat.service ${D}${systemd_system_unitdir}/ethercat.service
+
+    # udev rule: make /dev/EtherCAT0 world-readable/writable so LinuxCNC
+    # (running as non-root via RTAPI_UID) can access it.
+    install -d ${D}${sysconfdir}/udev/rules.d
+    install -m 0644 ${WORKDIR}/ethercat-udev.rules \
+        ${D}${sysconfdir}/udev/rules.d/99-ethercat.rules
 }
 
 # Kernel modules live under .../kernel/ethercat/ (IgH installs to kernel/ subdir)
@@ -76,6 +83,7 @@ FILES:${PN} += " \
     ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/kernel/ethercat \
     ${sysconfdir}/ethercat.conf \
     ${sysconfdir}/init.d/ethercat \
+    ${sysconfdir}/udev/rules.d/99-ethercat.rules \
     ${systemd_system_unitdir}/ethercat.service \
     ${datadir}/bash-completion \
 "
